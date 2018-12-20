@@ -5,7 +5,7 @@ It has workloads “resnet50_v1” and "ssd-mobilenet" and can run Single and Mu
 
 ## 2. System Requirements
 
-* Operating System: 
+* Operating System:
 	Ubuntu 16.04 LTS
 * CPU:
 	  6th to 8th generation Intel Core and Intel Xeon processors
@@ -19,7 +19,7 @@ It has workloads “resnet50_v1” and "ssd-mobilenet" and can run Single and Mu
 ## 3. Run Benchmark
 
 ##### Steps to configure the machine
-1. Checkout the AIXPRT Github repository or download as zip to the /home/[user]/AIXPRT directory. If you download this module as zip , please make sure that the root folder name is /home/[user]/AIXPRT.
+1. Checkout the AIXPRT Github repository or download as zip to the /home/[user]/AIXPRT directory. If you download this module as zip , please make sure that the root folder name is /home/[user]/AIXPRT. (AIXPRT/OpenVINO/AIXPRT must be located at /home/[user]/AIXPRT)
 
 2. Install dependencies:
    * Install OpenVINO full package version , following the instructions in
