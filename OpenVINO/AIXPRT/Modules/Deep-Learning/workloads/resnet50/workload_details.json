@@ -1,0 +1,63 @@
+{
+    "category": "Image Classification",
+    "default_run_config": {
+        "batch_sizes": [
+            1,
+            2,
+            4,
+            8,
+            16,
+            32
+        ],
+        "concurrent_requests": 1,
+        "hardware": "cpu",
+        "iterations": 100,
+        "precision": "fp32",
+        "runtype": "performance"
+    },
+    "description": "Image Classification using ResNet-50",
+    "dir_name": "resnet50",
+    "framework": "Intel Deep Learning Toolkit",
+    "id": 1007,
+    "name": "ResNet-50",
+    "requested_config": {
+        "batch_sizes": [
+            1
+        ],
+        "concurrent_requests": 1,
+        "hardware": "cpu",
+        "iterations": 1,
+        "name": "ResNet-50",
+        "precision": "fp32",
+        "runtype": "performance"
+    },
+    "script": "run_task.py",
+    "support": {
+        "cpu": {
+            "supported_prec": "fp32",
+            "supported_runtype": "performance"
+        },
+        "gpu": {
+            "supported_prec": "fp32,fp16",
+            "supported_runtype": "performance"
+        },
+        "myriad": {
+            "supported_prec": "fp16",
+            "supported_runtype": "performance"
+        }
+    },
+    "workload_info": {
+        "accelerator_lib": [
+            "MKLDNN ",
+            "CLDNN",
+            "DLIA",
+            "Myriad"
+        ],
+        "inference_runtime": "v2018.4.420",
+        "model": "ResNet-50",
+        "source_model_format": "caffe",
+        "test_dataset": "ILSVRC 2012",
+        "training_dataset": "ILSVRC 2012",
+        "training_framework": "caffe"
+    }
+}

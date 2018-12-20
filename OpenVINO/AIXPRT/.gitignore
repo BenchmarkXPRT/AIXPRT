@@ -1,0 +1,22 @@
+# Ignore Mac DS_Store files
+.DS_Store
+
+# Ignore generated files
+*.pyc
+*.o
+Harness/__pycache__/
+*.idea/
+
+#Ignore generated Result folder
+/Results
+
+#Ignore Generated System info json
+Harness/SystemInfo.json
+Harness/config.json
+Harness/benchmark_details.json
+Config/
+
+
+#Ignore Large files in the Module ( <100MB)
+/Modules/Deep-Learning/packages/models/irv2/irv2_fp16.bin
+/Modules/Deep-Learning/packages/models/irv2/irv2_fp32.bin
