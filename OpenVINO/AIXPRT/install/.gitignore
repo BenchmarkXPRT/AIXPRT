@@ -2,5 +2,5 @@
 *
 # But not these files...
 !.gitignore
-!.compile_AIXPRT_sources.sh
+!compile_AIXPRT_sources.sh
 !remove_temp_directories.sh
