@@ -19,7 +19,16 @@ It has workloads “resnet50_v1” and "ssd-mobilenet" and can run Single and Mu
 ## 3. Run Benchmark
 
 ##### Steps to configure the machine
-1. Checkout the AIXPRT Github repository or download as zip to the /home/[user]/AIXPRT directory. If you download this module as zip , please make sure that the root folder name is /home/[user]/AIXPRT. (AIXPRT/OpenVINO/AIXPRT must be located at /home/[user]/AIXPRT)
+
+1.	Download the AIXPRT repository. Since the repository contains large files, over 50MB in size, the package git-lfs must be installed and the repository must be cloned. (A zip file of the repository will not include the large files.)  
+		a.	Install git lfs; instructions are found at https://packagecloud.io/github/git-lfs/install and are listed in the following 2 steps
+				i.	curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+				ii.	sudo apt-get install git-lfs
+		b.	Clone the repository
+				git clone https://github.com/BenchmarkXPRT/AIXPRT.git
+				(You may need to enter your credentials for each large file)
+		c.	Move the repository directory, AIXPRT/OpenVINO/AIXPRT to /home/[user]/AIXPRT
+
 
 2. Install dependencies:
    * Install OpenVINO full package version , following the instructions in
