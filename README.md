@@ -2,7 +2,7 @@
 
 ## Instructions for downloading the AIXPRT repository. 
 
-Since the repository contains large files, over 50MB in size, the package git-lfs must be installed and the repository must be cloned. (A zip file of the repository will not include the large files.)  
+The AIXPRT repository contains large files, over 50MB in size, so the package, git-lfs, must be installed and the repository must be cloned. (A zip file of the repository will not include the large files.)  
 
 Install git lfs and clone.
 Instructions are found at https://packagecloud.io/github/git-lfs/install and are listed in the following 3 steps
