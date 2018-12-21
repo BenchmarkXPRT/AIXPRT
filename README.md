@@ -10,4 +10,4 @@ Instructions are found at https://packagecloud.io/github/git-lfs/install and are
 1.	curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
 2.  sudo apt-get install git-lfs
 3.  git clone https://github.com/BenchmarkXPRT/AIXPRT.git (You may need to enter your credentials for each large file)
-
+4.  For environment setup, follow the steps in the README.md file in the Modules/Deep-Learning/ directory for each platform
