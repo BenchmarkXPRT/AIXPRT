@@ -1,0 +1,51 @@
+{
+    "category": "Image Classification",
+    "default_run_config": {
+        "batch_sizes": [
+            1,
+            2,
+            4,
+            8,
+            16,
+            32,
+            64,
+            128
+        ],
+        "concurrent_instances": 1,
+        "hardware": "gpu",
+        "precision": "fp32",
+        "runtype": "performance",
+        "total_requests": 10
+    },
+    "description": "Object Detection using SSD MobileNet-v1",
+    "dir_name": "ssdmobilenetv1",
+    "framework": "Tensorflow",
+    "id": 1005,
+    "name": "SSD-MobileNet-v1",
+    "requested_config": {
+        "batch_sizes": [
+            1
+        ],
+        "hardware": "gpu",
+        "iterations": 10,
+        "name": "SSD-MobileNet-v1",
+        "precision": "int8",
+        "runtype": "performance"
+    },
+    "script": "run_task.py",
+    "support": {
+        "gpu": {
+            "supported_prec": "fp32,fp16,int8",
+            "supported_runtype": "performance"
+        }
+    },
+    "workload_info": {
+        "accelerator_lib": [],
+        "inference_runtime": "",
+        "model": "SSD-MobileNet-v1",
+        "source_model_format": "tensorflow",
+        "test_dataset": "COCO 2017",
+        "training_dataset": "COCO 2017",
+        "training_framework": "tensorflow"
+    }
+}
