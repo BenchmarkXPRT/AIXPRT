@@ -1,0 +1,112 @@
+{
+    "category": "Image Classification",
+    "default_run_config": {
+        "batch_sizes": [
+            1,
+            2,
+            4,
+            8,
+            16,
+            32,
+            64,
+            128
+        ],
+        "concurrent_instances": 1,
+        "env_variables": {},
+        "framework_config": {
+            "allow_soft_placement": false,
+            "enableConfig": false,
+            "inter_op_parallelism_threads": 0,
+            "intra_op_parallelism_threads": 0
+        },
+        "hardware": "cpu",
+        "precision": "fp32",
+        "runtype": "performance",
+        "setNUMA": false,
+        "tf_graphTransform": null,
+        "total_requests": 10
+    },
+    "description": "Image Classification using ResNet-50",
+    "dir_name": "resnet50",
+    "framework": "Tensorflow",
+    "id": 1005,
+    "name": "ResNet-50",
+    "requested_config": {
+        "batch_sizes": [
+            1
+        ],
+        "concurrent_instances": 8,
+        "env_variables": {
+            "KMP_AFFINITY": "granularity=fine,verbose,compact,1,0",
+            "KMP_BLOCKTIME": "1",
+            "KMP_SETTINGS": "1"
+        },
+        "framework_config": {
+            "allow_soft_placement": true,
+            "enableConfig": true,
+            "inter_op_parallelism_threads": 0,
+            "intra_op_parallelism_threads": 0
+        },
+        "hardware": "cpu",
+        "instance_allocation": [
+            {
+                "membind": "0",
+                "physcpubind": "0-7"
+            },
+            {
+                "membind": "1",
+                "physcpubind": "8-15"
+            },
+            {
+                "membind": "2",
+                "physcpubind": " 16-23"
+            },
+            {
+                "membind": "3",
+                "physcpubind": "24-31"
+            },
+            {
+                "membind": "4",
+                "physcpubind": "32-39"
+            },
+            {
+                "membind": "5",
+                "physcpubind": " 40-47"
+            },
+            {
+                "membind": "6",
+                "physcpubind": "48-55"
+            },
+            {
+                "membind": "7",
+                "physcpubind": "56-63"
+            }
+        ],
+        "name": "ResNet-50",
+        "precision": "fp32",
+        "runtype": "performance",
+        "setNUMA": true,
+        "tf_graphTransform": null,
+        "total_requests": 8
+    },
+    "script": "run_task.py",
+    "support": {
+        "cpu": {
+            "supported_prec": "fp32, int8",
+            "supported_runtype": "performance"
+        },
+        "gpu": {
+            "supported_prec": "fp32",
+            "supported_runtype": "performance"
+        }
+    },
+    "workload_info": {
+        "accelerator_lib": [],
+        "inference_runtime": "",
+        "model": "resnet50",
+        "source_model_format": "tensorflow",
+        "test_dataset": "ILSVRC 2012",
+        "training_dataset": "ILSVRC 2012",
+        "training_framework": "tensorflow"
+    }
+}
