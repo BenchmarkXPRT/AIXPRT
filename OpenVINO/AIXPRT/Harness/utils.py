@@ -196,3 +196,13 @@ def createLogDir():
     if not os.path.exists(logDir):
         os.makedirs(logDir)
     return logDir
+
+def getTensorflowInfo():
+    command = "pip list  | grep tensorflow"
+    info = ""
+    try:
+        info = subprocess.check_output(command, shell=True)
+        info = str((info.strip()).decode('utf_8'))
+    except subprocess.CalledProcessError as grepexc:
+        print("Warning unable to get tensorflow type by running- pip3 list  | grep tensorflow", grepexc.returncode, grepexc.output)
+    return info

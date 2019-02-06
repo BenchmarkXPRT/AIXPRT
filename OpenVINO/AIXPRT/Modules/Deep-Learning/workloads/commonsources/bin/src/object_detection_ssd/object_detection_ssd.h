@@ -112,7 +112,7 @@ DEFINE_int32(ni, 1, iterations_count_message);
 DEFINE_bool(p_msg, false, plugin_err_message);
 
 DEFINE_string(a, "", "Model name");
-DEFINE_string(b, "", "Batch size");
+DEFINE_int32(b, 1, "Batch size");
 DEFINE_string(aarch, "", "Architecture");
 DEFINE_string(dir, "", "output_dir");
 DEFINE_string(prec, "", "Precision");

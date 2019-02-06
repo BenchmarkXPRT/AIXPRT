@@ -1,13 +1,34 @@
 # About
 
-AIXPRT benchmark description.
+AIXPRT is an AI benchmark which has the capability of running on below platforms  
+* AMD CPU
+* AMD GPU
+* Intel CPU
+* Intel GPU
+* Intel VPU (Myriad)
+* Nvidia GPU
+* Nvidia Xavier
 
-1. This ReadMe only explains about the Harness of the application. For individual Module ReadMe file , please navigate to
-AIXPRT/Modules/Deep-Learning/README.md
+Workloads are implemented using the publicly available libraries and SDKs for each platform.
 
-2. Individual ReadMe files will have instructions to Setup and Run the BenchMark.
+# Run the Benchmark
 
+### By Cloning the repo 
+   1.Install git with lfs.Instructions are found at https://packagecloud.io/github/git-lfs/install.
 
-Application UML
+   2. Clone the repository 
+    * git clone https://github.com/BenchmarkXPRT/AIXPRT.git
 
-![alt text](path to url /AIXPRT/Harness/uml.png)
+   3. Navigate to AIXPRT/Modules/Deep-Learning/README.md of the cloned branch and follow instructions to run the benchmark.
+
+   4. AIXPRT application runs on default confugaration provided by the workloads. However once a default config file is generated , user        can edit this config to change the workload behavior.
+
+NOTE : A config file will be generated at AIXPRT/Config/{config_name}.json after the first run of index.py . One can edit this config file to run the specific workload in a specific way .
+
+[How to edit config](TODO : add url to AIXPRT/EditConfig.md file )
+
+## Report Bugs
+Please Report your bugs under Issues tab of this project
+
+## Develop
+Please follow the [instructions](TODO : Add url to AIXPRT AddWorkload.md) to add new workloads to the benchmark.

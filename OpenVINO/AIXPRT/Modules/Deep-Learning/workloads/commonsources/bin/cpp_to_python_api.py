@@ -16,6 +16,8 @@ import platform
 import csv
 import json
 import result_dnn_api
+import subprocess
+import re
 
 # Check if the argument is passed for the model wprefix
 modelPrefix = sys.argv[1]
@@ -26,9 +28,28 @@ imgPerSec = sys.argv[5]
 iterCount = sys.argv[6]
 timeInMillisec = sys.argv[7]
 StandardDev = sys.argv[8]
+# --- Synchronize logging
+concurrent_instances = sys.argv[9]
 
 # version update from: deployment_tools/documentation/InstallingForLinux.html
-version = 'v2018.4.420'
+
+def getOpenVINOversion():
+    exePATH = os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","workloads","commonsources","bin","image_classification")
+    command = "ldd %s" % exePATH
+    ldd_out_temp = (subprocess.check_output(command, shell=True).strip())
+    ldd_out = ldd_out_temp.decode("utf-8")
+    OpenVINOversion = ""
+    for line in ldd_out.splitlines():
+        line = str(line)
+        if ("/opt/intel/computer_vision_sdk" in str(line)) and ("/deployment_tools" in str(line)):
+            match = re.match(r'\t(.*) => (.*) \(0x', line)
+            if match:
+                myString = match.group(2)
+                OpenVINOversion = myString[(myString.index("/opt/intel/")+len("/opt/intel/")):myString.index("/deployment_tools")]
+    return OpenVINOversion
+
+
+version = getOpenVINOversion()
 s = {
 'cpu': 'MKLDNN 18WW32.5',
 'gpu': 'clDNN 18WW32.5',
@@ -49,7 +70,7 @@ def writeBatchResultsToAPI():
     forwardTime = float(timeInMillisec)
     workLoadName = result_dnn_api.returnWorkloadName(modelPrefix)
     inputString = result_dnn_api.returnInputMap("OpenVINO ", version , "ILSVRC 2012",batchSize , aarch, modelPrefix+'net',prec,iterCount,usedAcceleratorList)
-    resultsString = result_dnn_api.returnBatchsizeResults(int(batchSize), round(resInImgPerSec,3), forwardTime, int(iterCount), modelPrefix+'Net', StandardDev)
+    resultsString = result_dnn_api.returnBatchsizeResults(int(batchSize), round(resInImgPerSec,3), forwardTime, int(iterCount), modelPrefix, aarch.lower(), StandardDev, int(concurrent_instances) )
     # Now wrtie the info to the API
     result_dnn_api.writeResultsToAPI(workLoadName, inputString, resultsString)
 

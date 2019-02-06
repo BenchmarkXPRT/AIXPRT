@@ -111,6 +111,7 @@ int main(int argc, char *argv[]) {
         // --------------------------- 1. Load Plugin for inference engine -------------------------------------
         slog::info << "Loading plugin" << slog::endl;
         InferencePlugin plugin = PluginDispatcher({ FLAGS_pp, "../../../lib/intel64" , "" }).getPluginByDevice(FLAGS_d);
+	//InferencePlugin plugin = PluginDispatcher({ FLAGS_pp, "" }).getPluginByDevice(FLAGS_d);
         if (FLAGS_p_msg) {
             static_cast<InferenceEngine::InferenceEnginePluginPtr>(plugin)->SetLogCallback(error_listener);
         }
@@ -287,7 +288,6 @@ int main(int argc, char *argv[]) {
         typedef std::chrono::duration<double, std::ratio<1, 1000>> ms;
         typedef std::chrono::duration<float> fsec;
 
-        double total = 0.0;
         double sample[FLAGS_ni]; //compute STDev
         for (int iter = 0; iter < FLAGS_ni; ++iter){
           sample[FLAGS_ni] = 0.0;
@@ -299,6 +299,7 @@ int main(int argc, char *argv[]) {
         }
 
         /** Start inference & calc performance **/
+        double total = 0.0;
         for (int iter = 0; iter < FLAGS_ni; ++iter) {
             auto t0 = Time::now();
             infer_request.Infer();
@@ -338,7 +339,7 @@ int main(int argc, char *argv[]) {
         std::cout << "Result: " << imgpersec << " images/sec" << std::endl;
         std::string const command = "python cpp_to_python_api.py "  + model_name +" " + std::to_string(batch_size) + " " + aarch + " " +\
                                     precision + " " + std::to_string(imgpersec) + " " + std::to_string(FLAGS_ni) + " " +\
-                                    std::to_string(avg_time) + " " + std::to_string(standard_deviation) ;
+                                    std::to_string(avg_time) + " " + std::to_string(standard_deviation) + " " + std::to_string(1);
 
         int ret_val = system(command.c_str());
         if (ret_val == 0)

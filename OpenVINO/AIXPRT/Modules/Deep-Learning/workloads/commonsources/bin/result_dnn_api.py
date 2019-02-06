@@ -36,27 +36,35 @@ def returnInputMap(framework, version, imgSource, imgCount, arch, model , precis
     return(workloadInput)
 
 ## returnBatchsizeResults()
-def returnBatchsizeResults(batchSize, resultInImgPerSec, timeInMsec, iterCount, misc, standardDev):
+def returnBatchsizeResults(batchSize, resultInImgPerSec, timeInMsec, iterCount, modelName, aarch, standardDev, concurrent_instances):
     results = []
     insideResults = {}
     insideResults["label"] = 'Batch ' + str(batchSize)
+    #insideResults["Batch"] = str(batchSize)
     insideResults["system_throughput"] =   resultInImgPerSec
-    insideResults["system_throughput_units"] =   'ImagesPerSec'
+    insideResults["system_throughput_units"] =   'imgs/sec'
+    insideResults["system_latency"] = timeInMsec
+    insideResults["system_latency_units"] = "milliseconds"
     # Optional Fields
     additional_info = []
     insideResults["additional info"] = additional_info
     additional_info_details = {}
-    additional_info_details["batch"] = batchSize
-    additional_info_details["iter_count"] = iterCount
-    additional_info_details["timeinmsec_per_iter"] = timeInMsec
-    additional_info_details["Extra"] = misc
-    additional_info_details["standardDev"] = standardDev
+    #additional_info_details["batch"] = batchSize
+    #additional_info_details["iter_count"] = iterCount
+    #additional_info_details["timeinmsec_per_iter"] = timeInMsec
+    #additional_info_details["modelName"] = modelName
+    #additional_info_details["Device"] = aarch
+    #additional_info_details["standardDev"] = standardDev
+
+    additional_info_details["concurrent_instances"] = concurrent_instances
+    additional_info_details["total_requests"] = iterCount
+
     additional_info.append(additional_info_details)
     results.append(insideResults)
 
     return(results)
 
-def returnAccuracyResults(top, percentValue, std, iterCount, misc, prec, arch):
+def returnAccuracyResults(top, percentValue, std, iterCount, modelName, prec, arch):
     results = []
     insideResults = {}
     insideResults["label"] = 'Top-' + str(top)
@@ -72,7 +80,7 @@ def returnAccuracyResults(top, percentValue, std, iterCount, misc, prec, arch):
     additional_info_details["iter_count"] = iterCount
     additional_info_details["std"] = std
     additional_info_details["prec"] = prec
-    additional_info_details["Extra"] = misc
+    additional_info_details["modelName"] = modelName
     additional_info.append(additional_info_details)
     results.append(insideResults)
 
@@ -84,7 +92,7 @@ def returnWorkloadName(key):
     dict["resnet-50"] = "ResNet-50"
     dict["irv2"] = "Inception-Resnet-v2"
     dict["squeezenet"] = "SqueezeNet_v1.1_ILSVRC-2012"
-    dict["mobilenetv1"] = "Mobilenet-v1"
+    dict["mobilenetv1"] = "MobileNet-v1"
     dict["ssd_mobilenet"] = "SSD-MobileNet-v1"
     dict["SSD_Inception_v2"] = "SSD_Inception v2_COCO"
     dict["yolo_v2"] = "Yolo-v2"
@@ -113,5 +121,5 @@ def writeAccuracyResultsToAPI(accType, topResult, Std, iterCount, model, ext):
     #print resultsString
     writeResultsToAPI(workLoadName, inputString, resultsString)
 
-sys.path.insert(1, '../../../../../Harness/')
+sys.path.insert(1, os.path.join(os.environ['APP_HOME'],'Harness'))
 import resultsapi	#For MLXBench results API

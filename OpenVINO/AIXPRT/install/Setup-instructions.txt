@@ -1,0 +1,43 @@
+#===================================================================================================
+
+	# Installation and Usage instructions for AIXPRT Intel workloads
+
+#===================================================================================================
+
+1. ## Downloads and Setup:
+	
+
+	### (a) Download and Install OpenVINO:
+
+	   (i) Go to https://software.intel.com/en-us/openvino-toolkit/choose-download/free-download-linux
+	       to register and download OpenVINO (R4).
+
+	   (ii) Unpack the downloaded OpenVINO tar archive file into the direcotory 'l_openvino_toolkit_p_<version>'
+	   
+	   (iii) cd 'l_openvino_toolkit_p_<version>' && sudo ./install_GUI.sh
+
+           Follow the on-screen instructions to install OpenVINO distribution into /opt/intel/
+
+
+	### (b) If using GPU and/or other devices, install dependencies (This requires reboot. Continue from (c) after reboot):
+
+ 	    (i) cd ~/AIXPRT/install
+            (ii) ./install_GPU_VPU_HDDLR_dep.sh
+	    (iii) sudo reboot
+
+
+	### (c) Run the 'compile_AIXPRT_sources.sh' from the install folder:
+
+            (i) cd ~/AIXPRT/install/
+	    (ii) ./compile_AIXPRT_sources.sh
+
+            (This compiles and installs the python library dependencies as well as required OpenVINO libraries)
+
+
+2. ## Running Workloads:
+	
+	(a) cd ~/AIXPRT/Harness/
+	(b) user@user:~/AIXPRT/Harness$ python3 index.py
+
+3. ## Results:
+	Results are generated in and saved in ~/AIXPRT/Results/<workload_config_json_date_time>.json

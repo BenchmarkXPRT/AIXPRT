@@ -149,10 +149,6 @@ def createResultJson(workloadName,workloadInput, results):
             # raise ValueError('\nPlease provide the precision on which the workload ran , if your workload has independent of precision then add NA \n'
             print("\nPlease provide the precision on which the workload ran , if your workload has independent of precision then add NA \n")
             return
-        if (workloadInput.get("iterations",None)==None):
-            # raise ValueError('\nPlease provide the number of iterations ran \n'
-            print("\nPlease provide the number of iterations ran \n")
-            return
         for result in results:
             if (result.get("label",None)==None):
                 print("Each result item must have a tag label")
