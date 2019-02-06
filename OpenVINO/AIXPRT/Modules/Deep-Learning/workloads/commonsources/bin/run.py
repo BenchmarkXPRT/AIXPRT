@@ -15,13 +15,13 @@ import subprocess
 import os
 import json
 from PIL import Image
-import numpy as np
+#import numpy as np
 import shutil
 sys.path.insert(0, os.path.join(os.environ['APP_HOME'],"Harness","CallBacks"))
 import workloadEventCallBack as event
 import re
 
-DL_DTK_Version="v2018.4.420"
+DL_DTK_Version="v2018.5.445"
 display_target=5
 
 # Setting default parameters
@@ -52,18 +52,23 @@ def get_params_from_json(dir_name):
             aarch = data["requested_config"]["hardware"].upper()
         if not (requested_config.get("precision",None)==None):
             precision = data["requested_config"]["precision"]
-        if not (requested_config.get("iterations",None)==None):
-            iterations = data["requested_config"]["iterations"]
+        if not (requested_config.get("total_requests",None)==None):
+            iterations = data["requested_config"]["total_requests"]
         if not (requested_config.get("batch_sizes",None)==None):
             batch_size_number = data["requested_config"]["batch_sizes"]
-        if not (requested_config.get("concurrent_requests",None)==None):
-            requests = data["requested_config"]["concurrent_requests"]
+        if not (requested_config.get("concurrent_instances",None)==None):
+            requests = data["requested_config"]["concurrent_instances"]
 
     return(aarch, precision, iterations, batch_size_number , workloadName , workloadID, requests)
 
 # Image Classification
 def image_classification(model_name,dir_name,model_input_size):
     aarch, precision, iterations, batch_size_number, workloadName, workloadID, concurrent_requests = get_params_from_json(dir_name)
+
+    if (aarch.upper() in ["GPU", "HDDL", "MYRIAD"]) and (precision=="int8"):
+        print("INT8 not supported on {}".format(aarch))
+        sys.exit()
+
     display_target=5
 
     set_env_path()
@@ -75,25 +80,41 @@ def image_classification(model_name,dir_name,model_input_size):
     os.chdir(os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","workloads","commonsources","bin"))
 
     for j in batch_size_number:
+
         if (j > 1):
-            if (aarch == "MYRIAD"):
-                print("Workload doesn't support batch size greater than 1")
-                exit()
+            if (aarch in ["MYRIAD", "HDDL"]):
+                print("No support for BATCH SIZE {} on {}".format(j, aarch.upper()))
+                sys.exit()
 
         image_folder = create_batch_files(j,"input_images",model_input_size)
         print("   Running "+model_name+" batch"+str(j)+" "+precision + " " + aarch)
-        file_out = os.path.join('..','..',dir_name,'result','output',model_name+'_'+precision+'_batch'+str(j)+'_'+aarch+'.txt')
+        file_out = os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","workloads",dir_name,'result','output',model_name+'_'+precision+'_batch'+str(j)+'_'+aarch+'.txt')
 
         if (concurrent_requests>1):
             display_target=1 #limit the size of output file
+
+            if aarch.upper()=="GPU": # GPU in concurrent mode not allowed
+                print("Don't run inference on GPU in async mode (set concurrent_instances = 1 in config file)")
+                sys.exit()
+
+            if (j > 1) and (aarch.upper() in ["MYRIAD", "HDDL"]): # Only run batch size 1 on MYRIAD devices
+                print("No support for BATCH SIZE {} on {}".format(j, aarch.upper()))
+                sys.exit()
+
             if (concurrent_requests>iterations):
                 iterations=concurrent_requests
                 print("    iterations should be bigger than concurrent_requests, ammending iterations = " + str(iterations))
+
             print("    Delivering "+ str(concurrent_requests) + " concurrent requests to inference engine....")
             application = os.path.realpath(os.getcwd()+"/image_classification_async")
             command = application + " -a "+model_name+" -b "+str(j)+" -aarch "+aarch+" -prec "+precision+" -d "+aarch+\
                       " -i "+image_folder+" -m "+model_path+" -nt "+str(display_target)+" -ni "+str(iterations)+" -nireq "+str(concurrent_requests)
         else:
+
+            if (aarch.upper() in ["MYRIAD", "HDDL"]): # Only run batch size 1 on MYRIAD devices
+                print("Workload does not support inference on {} with concurrent_instances < 2".format(aarch.upper()))
+                sys.exit()
+
             application = os.path.realpath(os.getcwd()+"/image_classification")
             command = application + " -a "+model_name+" -b "+str(j)+" -aarch "+aarch+" -prec "+precision+" -d "+aarch+\
               " -i "+image_folder+" -m "+model_path+" -nt "+str(display_target)+" -ni "+str(iterations)
@@ -111,35 +132,58 @@ def object_detection_ssd(model_name,dir_name,dataset):
     aarch, precision, iterations, batch_size_number, workloadName, workloadID, concurrent_requests = get_params_from_json(dir_name)
     set_env_path()
 
+    if (aarch.upper() in ["GPU", "HDDL", "MYRIAD"]) and (precision=="int8"):
+        print("INT8 not supported on {}".format(aarch))
+        sys.exit()
+        
     model_path = set_model_path(model_name,precision)
     os.chdir(os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","workloads","commonsources","bin"))
     for j in batch_size_number:
+
         print("   Running "+model_name+" batch"+str(j)+" "+precision + " " + aarch)
 
         if (j > 1):
-            if (aarch == "MYRIAD"):
-                print("Workload doesn't support batch size greater than 1")
-                exit()
+            if (aarch in ["MYRIAD", "HDDL"]):
+                print("No support for BATCH SIZE {} on {}".format(j, aarch.upper()))
+                sys.exit()
+
         model_input_size = 300
         image_folder = create_batch_files(j,"input_images",model_input_size)
 
-        model_path=os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","models",model_name,model_name+'_'+precision+'_b'+str(j)+'.xml')
+        #if aarch.upper()=="GPU":
+        #    model_path=os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","models",model_name,model_name+'_'+precision+'_b'+str(j)+'.xml')
+        #    if not os.path.isfile(model_path):
+        #        print("OpenVINO IR files for batch size {} not found. Please modify 'compile_AIXPRT_sources.sh' to generate IR file with batch size {}".format( j, j))
+        #        sys.exit()
 
-        file_out = os.path.join('..','..',dir_name,'result','output',model_name+'_'+precision+'_batch'+str(j)+'_'+aarch+'.txt')
+        file_out = os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","workloads",dir_name,'result','output',model_name+'_'+precision+'_batch'+str(j)+'_'+aarch+'.txt')
 
         if (concurrent_requests>1):
             display_target=1 #limit the size of output file
+            if aarch.upper()=="GPU":
+                print("Don't run inference on GPU in async mode (set concurrent_instances = 1 in config file)")
+                sys.exit()
+
+            if (j > 1) and (aarch.upper() in ["MYRIAD", "HDDL"]):
+                print("Cannot run {} concurrent requests with BATCH SIZE {}".format(concurrent_requests, j))
+                sys.exit()
+
             if (concurrent_requests>iterations):
                 iterations=concurrent_requests
                 print("    iterations should be bigger than concurrent_requests, ammending iterations = " + str(iterations))
             print("    Delivering "+ str(concurrent_requests) + " concurrent requests to inference engine....")
             application = os.path.realpath(os.getcwd()+"/object_detection_ssd_async")
             command = application + " -i " + image_folder + " -m " + model_path + " -ni " + str(iterations) + " -d " + aarch +\
-             " -nireq " + str(concurrent_requests) + " -b "+str(j) + " -prec "+precision+" -dir "+ dir_name + " -a "+model_name + " -aarch "+aarch + " "
+             " -nireq " + str(concurrent_requests) + " -b "+str(j) + " -prec "+precision+" -dir "+ dir_name + " -a "+model_name + " -aarch "+aarch
         else:
+
+            if (aarch.upper() in ["MYRIAD", "HDDL"]): # Only run batch size 1 on MYRIAD devices
+                print("Workload does not support inference on {} with concurrent_instances < 2".format(aarch.upper()))
+                sys.exit()
+
             application = os.path.realpath(os.getcwd()+"/object_detection_ssd")
             command = application + " -i " + image_folder + " -m " + model_path + " -ni " + str(iterations) + " -d " + aarch +\
-                      " -b "+str(j) + " -prec "+precision+" -dir "+ dir_name + " -a "+model_name + " -aarch "+aarch + " "
+                      " -b "+str(j) + " -prec "+precision+" -dir "+ dir_name + " -a "+model_name + " -aarch "+aarch
 
         with open(file_out, 'w') as out:
             command = event.workloadStarted(workloadName , workloadID , j , precision , aarch, command)
@@ -151,17 +195,19 @@ def object_detection_ssd(model_name,dir_name,dataset):
 
 def create_batch_files(batch_size,validation_folder,size):
     images_list = list_all_files_sorted(validation_folder)
+    Num_images = len(images_list)
+    current_batch = images_list[:min(batch_size, Num_images)]
 
-    current_batch = images_list[0:batch_size]
-    image_folder = os.path.join("..","..","..","packages",validation_folder,"batch"+str(batch_size))
+    image_folder = os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages",validation_folder,"batch"+str(batch_size))
     if os.path.isdir(image_folder):
             shutil.rmtree(image_folder)
     os.makedirs(image_folder)
+
     for file in current_batch[:]:
         filename, fileext = os.path.splitext(file)
-        image_out = os.path.join("..","..","..","packages",validation_folder,"batch"+str(batch_size),os.path.basename(filename) + '.bmp')
+        image_out = os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages",validation_folder,"batch"+str(batch_size),os.path.basename(filename) + '.bmp')
         img_path = os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages",validation_folder,str(file))
-        i = Image.open(img_path)
+        i = Image.open(img_path).convert("RGB")
 
         if size == 1024:
             j = i.resize((int(size*2), int(size)), Image.ANTIALIAS)
@@ -169,6 +215,36 @@ def create_batch_files(batch_size,validation_folder,size):
         else:
             j = i.resize((int(size), int(size)), Image.ANTIALIAS)
             j.save(image_out)
+
+    # top up if batch size is more than available images
+    images_list = list_all_files_sorted(image_folder)
+    num_created_images = len(images_list)
+    copy_iteration = 0
+    while num_created_images < batch_size:
+        for file in images_list:
+ 
+            filename, fileext = os.path.splitext(file)
+            image_out = os.path.join(image_folder,str(copy_iteration) + "_" + os.path.basename(filename) + '.bmp')
+            img_path = os.path.join(image_folder, str(file))
+            i = Image.open(img_path).convert("RGB")
+
+            if size == 1024:
+                j = i.resize((int(size*2), int(size)), Image.ANTIALIAS)
+                j.save(image_out)
+            else:
+                j = i.resize((int(size), int(size)), Image.ANTIALIAS)
+                j.save(image_out)
+
+            num_created_images+=1 # Update number of created images
+
+            if num_created_images == batch_size:
+                break
+	        
+        copy_iteration+=1
+        images_list = list_all_files_sorted(image_folder)
+        num_created_images = len(images_list)
+    
+    #print("\nCreated {} additional copies.\n".format(num_created_images - Num_images))
     return(image_folder)
 
 def list_all_files_sorted(validation_folder):
@@ -180,40 +256,14 @@ def list_all_files_sorted(validation_folder):
 def remove_batch_files(image_folder):
     shutil.rmtree(image_folder)
 
-# For cropping images
-def central_crop(img, central_fraction=0.875):
-    y,x,c = img.shape
-    r = 1-central_fraction # How much to discard
-
-    starty = int(round(y*r/2.0))# starting crop for y
-    endy = y - starty
-
-    startx = int(round(x*r/2.0))
-    endx = x - startx
-#    print("Startx: {}\tEndx {}\tStarty {}\tEndy {}".format(startx, endx, starty, endy))
-    return img[starty:endy, startx:endx]
-
-#Resize and centercrop for validation
-def resize(size,direc,current_batch):
-    for file in current_batch[:]:
-        path = os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","input_images",str(file))
-        filename, fileext = os.path.splitext(file)
-
-        #%% PIL + Numpy preproc
-        img = Image.open(path).convert('RGB')
-        img = central_crop(np.array(img,dtype=np.float32)) # Crop central area of image
-        img = Image.fromarray(np.uint8(img), 'RGB')
-        crop_img = img.resize((int(size), int(size)), resample=Image.BILINEAR) # Resize to input dimensions
-
-        image_out = os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","input_images",str(direc)+'_'+str(size),os.path.basename(filename) + '.bmp')
-        crop_img.save(image_out)
-
 # Set ENV Paths
 def set_env_path():
     try:
         os.environ['LD_LIBRARY_PATH']=os.environ['LD_LIBRARY_PATH']+":"+os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","plugin")
     except KeyError:
         os.environ['LD_LIBRARY_PATH']=os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","plugin")
+    
+    os.environ['HDDL_INSTALL_DIR']="/opt/intel/computer_vision_sdk/deployment_tools/inference_engine/external/hddl"
 
 # Set Model Path
 def set_model_path(model_name,precision):

@@ -1,3 +1,4 @@
+
 {
   "Workloads": [
     {
@@ -64,7 +65,7 @@
         }
       ],
       "workload run information": {},
-      "workloadID": 0,
+      "workloadID": 1001,
       "workloadName": "ResNet-50"
     },
     {
@@ -131,7 +132,7 @@
         }
       ],
       "workload run information": {},
-      "workloadID": 0,
+      "workloadID": 1002,
       "workloadName": "SSD-MobileNet-v1"
     }
   ]

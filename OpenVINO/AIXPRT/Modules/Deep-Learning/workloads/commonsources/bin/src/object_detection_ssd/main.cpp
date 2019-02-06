@@ -153,29 +153,20 @@ int main(int argc, char *argv[]) {
         /** Extract model name and load weights **/
         networkReader.ReadWeights(binFileName);
         CNNNetwork network = networkReader.getNetwork();
+        network.setBatchSize(images.size());
         // -----------------------------------------------------------------------------------------------------
         //Adding harness variables
         std::string model_name,aarch,precision,output_dir;
-        int batch_size = 0;
-
-        for (int i = 0; i < argc; i++) {
-            std::string word = argv[i];
-            if (word == "-a") {
-                // We know the next argument *should* be the filename:
-                model_name = argv[i + 1];
-            }else if(word == "-aarch"){
-                aarch = argv[i + 1];
-            }else if(word == "-b"){
-                batch_size = atoi(argv[i + 1]);
-            }else if(word == "-prec"){
-                precision = argv[i + 1];
-            }else if(word == "-dir"){
-                output_dir = argv[i + 1];
-            }
-       	}
+        int batch_size = FLAGS_b;
+	model_name = FLAGS_a;
+        aarch = FLAGS_aarch;
+        precision = FLAGS_prec;
+        output_dir = FLAGS_dir;
 
         std::cout << "[ INFO ] " << model_name << "\t" << precision <<
             "\t" << batch_size << "\t" << output_dir << std::endl;
+        slog::info << "Model name " << FLAGS_a << slog::endl;
+        
         // --------------------------- 5. Prepare input blobs --------------------------------------------------
         slog::info << "Preparing input blobs" << slog::endl;
 
@@ -263,7 +254,7 @@ int main(int argc, char *argv[]) {
 
         ExecutableNetwork executable_network = plugin.LoadNetwork(network, {});
         // -----------------------------------------------------------------------------------------------------
-
+	slog::info << "Model loaded successfully to plugin" << slog::endl;
         // --------------------------- 8. Create infer request -------------------------------------------------
         InferRequest infer_request = executable_network.CreateInferRequest();
         // -----------------------------------------------------------------------------------------------------
@@ -399,7 +390,7 @@ int main(int argc, char *argv[]) {
         std::cout << std::endl << "Average running time of one iteration: " << avg_time << " ms" << std::endl << std::endl;
         std::string const command = "python cpp_to_python_api.py "+model_name+" "+std::to_string(batch_size)+" " + FLAGS_d +\
                                     " "+ precision +" " + std::to_string(imgpersec) + " "+std::to_string(FLAGS_ni)+\
-                                    " " + std::to_string(avg_time) + " " + std::to_string(standard_deviation) ;
+                                    " " + std::to_string(avg_time) + " " + std::to_string(standard_deviation) + " " + std::to_string(1);
         std::cout << command << std::endl;
         int ret_val = system(command.c_str());
         if (ret_val == 0)
@@ -432,9 +423,6 @@ int main(int argc, char *argv[]) {
             float xmax = detection[curProposal * objectSize + 5] * imageWidths[image_id];
             float ymax = detection[curProposal * objectSize + 6] * imageHeights[image_id];
 
-            //std::cout << "[" << curProposal << "," << label << "] element, prob = " << confidence <<
-            //    "    (" << xmin << "," << ymin << ")-(" << xmax << "," << ymax << ")" << " batch id : " << image_id;
-
             if (confidence > 0.5) {
                 /** Drawing only objects with >50% probability **/
                 classes[image_id].push_back(static_cast<int>(label));
@@ -449,7 +437,9 @@ int main(int argc, char *argv[]) {
 
         for (size_t batch_id = 0; batch_id < batchSize; ++batch_id) {
             addRectangles(originalImagesData[batch_id].get(), imageHeights[batch_id], imageWidths[batch_id], boxes[batch_id], classes[batch_id]);
+            //const std::string image_path = output_dir+"/result/output/out_"+model_name+std::to_string(batch_id)+".bmp";
             const std::string image_path = "../../"+output_dir+"/result/output/out_"+model_name+std::to_string(batch_id)+".bmp";
+            //const std::string image_path = std::to_string(batch_id)+".bmp";
             if (writeOutputBmp(image_path, originalImagesData[batch_id].get(), imageHeights[batch_id], imageWidths[batch_id])) {
                 slog::info << "Image " + image_path + " created!" << slog::endl;
             } else {

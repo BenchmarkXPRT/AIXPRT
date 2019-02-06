@@ -1,63 +1,76 @@
 {
-    "category": "Image Classification",
+    "category": "Image Classification", 
     "default_run_config": {
         "batch_sizes": [
-            1,
-            2,
-            4,
-            8,
-            16,
-            32
-        ],
-        "concurrent_requests": 1,
-        "hardware": "cpu",
-        "iterations": 100,
-        "precision": "fp32",
-        "runtype": "performance"
-    },
-    "description": "Object Detection using SSD (MobileNet)",
-    "dir_name": "ssdmobilenet",
-    "framework": "Intel Deep Learning Toolkit",
-    "id": 1016,
-    "name": "SSD-MobileNet-v1",
+            1, 
+            2, 
+            4, 
+            8, 
+            16, 
+            32, 
+            64, 
+            128
+        ], 
+        "concurrent_instances": 1, 
+        "hardware": "cpu", 
+        "precision": "fp32", 
+        "runtype": "performance", 
+        "total_requests": 1000
+    }, 
+    "description": "Object Detection using SSD (MobileNet)", 
+    "dir_name": "ssdmobilenet", 
+    "framework": "Intel Deep Learning Toolkit", 
+    "id": 1016, 
+    "name": "SSD-MobileNet-v1", 
     "requested_config": {
         "batch_sizes": [
-            1
-        ],
-        "concurrent_requests": 1,
-        "hardware": "myriad",
-        "iterations": 10,
-        "name": "SSD-MobileNet-v1",
-        "precision": "fp16",
-        "runtype": "performance"
-    },
-    "script": "run_task.py",
+            1, 
+            2, 
+            4, 
+            8, 
+            16, 
+            32, 
+            64, 
+            128
+        ], 
+        "concurrent_instances": 1, 
+        "hardware": "cpu", 
+        "name": "SSD-MobileNet-v1", 
+        "precision": "fp32", 
+        "runtype": "performance", 
+        "total_requests": 1000
+    }, 
+    "script": "run_task.py", 
     "support": {
         "cpu": {
-            "supported_prec": "fp32",
+            "supported_prec": "fp32,int8", 
             "supported_runtype": "performance"
-        },
+        }, 
         "gpu": {
-            "supported_prec": "fp16,fp32",
+            "supported_prec": "fp16,fp32", 
             "supported_runtype": "performance"
-        },
+        }, 
+        "hddl": {
+            "supported_prec": "fp16", 
+            "supported_runtype": "performance"
+        }, 
         "myriad": {
-            "supported_prec": "fp16",
+            "supported_prec": "fp16", 
             "supported_runtype": "performance"
         }
-    },
+    }, 
     "workload_info": {
         "accelerator_lib": [
-            "MKLDNN ",
-            "CLDNN",
-            "DLIA",
+            "MKLDNN ", 
+            "CLDNN", 
+            "DLIA", 
             "Myriad"
-        ],
-        "inference_runtime": "v2018.4.420",
-        "model": "SSD (MobileNet)",
-        "source_model_format": "caffe",
-        "test_dataset": "VOC2007",
-        "training_dataset": "VOC2007",
+        ], 
+        "inference_runtime": "v2018.5.445", 
+        "model": "SSD (MobileNet)", 
+        "source_model_format": "caffe", 
+        "test_dataset": "VOC2007", 
+        "training_dataset": "VOC2007", 
         "training_framework": "caffe"
     }
 }
