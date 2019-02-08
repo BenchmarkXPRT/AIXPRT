@@ -19,7 +19,7 @@ It has workloads “resnet50_v1” and "ssd-mobilenet" and can run Single Batch,
 ## 3. Run Benchmark
 
 ##### Steps to configure the machine
-1. Clone the AIXPRT Github repository.
+1. Clone the AIXPRT Github repository. These instructions are found in the repository README.
 
 2. Install dependencies:
    * Install OpenVINO full package version , following the instructions in

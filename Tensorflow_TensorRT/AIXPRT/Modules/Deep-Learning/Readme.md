@@ -8,56 +8,58 @@ For Nvidia Discrete Graphics Cards
 * Operating System:
 	Ubuntu 16.04 LTS
 * GPU:
-	  [CUDA enabled NVIDIA GPUs](https://developer.nvidia.com/cuda-gpus)
+	  [CUDA enabled Nvidia GPUs](https://developer.nvidia.com/cuda-gpus)
 
-For NVidia Tegra Xavier
+For Nvidia Tegra Xavier
 * JetPACK 4.1.1
 
 ## 3. Run Benchmark
 
 #### Steps to configure the machine
 
-1. Clone the AIXPRT Github repository
+1. Clone the AIXPRT Github repository. These instructions are found in the repository README.
 
 2. Install dependencies:
 
-   a. If using NVidia Discrete GFX
+   a. If using Nvidia Discrete GFX
 
-   * Install [CUDA 10](https://developer.nvidia.com/cuda-downloads)
-   * Restart the system after installing CUDA 10
-   * NOTE : Requires NVIDIA Driver release 410.xx.However,these drivers are installed during CUDA installation and no 		    seperate driver installation is requiered.
-   * Install docker and nvidia-docker <br />
-	 => Install docker: <br />
-		https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-from-a-package <br />
+		   * Install [CUDA 10](https://developer.nvidia.com/cuda-downloads)
+		   * Restart the system after installing CUDA 10
+		   * NOTE : Requires Nvidia Driver release 410.xx.However,these drivers are installed during CUDA installation and no separate driver installation is required.
+		   * Install docker and nvidia-docker
 
-		```shell
-		lsb_release -a # show the Ubuntu version and name.(amd64 is the release for amd and intel 64)
-		```
+				 => Install docker from this location: https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-from-a-package
+				 Installation notes:
+				 		* You will probably also need to install the cli and container packages located in the same docker package folder
+				 		* To see your system configuration and identify the following installation packages, run
+						```
+								lsb_release -a
+			 			```
+						* To test the installation of the docker image, run
+						```
+								sudo docker run hello-world
+						```
+						* If you get a "permission denied" response after installation, run the following command and reboot if the problem persists
+						```
+							sudo usermod -a -G docker $USER
+						```
 
-		You may also need to install the cli and container packages  <br />
+				 => Install Nvidia Docker from this location: https://github.com/nvidia/nvidia-docker
 
-		```shell
-		sudo docker run hello-world # test the installation of the docker image
-		sudo usermod -a -G docker $USER # To be able to run as a regular user.If the problem persists,reboot.
-	  	```
-
-	 => Install nvidia Docker: <br />
-		https://github.com/NVIDIA/nvidia-docker<br />
-
-	 => Pull and run TensorRT Docker Container v18.12 <br />
-		```
-		docker pull nvcr.io/nvidia/tensorflow:18.12-py3
-		```
-   b. If using Tegra Xavier <br />
-   	Flash JetPack v4.1.1 https://developer.nvidia.com/embedded/jetpack
+				 => Pull and run TensorRT Docker Container v18.12
+					```
+					docker pull nvcr.io/nvidia/tensorflow:18.12-py3
+					```
+	   b. If using Tegra Xavier <br />
+	   			Flash JetPack v4.1.1 https://developer.nvidia.com/embedded/jetpack
 
 #### Steps to run benchmark
- 1. Choose the target machine and run the commands <br />
-	 a. If using NVidia Discrete GFX
+ 1. Choose the target machine and run the commands
+	 a. If using Nvidia Discrete GFX
 	    Run the docker image
 		`nvidia-docker run -v <Path_to_AIXPRT_directory>:/workspace/AIXPRT --shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 -it --rm nvcr.io/nvidia/tensorflow:18.12-py3`
 
-	 b. If using NVidia Tegra Xavier <br />
+	 b. If using Nvidia Tegra Xavier
 	    Install pre-reqs
 	```shell
 		sudo apt-get install libhdf5-serial-dev hdf5-tools
@@ -86,7 +88,7 @@ For NVidia Tegra Xavier
  3. Navigate to directory:
  	`cd /workspace/AIXPRT/Harness/`
 
- 4. Run the benchmark:<br />
+ 4. Run the benchmark:
 	`python3 index.py`
 
 #### Results
