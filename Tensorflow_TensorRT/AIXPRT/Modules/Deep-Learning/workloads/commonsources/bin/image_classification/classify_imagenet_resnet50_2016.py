@@ -128,7 +128,7 @@ def batch_from_image(file_name, batch_size, batch_data, output_height=224, outpu
 def create_graph(model_dir, graph_file):
   """Creates a graph from saved GraphDef file and returns a saver."""
   # Creates graph from saved graph_def.pb.
-  with tf.gfile.FastGFile(os.path.join(
+  with tf.gfile.GFile(os.path.join(
       model_dir, graph_file), 'rb') as f:
     print("graph", os.path.join(
       model_dir, graph_file))
@@ -167,6 +167,12 @@ def log_stats(graph_name, log_buffer, timings, batch_size):
   additional_info_details = {}
   additional_info_details["total_requests"] = FLAGS.iterations
   additional_info_details["concurrent_instances"] = 1
+  additional_info_details["50_percentile_time"] = np.percentile(times, 50)
+  additional_info_details["90_percentile_time"] = np.percentile(times, 90)
+  additional_info_details["95_percentile_time"] = np.percentile(times, 95)
+  additional_info_details["99_percentile_time"] = np.percentile(times, 99)
+  #additional_info_details["max_time"] = np.amax(times)
+  #additional_info_details["min_time"] = np.amin(times)
   accelerator_lib_details = {}
   if (FLAGS.aarch.lower()=="cpu"):
       accelerator_lib_details["cpu_accelerator_lib"] = ""

@@ -1,27 +1,3 @@
-# For Developers
-
-### Steps to clone this repository ,add changes and push to the repository .
-
-1. Install git lfs and clone. Instructions are found at https://packagecloud.io/github/git-lfs/install.
-
-2. Clone the specific branch that you would like to develop
-
-3. Navigate to AIXPRT/Modules/Deep-Learning/README.md of the cloned branch and follow instructions to run the benchmark.
-
-4. Before you make any new changes , update your local branch
-
-    * git pull origin < BRANCH_NAME >  (To make sure your branch is up to date. This step is not necessary if you just                                 cloned the branch )
-
-   * Make sure you have no conflicts after the pull. Resolve the conflicts
-
-   * git push origin < BRANCH_NAME >    
-
-   * Go ahead with your development on this branch.
-
-5. To push your changes :
-
-   * Please submit a Pull Request , so that the chnages are reviewed before the merge.
-
 ### Steps to add a workload
 
 1. Create a folder with your workload name. Add "bin" and  "data" folders to it. Also add workload_details.json which would describe your workload. Here is a sample [workload_details.json](TODO : Add the url to one workload_details.json).
@@ -35,10 +11,12 @@
 
 5. Any data used in the workload ( example : images , input textFiles , input sound files etc) should be placed in data/ folder
 
-6. Call the result API in harness to generate the workload result from your script file after running the workload.
+6. Please follow the [Measurment Methodology](TODO : add url to /Harness/assets/measurment_method.pdf) and [Result Caluculation](TODO : add url to /Harness/assets/result_calculation.pdf) to obtain a workload result.
+
+7. Call the result API in harness to generate the workload result from your script file after running the workload.
   API ==> [resultapi.py](TODO : add the url to "createResultJson" method in /Harness/resultsapi.py)
 
-7. Verify if it works
+8. Verify if it works
 
 ```
 cd AIXPRT/Harness
@@ -47,7 +25,7 @@ python3 index.py
 ```
 Once the run is completed, the application closes. At this time, please go to /AIXPRT/Results/{ConfigFileName} folder to find the results in a json format. The result file name will be of the format ‘<Deep-Learning>_result_<time stamp>.json’.
 
-8. Now push your changes to upstream of your branch ! Done !
+9. Now push your changes to upstream of your branch ! Done !
 
 
 NOTE : A config file will be generated at AIXPRT/Config/{config_name}.json after the first run of index.py . One can edit this config file to run the specific workload in a specific way .

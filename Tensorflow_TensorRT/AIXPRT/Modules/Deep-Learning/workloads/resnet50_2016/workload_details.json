@@ -15,25 +15,13 @@
         "hardware": "gpu",
         "precision": "fp32",
         "runtype": "performance",
-        "total_requests": 10
+        "total_requests": 100
     },
     "description": "Image Classification using ResNet-50",
     "dir_name": "resnet50_2016",
     "framework": "Tensorflow",
     "id": 1005,
     "name": "ResNet-50",
-    "requested_config": {
-        "batch_sizes": [
-            1
-        ],
-        "concurrent_instances": "1",
-        "hardware": "gpu",
-        "iterations": 10,
-        "name": "ResNet-50",
-        "precision": "fp32",
-        "runtype": "performance",
-        "total_requests": "10"
-    },
     "script": "run_task.py",
     "support": {
         "gpu": {

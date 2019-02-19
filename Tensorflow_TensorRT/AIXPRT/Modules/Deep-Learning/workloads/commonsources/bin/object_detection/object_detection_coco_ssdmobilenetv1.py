@@ -151,11 +151,11 @@ def log_stats(log_buffer, timings, batch_size):
     batch_size: int, number of examples per batch
   """
   times = np.array(timings)
+  times = np.sort(timings)
+  time_mean = np.mean(timings)
+  time_med = np.median(timings)
   steps = len(times)
   speeds = batch_size / times
-  time_mean = np.mean(times)
-  time_med = np.median(times)
-  #time_99th = np.percentile(times, 99)
   #time_99th_uncertainty = np.abs(np.percentile(times[0::2], 99) -
   #                               np.percentile(times[1::2], 99))
   speed_mean = np.mean(speeds)
@@ -176,6 +176,12 @@ def log_stats(log_buffer, timings, batch_size):
   additional_info_details = {}
   additional_info_details["concurrent_instances"] = 1
   additional_info_details["total_requests"] = FLAGS.iterations
+  additional_info_details["50_percentile_time"] = np.percentile(times, 50)
+  additional_info_details["90_percentile_time"] = np.percentile(times, 90)
+  additional_info_details["95_percentile_time"] = np.percentile(times, 95)
+  additional_info_details["99_percentile_time"] = np.percentile(times, 99)
+  #additional_info_details["max_time"] = np.amax(times)
+  #additional_info_details["min_time"] = np.amin(times)
   accelerator_lib_details = {}
   if (FLAGS.aarch.lower()=="cpu"):
       accelerator_lib_details["cpu_accelerator_lib"] = ""

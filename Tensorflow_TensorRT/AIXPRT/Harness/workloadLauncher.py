@@ -76,7 +76,7 @@ def runConfig(config):
             print("HDDL system is targetted in the Config")
             setupScript = os.path.join(os.environ['APP_HOME'],"Harness","hddlSetup.sh")
             p = subprocess.call(['gnome-terminal', '-x', setupScript])
-            time.sleep(5)
+            time.sleep(30)
         runWorkloads(config["module"],workloads,workloadDelays)
         i = i +1
         generateResults(config["module"],workloads,config)

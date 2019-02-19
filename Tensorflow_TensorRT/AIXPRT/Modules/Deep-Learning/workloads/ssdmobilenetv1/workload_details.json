@@ -15,23 +15,13 @@
         "hardware": "gpu",
         "precision": "fp32",
         "runtype": "performance",
-        "total_requests": 10
+        "total_requests": 100
     },
     "description": "Object Detection using SSD MobileNet-v1",
     "dir_name": "ssdmobilenetv1",
     "framework": "Tensorflow",
     "id": 1005,
     "name": "SSD-MobileNet-v1",
-    "requested_config": {
-        "batch_sizes": [
-            1
-        ],
-        "hardware": "gpu",
-        "iterations": 10,
-        "name": "SSD-MobileNet-v1",
-        "precision": "int8",
-        "runtype": "performance"
-    },
     "script": "run_task.py",
     "support": {
         "gpu": {
