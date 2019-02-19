@@ -11,10 +11,12 @@
 
 5. Any data used in the workload ( example : images , input textFiles , input sound files etc) should be placed in data/ folder
 
-6. Call the result API in harness to generate the workload result from your script file after running the workload.
+6. Please follow the [Measurment Methodology](TODO : add url to /Harness/assets/measurment_method.pdf) and [Result Caluculation](TODO : add url to /Harness/assets/result_calculation.pdf) to obtain a workload result.
+
+7. Call the result API in harness to generate the workload result from your script file after running the workload.
   API ==> [resultapi.py](TODO : add the url to "createResultJson" method in /Harness/resultsapi.py)
 
-7. Verify if it works
+8. Verify if it works
 
 ```
 cd AIXPRT/Harness
@@ -23,7 +25,7 @@ python3 index.py
 ```
 Once the run is completed, the application closes. At this time, please go to /AIXPRT/Results/{ConfigFileName} folder to find the results in a json format. The result file name will be of the format ‘<Deep-Learning>_result_<time stamp>.json’.
 
-8. Now push your changes to upstream of your branch ! Done !
+9. Now push your changes to upstream of your branch ! Done !
 
 
 NOTE : A config file will be generated at AIXPRT/Config/{config_name}.json after the first run of index.py . One can edit this config file to run the specific workload in a specific way .

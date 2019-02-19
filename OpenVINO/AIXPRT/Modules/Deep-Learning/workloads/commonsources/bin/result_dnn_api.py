@@ -36,7 +36,7 @@ def returnInputMap(framework, version, imgSource, imgCount, arch, model , precis
     return(workloadInput)
 
 ## returnBatchsizeResults()
-def returnBatchsizeResults(batchSize, resultInImgPerSec, timeInMsec, iterCount, modelName, aarch, standardDev, concurrent_instances):
+def returnBatchsizeResults(batchSize, resultInImgPerSec, timeInMsec, iterCount, modelName, aarch, standardDev, concurrent_instances, perc_99, perc_95, perc_90, perc_50, min_time, max_time):
     results = []
     insideResults = {}
     insideResults["label"] = 'Batch ' + str(batchSize)
@@ -48,16 +48,9 @@ def returnBatchsizeResults(batchSize, resultInImgPerSec, timeInMsec, iterCount, 
     # Optional Fields
     additional_info = []
     insideResults["additional info"] = additional_info
-    additional_info_details = {}
-    #additional_info_details["batch"] = batchSize
-    #additional_info_details["iter_count"] = iterCount
-    #additional_info_details["timeinmsec_per_iter"] = timeInMsec
-    #additional_info_details["modelName"] = modelName
-    #additional_info_details["Device"] = aarch
-    #additional_info_details["standardDev"] = standardDev
-
-    additional_info_details["concurrent_instances"] = concurrent_instances
-    additional_info_details["total_requests"] = iterCount
+    additional_info_details = {"concurrent_instances": concurrent_instances, "total_requests": iterCount, "50_percentile_time": perc_50, "90_percentile_time": perc_90,
+                               "95_percentile_time": perc_95, "99_percentile_time": perc_99}
+    
 
     additional_info.append(additional_info_details)
     results.append(insideResults)
@@ -90,16 +83,8 @@ def returnAccuracyResults(top, percentValue, std, iterCount, modelName, prec, ar
 def returnWorkloadName(key):
     dict = {}
     dict["resnet-50"] = "ResNet-50"
-    dict["irv2"] = "Inception-Resnet-v2"
-    dict["squeezenet"] = "SqueezeNet_v1.1_ILSVRC-2012"
-    dict["mobilenetv1"] = "MobileNet-v1"
     dict["ssd_mobilenet"] = "SSD-MobileNet-v1"
-    dict["SSD_Inception_v2"] = "SSD_Inception v2_COCO"
-    dict["yolo_v2"] = "Yolo-v2"
-    dict["resnet-50_validation"] = "ResNet-50-validation"
-    dict["squeezenet_validation"] = "SqueezeNet_v1.1_ILSVRC-2012_validation"
-    dict["mobilenetv1_validation"] = "Mobilenet-v1-validation"
-    dict["irv2_validation"] = "Inception-Resnet-v2-validation"
+
     return dict.get(key)
 
 ## writeResultsToAPI(name, input, results)

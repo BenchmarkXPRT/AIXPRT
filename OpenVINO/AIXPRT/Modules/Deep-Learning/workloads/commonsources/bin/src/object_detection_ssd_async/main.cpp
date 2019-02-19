@@ -74,11 +74,26 @@ bool ParseAndCheckCommandLine(int argc, char *argv[]) {
     return true;
 }
 
-/**
-* \brief The entry point for the Inference Engine object_detection sample application
-* \file object_detection_sample_ssd/main.cpp
-* \example object_detection_sample_ssd/main.cpp
-*/
+//0 =======================================================================================================================================================================
+
+// -------------------------- Compute percentile -----------------------------------------------------------------
+
+double computePercentile( std::vector<double> arr, int perc){
+
+   float loc = (float(perc)/100.0)*arr.size() - 1.0; // Index starts from zero
+   int l = static_cast<int> (floor(loc));
+   int h = static_cast<int> (ceil(loc));
+   
+   double lower = arr[l];
+   double upper = arr[h];
+   double value = lower + (upper - lower)*(loc - l);
+   return value;
+
+}
+//0=======================================================================================================================================================================
+
+// -------------------------- Main -----------------------------------------------------------------
+
 int main(int argc, char *argv[]) {
     try {
         /** This sample covers certain topology and cannot be generalized for any object detection one **/
@@ -376,27 +391,49 @@ int main(int argc, char *argv[]) {
         typedef std::chrono::duration<double, std::ratio<1, 1000>> ms;
         typedef std::chrono::duration<float> fsec;
 
+//1 =======================================================================================================================================================================
+
         /** warmup the inference engine **/
-        for (int iter = 0; iter < 10; ++iter) {
-            inferRequests[0].Infer();
-        }
 
         size_t currentInfer = 0;
         size_t prevInfer = (FLAGS_nireq > 1) ? 1 : 0;
 
-        // warming up
-        inferRequests[0].StartAsync();
-        inferRequests[0].Wait(InferenceEngine::IInferRequest::WaitMode::RESULT_READY);
+	auto t_ = Time::now();	
+	std::map < int, std::vector<decltype(t_)> > req_start_times;
+        std::map < int, std::vector<double> > req_total_times;
+        ms req_d;
+	std::chrono::duration<double> st_d;
 
+// -------------------------------------------------------------------------------------------------------------------------------------	
+	slog::info << " Initializing request times "<<slog::endl;
+        for (int i=0; i < FLAGS_nireq; i++)
+        {
+           std::vector<double> times_vec = {};
+	   //std::vector<double> st_vec = {};
+
+           std::vector<decltype(t_)> runtime_vec {Time::now()};
+
+	   req_start_times[i] = runtime_vec;
+	   req_total_times[i] = times_vec;
+        }
+
+// -------------------------------------------------------------------------------------------------------------------------------------
         double total = 0.0;
         /** Start inference & calc performance **/
+	std::vector<double> inference_times_array = {};// All inference request times
+        slog::info << "Starting iterations"<< slog::endl;
+
         auto t0 = Time::now();
         for (int iter = 0; iter < FLAGS_ni + FLAGS_nireq; ++iter) {
             if (iter < FLAGS_ni) {
+
+                req_start_times[currentInfer].push_back(Time::now());
                 inferRequests[currentInfer].StartAsync();
             }
 
-            inferRequests[prevInfer].Wait(InferenceEngine::IInferRequest::WaitMode::RESULT_READY);	
+            inferRequests[prevInfer].Wait(InferenceEngine::IInferRequest::WaitMode::RESULT_READY);
+            req_d = std::chrono::duration_cast<ms>( Time::now() - req_start_times[prevInfer].back() ); // Time it took for prevInfer inference
+            req_total_times[prevInfer].push_back(req_d.count());
 
             currentInfer++;
             if (currentInfer >= FLAGS_nireq) {
@@ -407,30 +444,57 @@ int main(int argc, char *argv[]) {
                 prevInfer = 0;
             }
         }
+
+// -------------------------------------------------------------------------------------------------------------------------------------
         auto t1 = Time::now();
         fsec fs = t1 - t0;
         ms d = std::chrono::duration_cast<ms>(fs);
         total = d.count();
 
+// -------------------------------------------------------------------------------------------------------------------------------------
+	/** Populate inference_times_array **/
+        for (size_t i = 0; i < FLAGS_nireq; i++ ){
+            slog::info << "============== Times for request "<< i <<" ==================== " << slog::endl;
+            int idx = 0;
+            for ( auto it = req_total_times[i].cbegin()+1; it != req_total_times[i].cend(); ++it){
+                    inference_times_array.push_back(*it); 
+                    slog::info <<"Request " << i << " " << idx << " : " << *it << slog::endl;
+                idx++;
+	    }
+        }
+
+// -------------------------------------------------------------------------------------------------------------------------------------
+
+        /** Compute Percentiles **/
+	std::sort (inference_times_array.begin(), inference_times_array.end()); // Sort the times
+        double max_time= inference_times_array.back();
+	double perc_99 = computePercentile( inference_times_array, 99);
+	double perc_95 = computePercentile( inference_times_array, 95);
+        double perc_90 = computePercentile( inference_times_array, 90);
+        double perc_50 = computePercentile( inference_times_array, 50);
+        double min_time= inference_times_array[0];
+
+// -------------------------------------------------------------------------------------------------------------------------------------
         std::cout << "total: " << total << std::endl;
         /** Show performance results **/
         std::cout << std::endl << "Throughput: " << 1000 * static_cast<double>(FLAGS_ni) * batchSize / total << " FPS" << std::endl;
         std::cout << std::endl;
 
-        if (FLAGS_pc) {
-            printPerformanceCounts(inferRequests[0], std::cout);
-        }
-        // -----------------------------------------------------------------------------------------------------
-        
         double avg_time = 0.0;
+        avg_time = total / static_cast<double>(FLAGS_ni);
         double imgpersec = 0.0;
-        avg_time = total/ static_cast<double>(FLAGS_ni);
-        imgpersec = ( double(batchSize) / avg_time ) * 1000.0;
-	//double standard_deviation = "Undefined";//0.0; //Ambiguous
-	std::string standard_deviation = "Undefined";//0.0; //Ambiguous
-        std::string const command = "python cpp_to_python_api.py "+model_name+" "+std::to_string(batchSize)+" " + FLAGS_d +\
-                                    " "+ precision +" " + std::to_string(imgpersec) + " "+std::to_string(FLAGS_ni)+\
-                                    " " + std::to_string(avg_time) + " " + standard_deviation + " " + std::to_string(FLAGS_nireq);
+        imgpersec =  1000 * static_cast<double>(FLAGS_ni) * batchSize / total;
+        std::cout << "Result: " << imgpersec << " images/sec" << std::endl;
+
+        //double standard_deviation = 0.0; // not possible to compute
+	std::string standard_deviation = "Undefined";
+        std::string const command = "python cpp_to_python_api.py "  + model_name +" " + std::to_string(batch_size) + " " + aarch + " " + precision + " " + std::to_string(imgpersec) +\
+                                     " " + std::to_string(FLAGS_ni) + " " + std::to_string(avg_time) + " " + standard_deviation + " " + std::to_string(FLAGS_nireq) +\
+					" " + std::to_string(perc_99) + " " + std::to_string(perc_95) + " " + std::to_string(perc_90) + " " + std::to_string(perc_50) +\
+					" " + std::to_string(min_time) + " " + std::to_string(max_time);
+
+//1 =======================================================================================================================================================================
+
         std::cout << command << std::endl;
         int ret_val = system(command.c_str());
         if (ret_val == 0)

@@ -15,7 +15,6 @@
 #  limitations under the License.
 
 NUM_ARGS=$#
-BATCH_LIST=(1 2 4 8 16 32 64 128) # Modify to include batch sizes required to run on GPU
 usage() {
     echo "Usage:"
     echo -e "\t compile_AIXPRT_sources.sh </path/to/AIXPRT>"
@@ -91,8 +90,6 @@ fi
 
 RUN_AGAIN="Then run the script again\n\n"
 DASHES="\n\n==================================================\n\n"
-PYTHON_BINARY=python3
-PIP_BINARY=pip3
 CUR_PATH=$PWD
 
 OPENVINO_DIR="/opt/intel/computer_vision_sdk/deployment_tools/"
@@ -117,23 +114,47 @@ AIXPRT_SOURCES="${AIXPRT_DIR}/Modules/Deep-Learning/workloads/commonsources/bin/
 printf "${DASHES}"
 printf "Installing dependencies"
 printf "${DASHES}"
-
-if [[ -f /etc/lsb-release ]]; then
+#------------------------------------------------------------------------------------------------------
+if [[ -f /etc/centos-release ]]; then
+    DISTRO="centos"
+elif [[ -f /etc/lsb-release ]]; then
     DISTRO="ubuntu"
+    IFS='=' read -ra arr <<< "$(cat /etc/lsb-release | grep DISTRIB_RELEASE)" # get the release version
+    RELEASE=${arr[1]}
+fi
+
+if [[ $DISTRO == "centos" ]]; then
+    if command -v python3.5 >/dev/null 2>&1; then
+        PYTHON_BINARY=python3.5
+    fi
+    if command -v python3.6 >/dev/null 2>&1; then
+        PYTHON_BINARY=python3.6
+    fi
+    if [ -z "$PYTHON_BINARY" ]; then
+        sudo -E yum install -y https://centos7.iuscommunity.org/ius-release.rpm
+        #sudo -E yum install -y python36u easy_install python36u-pip
+        sudo -E yum install -y python36u python36u-pip libgfortran3 build-essential libcairo2-dev libpango1.0-dev libglib2.0-dev libgtk2.0-dev libswscale-dev libavcodec-dev libavformat-dev libgstreamer1.0-0 gstreamer1.0-plugins-base libpng12-dev python-pil
+        sudo -E pip3.6 install virtualenv
+        PYTHON_BINARY=python3.6
+    fi
+elif [[ $DISTRO == "ubuntu" ]]; then
+    sudo -E apt -y install python3-pip libgfortran3 build-essential libcairo2-dev libpango1.0-dev libglib2.0-dev libgtk2.0-dev libswscale-dev libavcodec-dev libavformat-dev libgstreamer1.0-0 gstreamer1.0-plugins-base
+    PYTHON_BINARY=python3
+
+    if [[ $RELEASE == "16.04" ]]; then
+       echo -e "\e[0;32m Installing PIL and png packages for Ubuntu 16.04.\e[0m"
+       sudo -E apt -y install libpng12-dev python-imaging
+    else
+       echo -e "\e[0;32m Installing PIL and png packages for Ubuntu 18.04.\e[0m"
+       sudo -E apt -y install python-pil libpng-dev
+    fi
+
 else
-    echo -e "\e[1;31m\n AIXPRT: Ubuntu is the only operating system supported.\e[0m"
-    exit 1
+   echo -e "\e[0;31mUnsupported operating system.\e[0m"
+   exit
 fi
 
-printf "Run sudo -E apt -y install build-essential python3-pip virtualenv cmake libpng12-dev libcairo2-dev libpango1.0-dev libglib2.0-dev libgtk2.0-dev libswscale-dev libavcodec-dev libavformat-dev libgstreamer1.0-0 gstreamer1.0-plugins-base python-imaging\n"
-sudo -E apt update
-sudo -E apt -y install build-essential python3-pip virtualenv cmake libpng12-dev libcairo2-dev libpango1.0-dev libglib2.0-dev libgtk2.0-dev libswscale-dev libavcodec-dev libavformat-dev libgstreamer1.0-0 gstreamer1.0-plugins-base python-imaging
-
-if ! command -v $PYTHON_BINARY &>/dev/null; then
-    printf "\n\nPython 3.5 (x64) or higher is not installed. It is required to run Model Optimizer, please install it. ${RUN_AGAIN}"
-    exit 1
-fi
-sudo -E $PIP_BINARY install pyyaml requests numpy
+#------------------------------------------------------------------------------------------------------
 
 printf "${DASHES}"
 printf "Installing cv sdk dependencies\n\n"
@@ -177,7 +198,6 @@ cd "${OPENVINO_MO_DIR}/install_prerequisites"
 bash install_prerequisites.sh "caffe"
 
 cd ${CUR_PATH}
-
 #========================= Download and Convert pre-trained models ===========================================
 # Step 3. Download and Convert pretrained Models
 
@@ -185,7 +205,7 @@ printf "${DASHES}"
 printf "Downloading and Converting pretrained models"
 printf "${DASHES}"
 
-MODEL_NAMES=("mobilenet-ssd" "resnet-50")
+MODEL_NAMES=("resnet-50" "mobilenet-ssd")
 
 PRECISION_LIST=("FP16" "FP32")
 export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp
@@ -195,29 +215,26 @@ for idx in "${!MODEL_NAMES[@]}"
     MODEL_DIR="$CUR_PATH/models"
     
     MODEL_NAME=${MODEL_NAMES[idx]}
+    IR_PATH="$CUR_PATH/${MODEL_NAME}"
+    if [ -d ${IR_PATH} ];then rm -r ${IR_PATH}; fi;
 
 	if [ $MODEL_NAME == "mobilenet-ssd" ]
 	     then
-		MODEL_PATH="${TAR_DIR}/frozen_inference_graph.pb"
 		MODEL_DEST="ssd_mobilenet"
+		printf "Run $OPENVINO_DIR/model_downloader/downloader.py --name \"${MODEL_NAME}\" --output_dir \"${MODEL_DIR}\"\n\n"
+		MODEL_PATH="$MODEL_DIR/object_detection/common/mobilenet-ssd/caffe/mobilenet-ssd.caffemodel"
+		$PYTHON_BINARY "$OPENVINO_DIR/model_downloader/downloader.py" --name "${MODEL_NAME}" --output_dir "${MODEL_DIR}"
+		MEAN_VALUES="data[127.5,127.5,127.5]"
+		SCALE_VALUES="data[127.50223128904757]"
+		MODEL_DEST="ssd_mobilenet"
+		INPUT_SHAPE="[1,3,300,300]"
 
-		IR_PATH="$CUR_PATH/${MODEL_NAME}"
-		if [ -d ${IR_PATH} ];then rm -r ${IR_PATH}; fi;
 
 		for PRECISION in "${PRECISION_LIST[@]}"
 		   do
 			precision=${PRECISION,,}
-			printf "Run $OPENVINO_DIR/model_downloader/downloader.py --name \"${MODEL_NAME}\" --output_dir \"${MODEL_DIR}\"\n\n"
-			MODEL_PATH="$MODEL_DIR/object_detection/common/mobilenet-ssd/caffe/mobilenet-ssd.caffemodel"
-			$PYTHON_BINARY "$OPENVINO_DIR/model_downloader/downloader.py" --name "${MODEL_NAME}" --output_dir "${MODEL_DIR}"
-			MEAN_VALUES="data[127.5,127.5,127.5]"
-			SCALE_VALUES="data[127.50223128904757]"
-			MODEL_DEST="ssd_mobilenet"
-			INPUT_SHAPE="[1,3,300,300]"
-
 			IR_MODEL_XML=${IR_PATH}/${MODEL_DEST}".xml" # Name of generated IR
 			IR_MODEL_BIN=${IR_PATH}/${MODEL_DEST}".bin"
-
 			IR_MODEL_AIXPRT_XML=${IR_PATH}/${MODEL_DEST}"_${precision}.xml" # For renaming generated IR
 			IR_MODEL_AIXPRT_BIN=${IR_PATH}/${MODEL_DEST}"_${precision}.bin"
 
@@ -229,7 +246,7 @@ for idx in "${!MODEL_NAMES[@]}"
 			mv ${IR_MODEL_XML} ${IR_MODEL_AIXPRT_XML}
 			mv ${IR_MODEL_BIN} ${IR_MODEL_AIXPRT_BIN}
 		done
-
+	           
     elif [ $MODEL_NAME == "resnet-50" ]
            then
 
@@ -319,7 +336,7 @@ else
 fi
 
 #========================= Copy libraries ================================================================================
-# Step 5. Finally copy plugins folder
+# Step 6. Finally copy plugins folder
 
 #printf ${DASHES}
 #printf "Copying OpenVINO Libraries"
@@ -328,7 +345,12 @@ PLUGIN_DIR="$CUR_PATH/plugin"
 if [ -d "${PLUGIN_DIR}" ]; then rm -Rf $PLUGIN_DIR; fi
 mkdir ${PLUGIN_DIR}
 
-OPERATING_SYSTEM="ubuntu_16.04"
+if [ $DISTRO == "centos" ];then 
+   OPERATING_SYSTEM="centos_7.4"
+elif [ $DISTRO == "ubuntu" ];then
+   OPERATING_SYSTEM="ubuntu_${RELEASE}" # Options: ubuntu_16.04 centos_7.4
+fi
+
 OPENVINO_IE_DIR="/opt/intel/computer_vision_sdk/deployment_tools/inference_engine/"
 
 cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libclDNN64.so $PLUGIN_DIR
@@ -343,8 +365,10 @@ cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libMKLDNNPlugin.so $PLUGIN_DIR
 cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libmyriadPlugin.so $PLUGIN_DIR
 
 # HDDL libraries
-cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libHDDLPlugin.so $PLUGIN_DIR
-find /opt/intel/computer_vision_sdk/inference_engine/external/hddl/lib/ -type f -name 'lib*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+if [ $DISTRO == "ubuntu" ];then
+   cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libHDDLPlugin.so $PLUGIN_DIR
+   find /opt/intel/computer_vision_sdk/inference_engine/external/hddl/lib/ -type f -name 'lib*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+fi
 
 # openCV
 find /opt/intel/computer_vision_sdk/opencv/lib/ -type f -name 'libopencv_core*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
@@ -357,7 +381,7 @@ cp -r ${PLUGIN_DIR}/* ${AIXPRT_PLUGIN}/
 
 #printf ${DASHES}
 #======================= Remove temp directories =================================================
-# Step 6. Post-install Clean-up
+# Step 7. Post-install Clean-up
 
 cd ${CUR_PATH}
 aixprt_compiled="${CUR_PATH}/aixprt_compiled"
@@ -374,3 +398,4 @@ printf ${DASHES}
 echo -e "\e[1;32mSetup completed successfully.\e[0m"
 printf ${DASHES}
 exit 1
+

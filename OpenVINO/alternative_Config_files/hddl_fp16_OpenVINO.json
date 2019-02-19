@@ -1,0 +1,30 @@
+{
+    "delayBetweenWorkloads": 0,
+    "iteration": 1,
+    "module": "Deep-Learning",
+    "runtype": "performance",
+    "workloads_config": [
+        {
+            "batch_sizes": [
+                1
+            ],
+            "concurrent_instances": 32,
+            "hardware": "hddl",
+            "name": "SSD-MobileNet-v1",
+            "precision": "fp16",
+            "runtype": "performance",
+            "total_requests": 1600
+        },
+        {
+            "batch_sizes": [
+                1
+            ],
+            "concurrent_instances": 32,
+            "hardware": "hddl",
+            "name": "ResNet-50",
+            "precision": "fp16",
+            "runtype": "performance",
+            "total_requests": 1600
+        }
+    ]
+}

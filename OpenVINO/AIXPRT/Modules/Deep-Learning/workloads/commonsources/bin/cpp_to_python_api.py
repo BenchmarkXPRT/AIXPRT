@@ -31,6 +31,22 @@ StandardDev = sys.argv[8]
 # --- Synchronize logging
 concurrent_instances = sys.argv[9]
 
+# ---- Statistics
+perc_99 = ""
+perc_95 = ""
+perc_90 = ""
+perc_50 = ""
+min_time = ""
+max_time = ""
+
+if len(sys.argv) > 10:
+    perc_99 = sys.argv[10]
+    perc_95 = sys.argv[11]
+    perc_90 = sys.argv[12]
+    perc_50 = sys.argv[13]
+    min_time = sys.argv[14]
+    max_time = sys.argv[15]
+
 # version update from: deployment_tools/documentation/InstallingForLinux.html
 
 def getOpenVINOversion():
@@ -70,7 +86,7 @@ def writeBatchResultsToAPI():
     forwardTime = float(timeInMillisec)
     workLoadName = result_dnn_api.returnWorkloadName(modelPrefix)
     inputString = result_dnn_api.returnInputMap("OpenVINO ", version , "ILSVRC 2012",batchSize , aarch, modelPrefix+'net',prec,iterCount,usedAcceleratorList)
-    resultsString = result_dnn_api.returnBatchsizeResults(int(batchSize), round(resInImgPerSec,3), forwardTime, int(iterCount), modelPrefix, aarch.lower(), StandardDev, int(concurrent_instances) )
+    resultsString = result_dnn_api.returnBatchsizeResults(int(batchSize), round(resInImgPerSec,3), forwardTime, int(iterCount), modelPrefix, aarch.lower(), StandardDev, int(concurrent_instances), perc_99, perc_95, perc_90, perc_50, min_time, max_time)
     # Now wrtie the info to the API
     result_dnn_api.writeResultsToAPI(workLoadName, inputString, resultsString)
 

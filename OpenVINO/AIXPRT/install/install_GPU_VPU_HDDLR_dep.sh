@@ -81,7 +81,6 @@ if [ $(echo "${KERNEL_VERSION}" | cut -c 1) -eq "4" ]
        fi
 fi
 
-sudo apt-get update
 sudo bash install_NEO_OCL_driver.sh
 sudo apt-get -y install clinfo
 clinfo

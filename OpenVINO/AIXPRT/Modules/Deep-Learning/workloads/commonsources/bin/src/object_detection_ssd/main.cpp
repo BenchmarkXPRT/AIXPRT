@@ -77,11 +77,25 @@ bool ParseAndCheckCommandLine(int argc, char *argv[]) {
     return true;
 }
 
-/**
-* \brief The entry point for the Inference Engine object_detection sample application
-* \file object_detection_sample_ssd/main.cpp
-* \example object_detection_sample_ssd/main.cpp
-*/
+//0=================================================================================================================================================
+
+// -------------------------- Compute percentile -----------------------------------------------------------------
+double computePercentile( std::vector<double> arr, int perc){
+
+   float loc = (float(perc)/100.0)*arr.size() - 1.0; // Index starts from zero
+   int l = static_cast<int> (floor(loc));
+   int h = static_cast<int> (ceil(loc));
+   
+   double lower = arr[l];
+   double upper = arr[h];
+   double value = lower + (upper - lower)*(loc - l);
+   return value;
+
+}
+
+//0=================================================================================================================================================
+
+// -------------------------- Main -----------------------------------------------------------------
 int main(int argc, char *argv[]) {
     try {
         /** This sample covers certain topology and cannot be generalized for any object detection one **/
@@ -339,10 +353,8 @@ int main(int argc, char *argv[]) {
         typedef std::chrono::duration<float> fsec;
 
         double total = 0.0;
-        double sample[FLAGS_ni]; //compute STDev
-        for (int iter = 0; iter < FLAGS_ni; ++iter){
-          sample[FLAGS_ni] = 0.0;
-        }
+//1=================================================================================================================================================
+        std::vector<double> sample = {}; //compute STDev
 
         /** warmup the inference engine **/
         for (int iter = 0; iter < 10; ++iter) {
@@ -357,9 +369,10 @@ int main(int argc, char *argv[]) {
             fsec fs = t1 - t0;
             ms d = std::chrono::duration_cast<ms>(fs);
             total += d.count();
-            sample[iter] = d.count();
+            sample.push_back(d.count());// = d.count();
         }
 
+//1=================================================================================================================================================
         /** Show performance results **/
         slog::info << "Average running time of one iteration: " << total / static_cast<double>(FLAGS_ni) << " ms" << slog::endl;
 
@@ -386,11 +399,24 @@ int main(int argc, char *argv[]) {
           std::cout << "    standard_deviation: " << standard_deviation << " variance: " << variance << std::endl;
         }
 
+//2=================================================================================================================================================
+        /** Compute Percentiles **/
+	std::sort (sample.begin(), sample.end()); // Sort the times
+        double max_time= sample.back();
+	double perc_99 = computePercentile( sample, 99);
+	double perc_95 = computePercentile( sample, 95);
+        double perc_90 = computePercentile( sample, 90);
+        double perc_50 = computePercentile( sample, 50);
+        double min_time= sample[0];
+
         std::cout << "Result: " << imgpersec << " images/sec" << std::endl;
-        std::cout << std::endl << "Average running time of one iteration: " << avg_time << " ms" << std::endl << std::endl;
-        std::string const command = "python cpp_to_python_api.py "+model_name+" "+std::to_string(batch_size)+" " + FLAGS_d +\
-                                    " "+ precision +" " + std::to_string(imgpersec) + " "+std::to_string(FLAGS_ni)+\
-                                    " " + std::to_string(avg_time) + " " + std::to_string(standard_deviation) + " " + std::to_string(1);
+        std::string const command = "python cpp_to_python_api.py "  + model_name +" " + std::to_string(batch_size) + " " + aarch + " " + precision +\
+                                    " " + std::to_string(imgpersec) + " " + std::to_string(FLAGS_ni) + " " + std::to_string(avg_time) + " " +\
+                                     std::to_string(standard_deviation) + " " + std::to_string(1) + " " + std::to_string(perc_99) + " " +\
+                                     std::to_string(perc_95) + " " + std::to_string(perc_90) + " " + std::to_string(perc_50) + " " + std::to_string(min_time) + " " + std::to_string(max_time);
+
+//2=================================================================================================================================================
+
         std::cout << command << std::endl;
         int ret_val = system(command.c_str());
         if (ret_val == 0)
