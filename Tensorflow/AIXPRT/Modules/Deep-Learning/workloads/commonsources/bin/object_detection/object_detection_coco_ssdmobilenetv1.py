@@ -53,20 +53,6 @@ if StrictVersion(tf.__version__) < StrictVersion('1.9.0'):
 _LOG_FILE = "log_mobilenet_v1_ssd.txt"
 _WARMUP_NUM_LOOPS = 10
 
-
-
-# def create_graph(model_dir, graph_file):
-#   """Creates a graph from saved GraphDef file and returns a saver."""
-#   # Creates graph from saved graph_def.pb.
-#   with tf.gfile.GFile(os.path.join(
-#       model_dir, graph_file), 'rb') as f:
-#     print("graph", os.path.join(
-#       model_dir, graph_file))
-#     graph_def = tf.GraphDef()
-#     graph_def.ParseFromString(f.read())
-#     #tf.import_graph_def(graph_def, name='')
-#     return graph_def
-
 def load_image_into_numpy_array(image):
   (im_width, im_height) = image.size
   return np.array(image.getdata()).reshape(
@@ -212,11 +198,14 @@ def main(_):
 
         batch_data=[]
         files = file_names[:FLAGS.batch_size]
-
-        print(files)
-        for f in files:
-            image_path = data_dir + '/' + f
-            batch_data = batch_from_image(image_path, FLAGS.batch_size, batch_data)
+        cur_size=0
+        while cur_size < FLAGS.batch_size:
+            for f in files:
+                image_path = data_dir + '/' + f
+                if cur_size == FLAGS.batch_size:
+                    break
+                cur_size +=1
+                batch_data = batch_from_image(image_path, FLAGS.batch_size, batch_data)
         print(np.shape(batch_data))
         if FLAGS.frozen_graph:
             output_dict, timing = run_inference(batch_data, config_data, model_dir, FLAGS.frozen_graph)

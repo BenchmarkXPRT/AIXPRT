@@ -1,78 +1,72 @@
 {
-    "category": "Image Classification",
+    "category": "Image Classification", 
     "default_run_config": {
         "batch_sizes": [
-            1,
-            2,
-            4,
-            8,
-            16,
-            32,
-		 	64,
-		 	128
-        ],
-        "concurrent_instances": 1,
-        "env_variables": {},
+            1, 
+            2, 
+            4, 
+            8, 
+            16, 
+            32, 
+            64, 
+            128
+        ], 
+        "concurrent_instances": 1, 
+        "env_variables": {}, 
         "framework_config": {
-            "allow_soft_placement": false,
-            "enableConfig": false,
-            "inter_op_parallelism_threads": 0,
+            "allow_soft_placement": false, 
+            "enableConfig": false, 
+            "inter_op_parallelism_threads": 0, 
             "intra_op_parallelism_threads": 0
-        },
-        "hardware": "cpu",
-        "precision": "fp32",
-        "runtype": "performance",
-        "setNUMA": false,
+        }, 
+        "hardware": "cpu", 
+        "precision": "fp32", 
+        "runtype": "performance", 
+        "setNUMA": false, 
         "total_requests": 10
-    },
-    "description": "Object Detection using SSD MobileNet-v1",
-    "dir_name": "ssdmobilenetv1",
-    "framework": "Tensorflow",
-    "id": 1005,
-    "name": "SSD-MobileNet-v1",
+    }, 
+    "description": "Object Detection using SSD MobileNet-v1", 
+    "dir_name": "ssdmobilenetv1", 
+    "framework": "Tensorflow", 
+    "id": 1005, 
+    "name": "SSD-MobileNet-v1", 
     "requested_config": {
         "batch_sizes": [
             1
-        ],
-        "concurrent_instances": 1,
-        "env_variables": {
-            "KMP_AFFINITY": "granularity=fine,verbose,compact,1,0",
-            "KMP_BLOCKTIME": "1",
-            "KMP_SETTINGS": "1",
-            "OMP_NUM_THREADS": "28"
-        },
+        ], 
+        "concurrent_instances": 1, 
+        "env_variables": {}, 
         "framework_config": {
-            "allow_soft_placement": true,
-            "enableConfig": true,
-            "inter_op_parallelism_threads": 0,
+            "allow_soft_placement": false, 
+            "enableConfig": false, 
+            "inter_op_parallelism_threads": 0, 
             "intra_op_parallelism_threads": 0
-        },
-        "hardware": "cpu",
-        "name": "SSD-MobileNet-v1",
-        "precision": "fp32",
-        "runtype": "performance",
-        "setNUMA": true,
-        "tf_graphTransform": null,
+        }, 
+        "hardware": "cpu", 
+        "name": "SSD-MobileNet-v1", 
+        "precision": "int8", 
+        "runtype": "performance", 
+        "setNUMA": false, 
         "total_requests": 10
-    },
-    "script": "run_task.py",
+    }, 
+    "script": "run_task.py", 
     "support": {
         "cpu": {
-            "supported_prec": "fp32",
+            "supported_prec": "fp32, int8", 
             "supported_runtype": "performance"
-        },
+        }, 
         "gpu": {
-            "supported_prec": "fp32",
+            "supported_prec": "fp32", 
             "supported_runtype": "performance"
         }
-    },
+    }, 
     "workload_info": {
-        "accelerator_lib": [],
-        "inference_runtime": "",
-        "model": "SSD-MobileNet-v1",
-        "source_model_format": "tensorflow",
-        "test_dataset": "COCO 2017",
-        "training_dataset": "COCO 2017",
+        "accelerator_lib": [], 
+        "inference_runtime": "", 
+        "model": "SSD-MobileNet-v1", 
+        "source_model_format": "tensorflow", 
+        "test_dataset": "COCO 2017", 
+        "training_dataset": "COCO 2017", 
         "training_framework": "tensorflow"
     }
 }

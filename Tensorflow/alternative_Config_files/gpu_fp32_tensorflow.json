@@ -1,0 +1,61 @@
+{
+    "delayBetweenWorkloads": 0,
+    "iteration": 1,
+    "module": "Deep-Learning",
+    "runtype": "performance",
+    "workloads_config": [
+        {
+            "batch_sizes": [
+                1,
+                2,
+                4,
+                8,
+                16,
+                32,
+                64,
+                128
+            ],
+            "concurrent_instances": 1,
+            "env_variables": {},
+            "framework_config": {
+                "allow_soft_placement": false,
+                "enableConfig": false,
+                "inter_op_parallelism_threads": 0,
+                "intra_op_parallelism_threads": 0
+            },
+            "hardware": "gpu",
+            "name": "SSD-MobileNet-v1",
+            "precision": "fp32",
+            "runtype": "performance",
+            "setNUMA": false,
+            "total_requests": 10
+        },
+        {
+            "batch_sizes": [
+                1,
+                2,
+                4,
+                8,
+                16,
+                32,
+                64,
+                128
+            ],
+            "concurrent_instances": 1,
+            "env_variables": {},
+            "framework_config": {
+                "allow_soft_placement": false,
+                "enableConfig": false,
+                "inter_op_parallelism_threads": 0,
+                "intra_op_parallelism_threads": 0
+            },
+            "hardware": "gpu",
+            "name": "ResNet-50",
+            "precision": "fp32",
+            "runtype": "performance",
+            "setNUMA": false,
+            "tf_graphTransform": null,
+            "total_requests": 10
+        }
+    ]
+}

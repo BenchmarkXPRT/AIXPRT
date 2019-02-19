@@ -19,7 +19,7 @@ import tensorflow as tf
 
 workload_dir = "ssdmobilenetv1"
 
-def writeBatchResults(path_list,batchsize,aarch,iterations,instances, total_requests):
+def writeBatchResults(path_list,batchsize,aarch,iterations,instances, total_requests, precision):
     #read timings from csv file and log results
 
     for path in path_list:
@@ -28,6 +28,8 @@ def writeBatchResults(path_list,batchsize,aarch,iterations,instances, total_requ
             np_from_csv_data = np.vstack((np.array(np_from_csv_data), csv_data))
         else:
             np_from_csv_data = csv_data
+    async_timings = (np_from_csv_data[:,1] - np_from_csv_data[:,0])*1000
+
     if (np_from_csv_data.shape == (2,)):
         tend_max = np_from_csv_data[1]
         tstart_min = np_from_csv_data[0]
@@ -35,14 +37,16 @@ def writeBatchResults(path_list,batchsize,aarch,iterations,instances, total_requ
         tstart_max, tend_max = np_from_csv_data.max(axis=0)
         tstart_min, tend_min = np_from_csv_data.min(axis=0)
     tcalc = (tend_max - tstart_min)/(iterations * instances)
-    #print(tstart_min, tend_max, tcalc, iterations, instances, batchsize)
     speed_mean = (batchsize)/tcalc
-    # print("Throughput:", speed_mean)
     time_mean = tcalc*1000
     labelstr = "Batch "+ str(batchsize)
     additional_info_details = {}
     additional_info_details["total_requests"] = total_requests
     additional_info_details["concurrent_instances"] = instances
+    additional_info_details["50_percentile_time"] = np.percentile(async_timings, 50)
+    additional_info_details["90_percentile_time"] = np.percentile(async_timings, 90)
+    additional_info_details["95_percentile_time"] = np.percentile(async_timings, 95)
+    additional_info_details["99_percentile_time"] = np.percentile(async_timings, 99)
     accelerator_lib_details = {}
 
     if (aarch.lower()=="cpu"):
@@ -52,7 +56,7 @@ def writeBatchResults(path_list,batchsize,aarch,iterations,instances, total_requ
     workloadInput={
           "Tensorflow": "1.10",
           "architecture":aarch,
-          "precision":"fp32",
+          "precision":precision,
           "iterations":iterations,
           "instances": instances,
           "accelerator_lib": [accelerator_lib_details],
@@ -132,8 +136,14 @@ if total_requests % concurrent_instances == 0:
 else:
     print("ERROR: total_requests should be a mutiple of concurrent_instances")
     sys.exit()
-frozen_graph = 'ssd_mobilenet_v1_coco_2017_graph.pb'
-
+model_dir=os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","models")
+if(precision=='int8'):
+    frozen_graph = 'ssdmobilenet_int8_pretrained_model.pb'
+else:
+    frozen_graph = 'ssd_mobilenet_v1_coco_2017_graph.pb'
+if not os.path.isfile(model_dir+"/"+frozen_graph):
+    print("ERROR: Model file not found.")
+    sys.exit()
 for j in batch_size_number:
     commands = []
     path_list = []
@@ -167,4 +177,4 @@ for j in batch_size_number:
     print(commands)
     processes = [Popen(cmd, shell=True,stdout=f) for cmd in commands]
     for p in processes: p.wait()
-    writeBatchResults(path_list,j,aarch,iterations,concurrent_instances, total_requests)
+    writeBatchResults(path_list,j,aarch,iterations,concurrent_instances, total_requests, precision)

@@ -4,11 +4,11 @@ Workloads are build and tested using Tensorflow (version 1.12) framework. For Mo
 
 ## 2. System Requirements
  This Module can run on all the systems supported by tensorflow.
-
+ 
 ## 3. Run Benchmark
 
-##### Steps to configure the machine
-1. Clone the AIXPRT Github repository. These instructions are found in the repository README.
+##### Steps to configure the machine 
+1. Clone the AIXPRT Github repository.
 
 2. Install dependencies:
     ```
@@ -17,53 +17,49 @@ Workloads are build and tested using Tensorflow (version 1.12) framework. For Mo
     sudo apt-get install python python-numpy python-pil
     ```
 3. Install Tensorflow
-   * For instructions to install on Intel CPU and AMD CPU, follow [Tensorflow Website](https://www.tensorflow.org/install/)    
-   * For instructions to install for the NVIDIA GPU, follow [Tensorflow GPU Website](https://www.tensorflow.org/install/gpu) and install the "CUDA with apt section" (TensorRT section is optional)
+   * For instructions to install on Intel CPU and AMD CPU, follow [Tensorflow Website](https://www.tensorflow.org/install/)    NVIDIA GPU NVIDIA [Tensorflow GPU Website](https://www.tensorflow.org/install/gpu)
 
    * To install Tensorflow with AMD ROCm support follow the instructions [AMD ROCM Tensorflow](https://rocm.github.io/dl.html)
    NOTE : on AMD-GPU , Ubuntu 18.04 has the support for latest drivers and is recommend to use Ubuntu 18.04.
-
-   * Below are some simple instructions for installing AIXPRT on an Intel or AMD machine with an Nvidia GTX 1060 graphics card. However, users are free to choose to install any different type of tensorflow according to the system they are running on.
-
+   
+   * Below are some simple instruction to run the benchmark. However users are free to choose to install any different type of tensorflow according to the system they are running on.
+   
     ```
-    # CPU installation
-    # tensorflow must the be last-installed framework in order to run properly
-    # Also, make sure to edit the ../Config/Deep-Learning_defautl_config.json file for "cpu"
-    sudo apt-get install python-pip                     # install pip installer for tensorflow
+    # CPU
+    sudo apt-get install python-pip
     pip install tensorflow
      ```
 
     ```
     # GPU
-    # tensorflow-gpu must the be last-installed framework in order to run properly
-    # Also, make sure to edit the ../Config/Deep-Learning_defautl_config.json file for "gpu"
-    sudo apt-get install python-pip                     # install pip installer for tensorflow-gpu
-    pip install tensorflow-gpu
-    sudo apt-get purge nvidia*                          # remove any installed drivers
+    sudo apt-get purge nvidia*                # remove any installed drivers
     sudo add-apt-repository ppa:graphics-drivers/ppa    # get the repository
-    sudo apt update                                     # update the apt request
-    ubuntu-drivers devices                              # confirm desired driver is present
-    sudo apt install nvidia-410                         # install the desired driver
+    sudo apt update                        # update the apt request
+    ubuntu-drivers devices                    # confirm desired driver is present
+    sudo apt install nvidia-410                # install the desired driver
     reboot
-    nvidia-smi                                          # check that the desired driver version is installed as below (415.27)
-    Go to https://www.tensorflow.org/install/gpu) and install the "CUDA with apt section"
+    nvidia-smi                          # check that the desired driver version is installed as below (415.27)
+    sudo apt-get install python-pip
+    pip install tensorflow-gpu
      ```
-
+    
 ##### Steps to run benchmark
  1. Navigate to directory:
-
+ 
     ```
     cd AIXPRT/Harness
     ```
-
+    
  2. Run the benchmark:
-
+ 
     ```
     python3 index.py
-
+    
     ```
  3. If running on GPU target , please edit AIXPRT/Config/{filename.json} to set "hardware" to gpu .  
 ##### Results
 
-Benchmark runs and finished pointing to the results location.
-All the results are located at AIXPRT/Results/ after the benchmark run.
+Benchmark runs and finished pointing to the results location. 
+All the results are located at AIXPRT/Results/ after the benchmark run. 
+
+

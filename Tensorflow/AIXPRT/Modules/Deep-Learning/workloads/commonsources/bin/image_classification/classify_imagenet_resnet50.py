@@ -223,10 +223,14 @@ file_names = [fn for fn in os.listdir(data_dir)
   if any(fn.endswith(ext) for ext in included_extenstions)]
 batch_data=[]
 files = file_names[:FLAGS.batch_size]
-
-for f in files:
-    image_path = files_dir + '/' + f
-    batch_data = batch_from_image(image_path, FLAGS.batch_size, batch_data)
+cur_size=0
+while cur_size < FLAGS.batch_size:
+    for f in files:
+        image_path = data_dir + '/' + f
+        if cur_size == FLAGS.batch_size:
+            break
+        cur_size +=1
+        batch_data = batch_from_image(image_path, FLAGS.batch_size, batch_data)
 print(np.shape(batch_data))
 # run inference
 run_inference(tf_config_params,batch_data)
