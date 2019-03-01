@@ -9,9 +9,9 @@
           ],
           "label": "Batch 1",
           "system_throughput": "-",
-          "system_throughput_units": "-",
-          "system_latency": "-",
-          "system_latency_units": "-"
+          "system_throughput_units": "-"
+
+
         },
         {
           "additional info": [
@@ -19,9 +19,9 @@
           ],
           "label": "Batch 2",
           "system_throughput": "-",
-          "system_throughput_units": "-",
-          "system_latency": "-",
-          "system_latency_units": "-"
+          "system_throughput_units": "-"
+
+
         },
         {
           "additional info": [
@@ -29,9 +29,9 @@
           ],
           "label": "Batch 4",
           "system_throughput": "-",
-          "system_throughput_units": "-",
-          "system_latency": "-",
-          "system_latency_units": "-"
+          "system_throughput_units": "-"
+
+
         },
         {
           "additional info": [
@@ -39,9 +39,9 @@
           ],
           "label": "Batch 8",
           "system_throughput": "-",
-          "system_throughput_units": "-",
-          "system_latency": "-",
-          "system_latency_units": "-"
+          "system_throughput_units": "-"
+
+
         },
         {
           "additional info": [
@@ -49,9 +49,9 @@
           ],
           "label": "Batch 16",
           "system_throughput": "-",
-          "system_throughput_units": "-",
-          "system_latency": "-",
-          "system_latency_units": "-"
+          "system_throughput_units": "-"
+
+
         },
         {
           "additional info": [
@@ -59,9 +59,9 @@
           ],
           "label": "Batch 32",
           "system_throughput": "-",
-          "system_throughput_units": "-",
-          "system_latency": "-",
-          "system_latency_units": "-"
+          "system_throughput_units": "-"
+
+
         }
       ],
       "workload run information": {},
@@ -76,9 +76,9 @@
           ],
           "label": "Batch 1",
           "system_throughput": "-",
-          "system_throughput_units": "-",
-          "system_latency": "-",
-          "system_latency_units": "-"
+          "system_throughput_units": "-"
+
+
         },
         {
           "additional info": [
@@ -86,9 +86,9 @@
           ],
           "label": "Batch 2",
           "system_throughput": "-",
-          "system_throughput_units": "-",
-          "system_latency": "-",
-          "system_latency_units": "-"
+          "system_throughput_units": "-"
+
+
         },
         {
           "additional info": [
@@ -96,9 +96,9 @@
           ],
           "label": "Batch 4",
           "system_throughput": "-",
-          "system_throughput_units": "-",
-          "system_latency": "-",
-          "system_latency_units": "-"
+          "system_throughput_units": "-"
+
+
         },
         {
           "additional info": [
@@ -106,9 +106,9 @@
           ],
           "label": "Batch 8",
           "system_throughput": "-",
-          "system_throughput_units": "-",
-          "system_latency": "-",
-          "system_latency_units": "-"
+          "system_throughput_units": "-"
+
+
         },
         {
           "additional info": [
@@ -116,9 +116,9 @@
           ],
           "label": "Batch 16",
           "system_throughput": "-",
-          "system_throughput_units": "-",
-          "system_latency": "-",
-          "system_latency_units": "-"
+          "system_throughput_units": "-"
+
+
         },
         {
           "additional info": [
@@ -126,9 +126,9 @@
           ],
           "label": "Batch 32",
           "system_throughput": "-",
-          "system_throughput_units": "-",
-          "system_latency": "-",
-          "system_latency_units": "-"
+          "system_throughput_units": "-"
+
+
         }
       ],
       "workload run information": {},

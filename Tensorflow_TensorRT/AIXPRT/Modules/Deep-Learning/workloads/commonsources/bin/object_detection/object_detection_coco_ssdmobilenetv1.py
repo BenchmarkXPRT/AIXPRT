@@ -176,12 +176,11 @@ def log_stats(log_buffer, timings, batch_size):
   additional_info_details = {}
   additional_info_details["concurrent_instances"] = 1
   additional_info_details["total_requests"] = FLAGS.iterations
-  additional_info_details["50_percentile_time"] = np.percentile(times, 50)
-  additional_info_details["90_percentile_time"] = np.percentile(times, 90)
-  additional_info_details["95_percentile_time"] = np.percentile(times, 95)
-  additional_info_details["99_percentile_time"] = np.percentile(times, 99)
-  #additional_info_details["max_time"] = np.amax(times)
-  #additional_info_details["min_time"] = np.amin(times)
+  additional_info_details["50_percentile_time"] = np.percentile(times, 50)*1000
+  additional_info_details["90_percentile_time"] = np.percentile(times, 90)*1000
+  additional_info_details["95_percentile_time"] = np.percentile(times, 95)*1000
+  additional_info_details["99_percentile_time"] = np.percentile(times, 99)*1000
+  additional_info_details["time_units"] = "milliseconds"
   accelerator_lib_details = {}
   if (FLAGS.aarch.lower()=="cpu"):
       accelerator_lib_details["cpu_accelerator_lib"] = ""
@@ -196,8 +195,6 @@ def log_stats(log_buffer, timings, batch_size):
   results=[
 	{
 	"label":labelstr,
-	"system_latency":time_mean,
-	"system_latency_units":"milliseconds",
 	"system_throughput":speed_mean,
 	"system_throughput_units":"imgs/sec",
 	"additional info":[additional_info_details]
@@ -324,7 +321,7 @@ def main(_):
               if f.lower().endswith(('.jpg', '.jpeg', '.png')):
                   image_path = data_dir + '/' + f
               if cur_size == FLAGS.batch_size:
-                  break 
+                  break
               batch_data = batch_from_image(image_path, FLAGS.batch_size, batch_data)
               cur_size +=1
               print(image_path)

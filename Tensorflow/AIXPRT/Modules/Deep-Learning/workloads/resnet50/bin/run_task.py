@@ -58,6 +58,7 @@ def writeBatchResults(path_list,batchsize,aarch,iterations,instances,total_reque
     additional_info_details["90_percentile_time"] = np.percentile(async_timings, 90)
     additional_info_details["95_percentile_time"] = np.percentile(async_timings, 95)
     additional_info_details["99_percentile_time"] = np.percentile(async_timings, 99)
+    additional_info_details["time_units"] = "milliseconds"
     accelerator_lib_details = {}
 
     if (aarch.lower()=="cpu"):
@@ -75,8 +76,6 @@ def writeBatchResults(path_list,batchsize,aarch,iterations,instances,total_reque
     results=[
           {
           "label":labelstr,
-          "system_latency":time_mean,
-          "system_latency_units":"milliseconds",
           "system_throughput":speed_mean,
           "system_throughput_units":"imgs/sec",
           "additional info":[additional_info_details]
@@ -166,7 +165,7 @@ for j in batch_size_number:
                 cmd = ""
                 for key ,value in item.items():
                     cmd+= "--"+key+"="+value+" "
-                allocation.append(str(cmd))      
+                allocation.append(str(cmd))
 
     for ins in range(concurrent_instances):
         #For writing timings from all instances

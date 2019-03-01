@@ -43,14 +43,13 @@ def returnBatchsizeResults(batchSize, resultInImgPerSec, timeInMsec, iterCount, 
     #insideResults["Batch"] = str(batchSize)
     insideResults["system_throughput"] =   resultInImgPerSec
     insideResults["system_throughput_units"] =   'imgs/sec'
-    insideResults["system_latency"] = timeInMsec
-    insideResults["system_latency_units"] = "milliseconds"
+
     # Optional Fields
     additional_info = []
     insideResults["additional info"] = additional_info
     additional_info_details = {"concurrent_instances": concurrent_instances, "total_requests": iterCount, "50_percentile_time": perc_50, "90_percentile_time": perc_90,
-                               "95_percentile_time": perc_95, "99_percentile_time": perc_99}
-    
+                               "95_percentile_time": perc_95, "99_percentile_time": perc_99,"time_units":"milliseconds"}
+
 
     additional_info.append(additional_info_details)
     results.append(insideResults)

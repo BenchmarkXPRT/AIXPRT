@@ -54,7 +54,7 @@ def get_params_from_json(dir_name):
 
     return(aarch, precision, iterations, batch_size_number , workloadName , workloadID,concurrent_instances)
 
-aarch, precision, iterations, batch_size_number, workloadName, workloadID, concurrent_instances = get_params_from_json("resnet50_2016")
+aarch, precision, iterations, batch_size_number, workloadName, workloadID, concurrent_instances = get_params_from_json("ssdmobilenetv1")
 
 if int(concurrent_instances)>1:
     print("Workload cannot run concurrent instances > 1")
