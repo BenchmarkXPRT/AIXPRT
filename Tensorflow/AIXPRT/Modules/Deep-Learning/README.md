@@ -4,10 +4,10 @@ Workloads are build and tested using Tensorflow (version 1.12) framework. For Mo
 
 ## 2. System Requirements
  This Module can run on all the systems supported by tensorflow.
- 
+
 ## 3. Run Benchmark
 
-##### Steps to configure the machine 
+##### Steps to configure the machine
 1. Clone the AIXPRT Github repository.
 
 2. Install dependencies:
@@ -21,9 +21,9 @@ Workloads are build and tested using Tensorflow (version 1.12) framework. For Mo
 
    * To install Tensorflow with AMD ROCm support follow the instructions [AMD ROCM Tensorflow](https://rocm.github.io/dl.html)
    NOTE : on AMD-GPU , Ubuntu 18.04 has the support for latest drivers and is recommend to use Ubuntu 18.04.
-   
+
    * Below are some simple instruction to run the benchmark. However users are free to choose to install any different type of tensorflow according to the system they are running on.
-   
+
     ```
     # CPU
     sudo apt-get install python-pip
@@ -40,26 +40,24 @@ Workloads are build and tested using Tensorflow (version 1.12) framework. For Mo
     reboot
     nvidia-smi                          # check that the desired driver version is installed as below (415.27)
     sudo apt-get install python-pip
-    pip install tensorflow-gpu
+    pip install tensorflow-gpu==1.12.0
      ```
-    
+
 ##### Steps to run benchmark
  1. Navigate to directory:
- 
+
     ```
     cd AIXPRT/Harness
     ```
-    
+
  2. Run the benchmark:
- 
+
     ```
     python3 index.py
-    
+
     ```
  3. If running on GPU target , please edit AIXPRT/Config/{filename.json} to set "hardware" to gpu .  
 ##### Results
 
-Benchmark runs and finished pointing to the results location. 
-All the results are located at AIXPRT/Results/ after the benchmark run. 
-
-
+Benchmark runs and finished pointing to the results location.
+All the results are located at AIXPRT/Results/ after the benchmark run.
