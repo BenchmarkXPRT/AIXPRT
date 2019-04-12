@@ -8,6 +8,7 @@ Workloads are build and tested using Tensorflow (version 1.12) framework. For Mo
 ## 3. Run Benchmark
 
 ##### Steps to configure the machine
+####### Ubuntu
 1. Clone the AIXPRT Github repository.
 
 2. Install dependencies:
@@ -38,10 +39,24 @@ Workloads are build and tested using Tensorflow (version 1.12) framework. For Mo
     ubuntu-drivers devices                    # confirm desired driver is present
     sudo apt install nvidia-410                # install the desired driver
     reboot
-    nvidia-smi                          # check that the desired driver version is installed as below (415.27)
+    nvidia-smi                          # check that the desired driver version is installed as below (410.xx)
     sudo apt-get install python-pip
-    pip install tensorflow-gpu==1.12.0
+    pip install tensorflow-gpu
      ```
+####### Windows
+* Install dependencies
+  1. [Python for windows](https://www.python.org/downloads/windows/) .Please make sure to install the right version of python that is supported by tensorflow.
+  
+  2. Install pyreadline and PIL
+     ```
+     pip3 install pyreadline
+     pip3 install Pillow
+
+     ```
+   3. Install Tensorflow
+     For instructions to install on Intel CPU and AMD CPU, follow [Tensorflow Website](https://www.tensorflow.org/install/pip)        NVIDIA GPU NVIDIA [Tensorflow GPU Website](https://www.tensorflow.org/install/gpu#windows_setup)
+
+
 
 ##### Steps to run benchmark
  1. Navigate to directory:
@@ -52,10 +67,18 @@ Workloads are build and tested using Tensorflow (version 1.12) framework. For Mo
 
  2. Run the benchmark:
 
+    For Ubuntu
     ```
     python3 index.py
 
     ```
+
+    For Windows
+    ```
+    python index.py
+
+    ```
+
  3. If running on GPU target , please edit AIXPRT/Config/{filename.json} to set "hardware" to gpu .  
 ##### Results
 

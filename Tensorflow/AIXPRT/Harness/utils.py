@@ -57,7 +57,7 @@ def colorPrint(color,printString , end):
 
 def getCpuName():
     if platform.system() == "Windows":
-        name = subprocess.check_output(["wmic","cpu","get", "name"]).strip().split("\n")[1]
+        name = subprocess.check_output(["wmic","cpu","get", "name"]).decode('utf_8').strip().split("\n")[1]
         return name
     elif platform.system() == "Darwin":
         os.environ['PATH'] = os.environ['PATH'] + os.pathsep + '/usr/sbin'
