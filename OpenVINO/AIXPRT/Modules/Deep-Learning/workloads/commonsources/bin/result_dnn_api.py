@@ -36,11 +36,11 @@ def returnInputMap(framework, version, imgSource, imgCount, arch, model , precis
     return(workloadInput)
 
 ## returnBatchsizeResults()
-def returnBatchsizeResults(batchSize, resultInImgPerSec, timeInMsec, iterCount, modelName, aarch, standardDev, concurrent_instances, perc_99, perc_95, perc_90, perc_50, min_time, max_time):
+def returnBatchsizeResults(batchSize, resultInImgPerSec, timeInMsec, iterCount, modelName, aarch, standardDev, concurrent_instances, perc_99, perc_95, perc_90, perc_50, min_time, max_time,image_names,top_predictions):
+
     results = []
     insideResults = {}
     insideResults["label"] = 'Batch ' + str(batchSize)
-    #insideResults["Batch"] = str(batchSize)
     insideResults["system_throughput"] =   resultInImgPerSec
     insideResults["system_throughput_units"] =   'imgs/sec'
 
@@ -49,6 +49,20 @@ def returnBatchsizeResults(batchSize, resultInImgPerSec, timeInMsec, iterCount, 
     insideResults["additional info"] = additional_info
     additional_info_details = {"concurrent_instances": concurrent_instances, "total_requests": iterCount, "50_percentile_time": perc_50, "90_percentile_time": perc_90,
                                "95_percentile_time": perc_95, "99_percentile_time": perc_99,"time_units":"milliseconds"}
+
+    image_list = [os.path.basename(el) for el in image_names.split(',')]
+    print(top_predictions)
+    top_predictions = top_predictions.split(',')[:-1]
+    predictionsList = []
+    for im_predictions in top_predictions:
+        for pairs in im_predictions.split('_'):
+            if len(pairs) > 0:
+                predictionsList.append(pairs.split(':')[0])
+                predictionsList.append(pairs.split(':')[1])
+    # image name in jpg only not bmp
+    additional_info_details['output'] = {os.path.splitext(image_list[0])[0]+".jpg":predictionsList}
+
+
 
 
     additional_info.append(additional_info_details)

@@ -167,7 +167,7 @@ for j in batch_size_number:
         if(setNUMA):
             #instantiate numactl variables
             command = "numactl "+allocation[ins]
-        command = command + str('python'+' '+ path+' '+ '--frozen_graph'+' '+ frozen_graph+' '+ '--batch_size'+' '+ str(j)+
+        command = command + str('python3'+' '+ path+' '+ '--frozen_graph'+' '+ frozen_graph+' '+ '--batch_size'+' '+ str(j)+
         ' '+ '--aarch'+' '+ aarch+' '+ '--iterations'+' '+ str(iterations)+' '+
         '--instance'+' '+str(ins)+' '+'--workload_dir'+' '+ workload_dir+' '+'--csv_file_path'+' '+csv_file_path+' '+ '--precision'+' '+ precision)
         commands.append(command)

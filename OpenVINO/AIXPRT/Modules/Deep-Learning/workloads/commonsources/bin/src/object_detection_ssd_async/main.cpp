@@ -276,7 +276,7 @@ int main(int argc, char *argv[]) {
         slog::info << "Loading model to the plugin" << slog::endl;
         //set config values
         std::map<std::string, std::string> config;
-        if ((FLAGS_d.find("MYRIAD") != std::string::npos) or (FLAGS_d.find("HDDL") != std::string::npos)) {
+        if ((FLAGS_d.find("MYRIAD") != std::string::npos) || (FLAGS_d.find("HDDL") != std::string::npos)) {
           config[VPU_CONFIG_KEY(LOG_LEVEL)] = CONFIG_VALUE(LOG_WARNING);
           config[CONFIG_KEY(LOG_LEVEL)] = CONFIG_VALUE(LOG_WARNING);
           config[VPU_CONFIG_KEY(HW_STAGES_OPTIMIZATION)] = CONFIG_VALUE(YES); //This is the important one for HW acceleration
@@ -488,7 +488,7 @@ int main(int argc, char *argv[]) {
 
         //double standard_deviation = 0.0; // not possible to compute
 	std::string standard_deviation = "Undefined";
-        std::string const command = "python cpp_to_python_api.py "  + model_name +" " + std::to_string(batch_size) + " " + aarch + " " + precision + " " + std::to_string(imgpersec) +\
+        std::string const command = "python3 cpp_to_python_api.py "  + model_name +" " + std::to_string(batch_size) + " " + aarch + " " + precision + " " + std::to_string(imgpersec) +\
                                      " " + std::to_string(FLAGS_ni) + " " + std::to_string(avg_time) + " " + standard_deviation + " " + std::to_string(FLAGS_nireq) +\
 					" " + std::to_string(perc_99) + " " + std::to_string(perc_95) + " " + std::to_string(perc_90) + " " + std::to_string(perc_50) +\
 					" " + std::to_string(min_time) + " " + std::to_string(max_time);

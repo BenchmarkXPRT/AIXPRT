@@ -18,6 +18,6 @@ def getBenchmarkVersionNumber(AppName):
     versionjson = os.path.join(constants.APP_HOME,'Harness','version.json')
     with open(versionjson) as version_file:
         data = json.load(version_file)
-        version = AppName.lower()+'_versionNumber'
+        version = 'versionNumber'
         version = data[version]
         return version

@@ -39,6 +39,10 @@ perc_50 = ""
 min_time = ""
 max_time = ""
 
+# ----- For Demo
+image_names = ""
+top_results = ""
+
 if len(sys.argv) > 10:
     perc_99 = sys.argv[10]
     perc_95 = sys.argv[11]
@@ -46,6 +50,11 @@ if len(sys.argv) > 10:
     perc_50 = sys.argv[13]
     min_time = sys.argv[14]
     max_time = sys.argv[15]
+
+if len(sys.argv) > 16:
+    print("Num Inputs: {}".format(len(sys.argv)))
+    image_names = sys.argv[16]
+    top_results = sys.argv[17]
 
 # version update from: deployment_tools/documentation/InstallingForLinux.html
 
@@ -64,8 +73,10 @@ def getOpenVINOversion():
                 OpenVINOversion = myString[(myString.index("/opt/intel/")+len("/opt/intel/")):myString.index("/deployment_tools")]
     return OpenVINOversion
 
+sys.path.insert(0, os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","plugin"))
+from ie_api import get_version
 
-version = getOpenVINOversion()
+version = get_version()
 s = {
 'cpu': 'MKLDNN 18WW32.5',
 'gpu': 'clDNN 18WW32.5',
@@ -86,7 +97,7 @@ def writeBatchResultsToAPI():
     forwardTime = float(timeInMillisec)
     workLoadName = result_dnn_api.returnWorkloadName(modelPrefix)
     inputString = result_dnn_api.returnInputMap("OpenVINO ", version , "ILSVRC 2012",batchSize , aarch, modelPrefix+'net',prec,iterCount,usedAcceleratorList)
-    resultsString = result_dnn_api.returnBatchsizeResults(int(batchSize), round(resInImgPerSec,3), forwardTime, int(iterCount), modelPrefix, aarch.lower(), StandardDev, int(concurrent_instances), perc_99, perc_95, perc_90, perc_50, min_time, max_time)
+    resultsString = result_dnn_api.returnBatchsizeResults(int(batchSize), round(resInImgPerSec,3), forwardTime, int(iterCount), modelPrefix, aarch.lower(), StandardDev, int(concurrent_instances), float(perc_99),float(perc_95), float(perc_90),float(perc_50), min_time, max_time,image_names, top_results)
     # Now wrtie the info to the API
     result_dnn_api.writeResultsToAPI(workLoadName, inputString, resultsString)
 

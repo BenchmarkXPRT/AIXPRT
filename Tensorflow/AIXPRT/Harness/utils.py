@@ -83,7 +83,12 @@ def find_between( s, first, last ):
 def getGpuName():
     gpuDeviceList = []
     if platform.system() == "Windows":
-        return ""
+        # requiers
+        # pip install --upgrade wmi
+        # pip install --upgrade pypiwin32
+        import wmi
+        gpuDeviceList.append(format((wmi.WMI().Win32_VideoController()[0]).Name))
+        return gpuDeviceList
     elif platform.system() == "Darwin":
         return ""
     elif platform.system() == "Linux":
@@ -155,6 +160,7 @@ def createDefaultConfig():
         configMap = {
             "runtype":"performance",
             "iteration":1,
+            "isDemo": False,
             "delayBetweenWorkloads":0,
             "module":moduleFolderName,
             "workloads_config":allDefaultConfigList
@@ -198,11 +204,30 @@ def createLogDir():
     return logDir
 
 def getTensorflowInfo():
-    command = "pip list  | grep tensorflow"
+    # disable the pip upgrade warning for this instance
+    os.environ["PIP_DISABLE_PIP_VERSION_CHECK"] = "1"
+    command = "pip3 list --format=columns | grep tensorflow"
     info = ""
-    try:
-        info = subprocess.check_output(command, shell=True)
-        info = str((info.strip()).decode('utf_8'))
-    except subprocess.CalledProcessError as grepexc:
-        print("Warning unable to get tensorflow type by running- pip3 list  | grep tensorflow", grepexc.returncode, grepexc.output)
-    return info
+    tensorflow = "Tensorflow " 
+    if not platform.system() == "Windows":
+        try:
+            info = subprocess.check_output(command, shell=True)
+            info = str((info.strip()).decode('utf_8')) 
+            if("gpu" in info):
+                tensorflow = tensorflow+"gpu "
+            if("rocm" in info):
+                tensorflow = tensorflow+"rocm "
+            import tensorflow as tf
+            info = tensorflow + tf.__version__
+        except subprocess.CalledProcessError as grepexc:
+            # looks like the user installed tensorflow with different package manager
+            import tensorflow as tf
+            info = tensorflow + tf.__version__
+        return info
+    else:
+        import tensorflow as tf
+        info = tensorflow + tf.__version__
+        return info
+
+
+   

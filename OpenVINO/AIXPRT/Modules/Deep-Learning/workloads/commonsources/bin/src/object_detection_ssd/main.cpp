@@ -410,7 +410,7 @@ int main(int argc, char *argv[]) {
         double min_time= sample[0];
 
         std::cout << "Result: " << imgpersec << " images/sec" << std::endl;
-        std::string const command = "python cpp_to_python_api.py "  + model_name +" " + std::to_string(batch_size) + " " + aarch + " " + precision +\
+        std::string const command = "python3 cpp_to_python_api.py "  + model_name +" " + std::to_string(batch_size) + " " + aarch + " " + precision +\
                                     " " + std::to_string(imgpersec) + " " + std::to_string(FLAGS_ni) + " " + std::to_string(avg_time) + " " +\
                                      std::to_string(standard_deviation) + " " + std::to_string(1) + " " + std::to_string(perc_99) + " " +\
                                      std::to_string(perc_95) + " " + std::to_string(perc_90) + " " + std::to_string(perc_50) + " " + std::to_string(min_time) + " " + std::to_string(max_time);

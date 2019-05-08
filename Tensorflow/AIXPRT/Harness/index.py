@@ -14,7 +14,6 @@
 
 import argparse
 import os
-import readline
 import sys
 import json
 from colors import *

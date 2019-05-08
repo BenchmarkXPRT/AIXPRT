@@ -349,34 +349,6 @@ int main(int argc, char *argv[]) {
           std::cout << "    standard_deviation: " << standard_deviation << " variance: " << variance << std::endl;
         }
 
-//1 =======================================================================================================================================================================
-
-// -----------------------------------------------------------------------------------------------------
-        /** Compute Percentiles **/
-	std::sort (sample.begin(), sample.end()); // Sort the times
-        double max_time= sample.back();
-	double perc_99 = computePercentile( sample, 99);
-	double perc_95 = computePercentile( sample, 95);
-        double perc_90 = computePercentile( sample, 90);
-        double perc_50 = computePercentile( sample, 50);
-        double min_time= sample[0];
-
-        std::cout << "Result: " << imgpersec << " images/sec" << std::endl;
-        std::string const command = "python cpp_to_python_api.py "  + model_name +" " + std::to_string(batch_size) + " " + aarch + " " +\
-                                    precision + " " + std::to_string(imgpersec) + " " + std::to_string(FLAGS_ni) + " " +\
-                                    std::to_string(avg_time) + " " + std::to_string(standard_deviation) + " " + std::to_string(1)+\
-					" " + std::to_string(perc_99) + " " + std::to_string(perc_95) + " " + std::to_string(perc_90) + " " + std::to_string(perc_50) +\
-					" " + std::to_string(min_time) + " " + std::to_string(max_time);
-//1 =======================================================================================================================================================================
-
-        int ret_val = system(command.c_str());
-        if (ret_val == 0)
-        {
-          std::cout << "Inference Successful" << std::endl;
-        } else {
-          std::cout << "Error Running inference" << std::endl;
-          std::cout << "     "<< command << " RETURNS: " << std::to_string(ret_val) <<std::endl;
-        }
         // -----------------------------------------------------------------------------------------------------
 
         // --------------------------- 8. Process output -------------------------------------------------------
@@ -416,21 +388,65 @@ int main(int argc, char *argv[]) {
         }
 
         /** Print the result iterating over each batch **/
+        std::string image_names = "";
+        std::string top_results = "";
+        std::string top_predictions = "";
+
         for (int image_id = 0; image_id < batchSize; ++image_id) {
             std::cout << "Image " << imageNames[image_id] << std::endl << std::endl;
+            image_names = image_names + imageNames[image_id];
             for (size_t id = image_id * FLAGS_nt, cnt = 0; cnt < FLAGS_nt; ++cnt, ++id) {
                 std::cout.precision(7);
                 /** Getting probability for resulting class **/
                 const auto result = output_data[results[id] + image_id*(output_blob->size() / batchSize)];
+
                 std::cout << std::left << std::fixed << results[id] << " " << result;
+                top_results = top_results + std::to_string(results[id]) + ":" + std::to_string(result) + "_";
+
                 if (labelsEnabled) {
                     std::cout << " label " << labels[results[id]] << std::endl;
                 } else {
                     std::cout << " label #" << results[id] << std::endl;
                 }
             }
+            image_names = image_names + ",";
+            top_results = top_results + ",";
             std::cout << std::endl;
         }
+
+//1 =======================================================================================================================================================================
+
+// -----------------------------------------------------------------------------------------------------
+        /** Compute Percentiles **/
+	std::sort (sample.begin(), sample.end()); // Sort the times
+        double max_time= sample.back();
+	double perc_99 = computePercentile( sample, 99);
+	double perc_95 = computePercentile( sample, 95);
+        double perc_90 = computePercentile( sample, 90);
+        double perc_50 = computePercentile( sample, 50);
+        double min_time= sample[0];
+	
+	std::string demo_output = "";
+	if (batch_size < 2){
+	   demo_output = " " + image_names + " " + top_results;
+	}
+        std::cout << "Result: " << imgpersec << " images/sec" << std::endl;
+        std::string const command = "python3 cpp_to_python_api.py "  + model_name +" " + std::to_string(batch_size) + " " + aarch + " " +\
+                                    precision + " " + std::to_string(imgpersec) + " " + std::to_string(FLAGS_ni) + " " +\
+                                    std::to_string(avg_time) + " " + std::to_string(standard_deviation) + " " + std::to_string(1)+\
+					" " + std::to_string(perc_99) + " " + std::to_string(perc_95) + " " + std::to_string(perc_90) + " " + std::to_string(perc_50) +\
+					" " + std::to_string(min_time) + " " + std::to_string(max_time) + demo_output;
+//1 =======================================================================================================================================================================
+
+        int ret_val = system(command.c_str());
+        if (ret_val == 0)
+        {
+          std::cout << "Inference Successful" << std::endl;
+        } else {
+          std::cout << "Error Running inference" << std::endl;
+          std::cout << "     "<< command << " RETURNS: " << std::to_string(ret_val) <<std::endl;
+        }
+
         // -----------------------------------------------------------------------------------------------------
         std::cout << std::endl << "total inference time: " << total << std::endl;
         std::cout << "Average running time of one iteration: " << total / static_cast<double>(FLAGS_ni) << " ms" << std::endl;

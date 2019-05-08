@@ -27,26 +27,45 @@ import resultsapi
 import utils
 import tensorflow as tf
 import math
+import csv
 
 workload_dir = "resnet50"
 
 def writeBatchResults(path_list,batchsize,aarch,iterations,instances,total_requests, precision):
-    #read timings from csv file and log results
 
-    for path in path_list:
-        csv_data = genfromtxt(path, delimiter=',')
-        if 'np_from_csv_data' in dir():
-            np_from_csv_data = np.vstack((np.array(np_from_csv_data), csv_data))
-        else:
-            np_from_csv_data = csv_data
-    async_timings = (np_from_csv_data[:,1] - np_from_csv_data[:,0])*1000
-
-    if (np_from_csv_data.shape == (2,)):
-        tend_max = np_from_csv_data[1]
-        tstart_min = np_from_csv_data[0]
+    inputImage = ""
+    outputForImage = {}
+    output = {}
+    outputs = []
+    if(os.environ["DEMO"] == "True"):
+        with open(path_list[0]) as csvfile:
+            readCSV = csv.reader(csvfile, delimiter=',')
+            for row in readCSV:
+                    tend_max = float(row[1])
+                    tstart_min = float(row[0])
+                    async_timings = (tend_max -tstart_min)*1000
+                    outputs.extend([row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12]])
+                    output[row[2]] = outputs
+                    # to ensure that only first row is read and empty line are ignored
+                    break
+    #read timings from csv file and log results for regular run as numpy
     else:
-        tstart_max, tend_max = np_from_csv_data.max(axis=0)
-        tstart_min, tend_min = np_from_csv_data.min(axis=0)
+        for path in path_list:
+            csv_data = genfromtxt(path, delimiter=',')
+            if 'np_from_csv_data' in dir():
+                np_from_csv_data = np.vstack((np.array(np_from_csv_data), csv_data))
+            else:
+                np_from_csv_data = csv_data
+        if (np_from_csv_data.shape == (2,)):
+            tend_max = np_from_csv_data[1]
+            tstart_min = np_from_csv_data[0]
+            async_timings = (np_from_csv_data[1] - np_from_csv_data[0])*1000
+
+        else:
+            tstart_max, tend_max = np_from_csv_data.max(axis=0)
+            tstart_min, tend_min = np_from_csv_data.min(axis=0)
+            async_timings = (np_from_csv_data[:,1] - np_from_csv_data[:,0])*1000
+
     tcalc = (tend_max - tstart_min)/(iterations * instances)
     speed_mean = (batchsize)/tcalc
     time_mean = tcalc*1000
@@ -59,6 +78,7 @@ def writeBatchResults(path_list,batchsize,aarch,iterations,instances,total_reque
     additional_info_details["95_percentile_time"] = np.percentile(async_timings, 95)
     additional_info_details["99_percentile_time"] = np.percentile(async_timings, 99)
     additional_info_details["time_units"] = "milliseconds"
+    additional_info_details["output"] = output
     accelerator_lib_details = {}
 
     if (aarch.lower()=="cpu"):
@@ -177,7 +197,7 @@ for j in batch_size_number:
         if(setNUMA):
             #instantiate numactl variables
             command = "numactl "+allocation[ins]
-        command = command + str(' python'+' '+ inferenceFilePath+' '+ '--frozen_graph'+' '+ frozen_graph+' '+ '--batch_size'+' '+ str(j)+
+        command = command + str(' python3'+' '+ inferenceFilePath+' '+ '--frozen_graph'+' '+ frozen_graph+' '+ '--batch_size'+' '+ str(j)+
         ' '+ '--aarch'+' '+ aarch+' '+ '--iterations'+' '+ str(iterations)+' '+
         '--instance'+' '+str(ins)+' '+'--workload_dir'+' '+ workload_dir+' '+'--csv_file_path'+' '+csv_file_path+' '+ '--precision'+' '+ precision)
         commands.append(command)

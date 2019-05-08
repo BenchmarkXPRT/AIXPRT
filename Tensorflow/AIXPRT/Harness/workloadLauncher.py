@@ -23,6 +23,10 @@ import time
 import benchmarkVersion as bv
 import shutil
 import copy
+import numpy as np
+import gui.workload_ui as ui
+from threading import Thread
+
 
 def checkWorkloadRunCapabilities(workload , workloadConfig):
     hardware = workloadConfig["hardware"]
@@ -69,6 +73,8 @@ def runConfig(config):
     workloads,isHDDL = getWorkloadsToRun(config)
     applicationIterations = config["iteration"]
     workloadDelays = config["delayBetweenWorkloads"]
+    isDemo =  config["isDemo"]
+    os.environ["DEMO"] = str(isDemo)
     i = 1
     while (i <= applicationIterations):
         # Setup HDDL scripts is user targets it in the config
@@ -77,15 +83,15 @@ def runConfig(config):
             setupScript = os.path.join(os.environ['APP_HOME'],"Harness","hddlSetup.sh")
             p = subprocess.call(['gnome-terminal', '-x', setupScript])
             time.sleep(30)
-        runWorkloads(config["module"],workloads,workloadDelays)
+        threadObject = runWorkloads(config["module"],workloads,workloadDelays,isDemo)
         i = i +1
-        generateResults(config["module"],workloads,config)
+        generateResults(config["module"],workloads,config,threadObject,isDemo)
     return
 
 #Function to run the workloads. This method runs all the workloads installed.
 #Takes in a list of workloads to make sure that , we try to run the installed workloads and also ingnore any other folders which are not actual
 #workloads in /workloads folder . Ex: in OpenVX workloads folder , there is a directory named "common" which is not an actula workload.
-def runWorkloads(module,workloadList,workloadDelays):
+def runWorkloads(module,workloadList,workloadDelays,isDemo):
 
     # Delete any prior json results files saved from previous run
     for workload in workloadList:
@@ -94,6 +100,7 @@ def runWorkloads(module,workloadList,workloadDelays):
         if os.path.exists(individualWorkloadResultFiles):
             for jsonFile in sorted(os.listdir(individualWorkloadResultFiles)):
                if jsonFile.endswith(".json"):
+                   # print("didnt delete json")
                    os.remove(os.path.join(constants.INSTALLED_MODULES_PATH,module,"workloads",workload["dir_name"],"result",jsonFile))
     for workload in workloadList:
         utils.colorPrint(colors.HEADER,("\nRunning %s \n"%workload["name"]),colors.ENDC)
@@ -104,14 +111,24 @@ def runWorkloads(module,workloadList,workloadDelays):
             f.write(json.dumps(workload, indent=4, sort_keys=True))
         f.close()
         time.sleep(workloadDelays)
-        if (file_extension == '.py'):
-            subprocess.call(["python",path])
-        if (file_extension == '.sh'):
-            subprocess.call([path])
-    return
+        if(isDemo):
+            # show demo if requested
+            thread = Thread(target=ui.showWorkloadUI, args = (workload["name"],workload["dir_name"],workload["requested_config"]["hardware"],workload["requested_config"]["precision"]))
+            thread.daemon = True
+            thread.start()
+            for file in  os.listdir(os.path.join(constants.INSTALLED_MODULES_PATH,module,"packages","input_images")):
+                subprocess.call(["python3",path])
+            time.sleep(1)
+            thread.join()
+        else:
+            subprocess.call(["python3",path])
+    if(isDemo):
+        return thread
+
+    return None
 
 
-def collectResults(module,workloadList,config):
+def collectResults(module,workloadList,config,isDemo):
         print("Generating Results...")
         individualWorkloadResultList=[]
         schemaResultList = []
@@ -138,6 +155,7 @@ def collectResults(module,workloadList,config):
                 schema = json.load(schema_file)
                 for schemaWorkload in schema["Workloads"]:
                     for workload in individualWorkloadResultList:
+                        throughputList = []
                         if (schemaWorkload["workloadName"] == workload["workloadName"]):
                             # Some workloads in C++ are wrting results without using resultsapi , so there are some case missmatch .
                             #This is ugly , need to fix it better
@@ -153,10 +171,13 @@ def collectResults(module,workloadList,config):
                                             resultAdded = True
                                                 #because additional info is an optional check before you try to access it
                                             if (result.get("additional info",None)==None):
-                                                result["additional info"] = "";
+                                                result["additional info"] = ""
                                             schemaResult["additional info"] = result["additional info"]
                                             if not (result.get("system_throughput",None)==None):
                                                 schemaResult["system_throughput"] = result["system_throughput"]
+                                                if(isDemo):
+                                                    throughputList.append(result["system_throughput"])
+                                                    schemaResult["system_throughput"] = sum(throughputList)/len(throughputList)
                                                 schemaResult["system_throughput_units"] = result["system_throughput_units"]
                                             if not (result.get("system_latency",None)==None):
                                                 schemaResult["system_latency"] = result["system_latency"]
@@ -169,12 +190,13 @@ def collectResults(module,workloadList,config):
                                             result["system_latency"] = ""
                                             result["system_latency_units"] = ""
                                         schemaWorkload["results"].append(result)
+                                    
                                 else:
                                     for schemaResult in schemaWorkload["results"]:
                                         if schemaResult["label"] == result["label"]:
                                             #because additional info is an optional check before you try to access it
                                             if (result.get("additional info",None)==None):
-                                                result["additional info"] = "";
+                                                result["additional info"] = ""
                                             schemaResult["additional info"] = result["additional info"]
                                             if not (result.get("accuracy",None)==None):
                                                 schemaResult["accuracy"] = result["accuracy"]
@@ -206,6 +228,7 @@ def collectResults(module,workloadList,config):
                 module: {
                     "System Info":systemInfo,
                     "moduleID":utils.getModuleID(module),
+                    "isDemo":isDemo,
                     "Workloads":schemaResultList,
                     "notes":notes
                 }
@@ -236,18 +259,22 @@ def collectResults(module,workloadList,config):
                 for jsonFile in sorted(os.listdir(individualWorkloadResultFiles)):
                     if jsonFile.endswith(".json"):
                         os.remove(os.path.join(constants.INSTALLED_MODULES_PATH,module,"workloads",workload["dir_name"],"result",jsonFile))
-                        # print("Did not delete workload JSON")
+                        #print("Did not delete workload JSON")
             else:
                  utils.colorPrint(colors.FAIL,("%s did not generate a result file"%workload["name"]),colors.ENDC)
 
         return result_ts
 
-def generateResults(module,workloadList,config):
+def generateResults(module,workloadList,config,threadObject,isDemo):
     # if atleast 1 workload is run , then generate result
     if (len(workloadList)>0):
-        resultFileName=collectResults(module,workloadList,config)
+        resultFileName=collectResults(module,workloadList,config,isDemo)
         resultFile = os.path.join(os.environ['APP_HOME'],"Results",config["config_file_name"],resultFileName)
-
+        # if threadObject is not None:
+        #     os.environ['RUN_RESULT'] = resultFile
+        #     # UI Window is still open. here is your chance to show results on UI
+        #     time.sleep(1)
+        #     threadObject.join()
         print("-------------------------------------------------------------------------------\n")
         utils.colorPrint(colors.OKGREEN,("Completed running %s module and results are generated at %s\n"%(module,resultFile)),colors.ENDC)
         print("--------------------------------------------------------------------------------\n")

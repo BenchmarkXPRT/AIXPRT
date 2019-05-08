@@ -20,6 +20,7 @@ import shutil
 sys.path.insert(0, os.path.join(os.environ['APP_HOME'],"Harness","CallBacks"))
 import workloadEventCallBack as event
 import re
+import random
 
 DL_DTK_Version="v2018.5.445"
 display_target=5
@@ -135,7 +136,7 @@ def object_detection_ssd(model_name,dir_name,dataset):
     if (aarch.upper() in ["GPU", "HDDL", "MYRIAD"]) and (precision=="int8"):
         print("INT8 not supported on {}".format(aarch))
         sys.exit()
-        
+
     model_path = set_model_path(model_name,precision)
     os.chdir(os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","workloads","commonsources","bin"))
     for j in batch_size_number:
@@ -195,6 +196,7 @@ def object_detection_ssd(model_name,dir_name,dataset):
 
 def create_batch_files(batch_size,validation_folder,size):
     images_list = list_all_files_sorted(validation_folder)
+    random.shuffle(images_list)
     Num_images = len(images_list)
     current_batch = images_list[:min(batch_size, Num_images)]
 
@@ -222,7 +224,7 @@ def create_batch_files(batch_size,validation_folder,size):
     copy_iteration = 0
     while num_created_images < batch_size:
         for file in images_list:
- 
+
             filename, fileext = os.path.splitext(file)
             image_out = os.path.join(image_folder,str(copy_iteration) + "_" + os.path.basename(filename) + '.bmp')
             img_path = os.path.join(image_folder, str(file))
@@ -239,11 +241,11 @@ def create_batch_files(batch_size,validation_folder,size):
 
             if num_created_images == batch_size:
                 break
-	        
+
         copy_iteration+=1
         images_list = list_all_files_sorted(image_folder)
         num_created_images = len(images_list)
-    
+
     #print("\nCreated {} additional copies.\n".format(num_created_images - Num_images))
     return(image_folder)
 
@@ -258,12 +260,27 @@ def remove_batch_files(image_folder):
 
 # Set ENV Paths
 def set_env_path():
-    try:
-        os.environ['LD_LIBRARY_PATH']=os.environ['LD_LIBRARY_PATH']+":"+os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","plugin")
-    except KeyError:
-        os.environ['LD_LIBRARY_PATH']=os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","plugin")
-    
-    os.environ['HDDL_INSTALL_DIR']="/opt/intel/computer_vision_sdk/deployment_tools/inference_engine/external/hddl"
+    import sys
+
+    if 'win' in sys.platform:
+        try:
+            os.environ['PATH']=os.environ['PATH']+";"+os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","plugin")
+        except KeyError:
+            os.environ['PATH']=os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","plugin")
+
+    else:
+        try:
+            os.environ['LD_LIBRARY_PATH']=os.environ['LD_LIBRARY_PATH']+":"+os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","plugin")
+        except KeyError:
+            os.environ['LD_LIBRARY_PATH']=os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","plugin")
+        if not 'HDDL_INSTALL_DIR' in os.environ.keys():
+            openvino_version_file = os.path.join(os.environ['APP_HOME'],"Harness","OpenVINO_BUILD.txt")
+            if os.path.isfile(openvino_version_file):
+                with open(openvino_version_file,'r') as fid:
+                    text = fid.read().splitlines()
+                    OpenVINO_PATH = text[0].split(':')[-1]
+                
+                os.environ['HDDL_INSTALL_DIR']= os.path.join(OpenVINO_PATH,"deployment_tools","inference_engine","external","hddl")
 
 # Set Model Path
 def set_model_path(model_name,precision):

@@ -1,9 +1,16 @@
 #!/bin/bash
-# coffeeLake latest GPU drivers
-# sudo add-apt-repository ppa:oibaf/graphics-drivers
 DASHES="\n\n==========================================================\n\n"
 
-OPENVINO_INSTALL_DIR=/opt/intel/computer_vision_sdk
+
+#=================================== Get OpenVINO install directory ================================
+IFS=':' read -ra OPENVINO_BUILD < "../Harness/OpenVINO_BUILD.txt"
+
+OPENVINO_INSTALL_DIR=${OPENVINO_BUILD[1]}
+if [ ! -d ${OPENVINO_INSTALL_DIR} ]; then
+   echo -e "\e[1;31mCannot find OpenVINO installation directory ${OPENVINO_INSTALL_DIR}\e[0m"
+   exit
+fi
+
 if [ ! -d ${OPENVINO_INSTALL_DIR} ]
   then
       echo -e "\e[0;32mOpenVINO installation not found in /opt/intel. Please install OpenVINO in /opt/intel before continuing.\e[0m"

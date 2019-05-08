@@ -1,0 +1,21 @@
+# Ignore Mac DS_Store files
+.DS_Store
+
+# Ignore generated files
+*.pyc
+*.o
+Harness/__pycache__/
+*.idea/
+
+#Ignore generated Result folder
+/Results
+
+#Ignore Generated System info json
+Harness/SystemInfo.json
+Harness/config.json
+Harness/benchmark_details.json
+Config/
+Modules/Deep-Learning/packages/models/inception_resnet_v2.pb
+Modules/Deep-Learning/packages/models/yolov2.pb
+Modules/Deep-Learning/packages/models/yolov2-voc.pb
+Modules/Deep-Learning/workloads/g_nmt/bin/ende_gnmt_model_4_layer/translate.ckpt.data-00000-of-00001

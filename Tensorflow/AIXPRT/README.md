@@ -14,10 +14,51 @@ Workloads are implemented using the publicly available libraries and SDKs for ea
 # Run the Benchmark
 
 ### By Cloning the repo 
-   1.Install git with lfs.Instructions are found at https://packagecloud.io/github/git-lfs/install.
+
+
+   1. Install git 
 
    2. Clone the repository 
-    * git clone https://github.com/BenchmarkXPRT/AIXPRT.git
+     * __Internal__
+         1. Tensorflow workloads 
+      
+      
+             git clone -b AIXPRT_AMD_PT --single-branch https://github.intel.com/cept/AIXPRT.git
+          
+          
+          2. OpenVINO Workloads 
+      
+      
+             a. Ubutnu 18.04
+          
+          
+               git clone -b AIXPRT_INTEL_PT --single-branch https://github.intel.com/cept/AIXPRT.git
+            
+            
+             b. Windows 10 
+          
+          
+               git clone -b AIXPRT_INTEL_WINDOWS_PT --single-branch https://github.intel.com/cept/AIXPRT.git
+            
+            
+          3. Tensorflow TensorRT workloads
+          
+          
+               git clone -b AIXPRT_TF_TRT_PT --single-branch https://github.intel.com/cept/AIXPRT.git
+               
+               
+           4. TensorRT workloads 
+           
+           
+               git clone -b AIXPRT_NVIDIA --single-branch https://github.intel.com/cept/AIXPRT.git
+               
+               
+     * __External__
+     
+     
+         git clone https://github.com/BenchmarkXPRT/AIXPRT.git
+         
+         
 
    3. Navigate to AIXPRT/Modules/Deep-Learning/README.md of the cloned branch and follow instructions to run the benchmark.
 
