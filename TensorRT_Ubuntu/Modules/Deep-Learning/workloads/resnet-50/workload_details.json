@@ -1,0 +1,55 @@
+{
+    "category": "Image Classification",
+    "default_run_config": {
+        "batch_sizes": [
+            1,
+            2,
+            4,
+            8,
+            16,
+            32,
+            64,
+            128
+        ],
+        "concurrent_instances": 1,
+        "hardware": "gpu",
+        "precision": "fp32",
+        "runtype": "performance",
+        "total_requests": 1000
+    },
+    "description": "Image Classification using ResNet",
+    "dir_name": "resnet-50",
+    "framework": "TensorRT",
+    "id": 1007,
+    "name": "ResNet-50",
+    "requested_config": {
+        "batch_sizes": [
+            1
+        ],
+        "concurrent_instances": 1,
+        "hardware": "gpu",
+        "name": "ResNet-50",
+        "precision": "fp32",
+        "runtype": "performance",
+        "total_requests": 1000
+    },
+    "script": "run_task.py",
+    "support": {
+        "gpu": {
+            "supported_prec": "fp32,fp16,int8",
+            "supported_runtype": "performance"
+        }
+    },
+    "workload_info": {
+        "accelerator_lib": [
+            "CUDA 10.0 ",
+            " cuDNN 7.3.1"
+        ],
+        "inference_runtime": "TensorRT 5",
+        "model": "resnet-50",
+        "source_model_format": "caffe",
+        "test_dataset": "ILSVRC 2012",
+        "training_dataset": "ILSVRC 2012",
+        "training_framework": "caffe"
+    }
+}
