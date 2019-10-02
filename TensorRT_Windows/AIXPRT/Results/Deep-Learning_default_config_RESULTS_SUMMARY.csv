@@ -1,0 +1,12 @@
+SYSTEM INFORMATION :
+Application Version,0.5.2
+CPU,Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
+Frameworks Used,
+GPU 0,Intel(R) UHD Graphics 620
+Instruction Set Architecture,AMD64
+OS Platform,Windows-10-10.0.16299-SP0
+ 
+RESULT SUMMARY:
+ 
+DETAILED RESULTS (Median in case of multiple iterations):
+Workload,Inference Throughput,Inference Throughput Units,Inference Latency(50th percentile time),Inference Latency(90th percentile time),Inference Latency(95th percentile time),Inference Latency(99th percentile time),Inference Latency Units

@@ -1,0 +1,132 @@
+{
+    "Result": {
+        "Deep-Learning": {
+            "System Info": {
+                "Application Version": "0.5.2",
+                "CPU": "Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz",
+                "Frameworks Used": "",
+                "GPU 0": "Intel(R) UHD Graphics 620",
+                "Instruction Set Architecture": "AMD64",
+                "OS Platform": "Windows-10-10.0.16299-SP0",
+                "Thread(s) per core (CPU)": "-"
+            },
+            "Workloads": [
+                {
+                    "results": [
+                        {
+                            "additional info": [
+                                {}
+                            ],
+                            "label": "Batch 1",
+                            "system_throughput": "-",
+                            "system_throughput_units": "-"
+                        },
+                        {
+                            "additional info": [
+                                {}
+                            ],
+                            "label": "Batch 2",
+                            "system_throughput": "-",
+                            "system_throughput_units": "-"
+                        },
+                        {
+                            "additional info": [
+                                {}
+                            ],
+                            "label": "Batch 4",
+                            "system_throughput": "-",
+                            "system_throughput_units": "-"
+                        },
+                        {
+                            "additional info": [
+                                {}
+                            ],
+                            "label": "Batch 8",
+                            "system_throughput": "-",
+                            "system_throughput_units": "-"
+                        },
+                        {
+                            "additional info": [
+                                {}
+                            ],
+                            "label": "Batch 16",
+                            "system_throughput": "-",
+                            "system_throughput_units": "-"
+                        },
+                        {
+                            "additional info": [
+                                {}
+                            ],
+                            "label": "Batch 32",
+                            "system_throughput": "-",
+                            "system_throughput_units": "-"
+                        }
+                    ],
+                    "workload run information": {},
+                    "workloadID": 1001,
+                    "workloadName": "ResNet-50"
+                },
+                {
+                    "results": [
+                        {
+                            "additional info": [
+                                {}
+                            ],
+                            "label": "Batch 1",
+                            "system_throughput": "-",
+                            "system_throughput_units": "-"
+                        },
+                        {
+                            "additional info": [
+                                {}
+                            ],
+                            "label": "Batch 2",
+                            "system_throughput": "-",
+                            "system_throughput_units": "-"
+                        },
+                        {
+                            "additional info": [
+                                {}
+                            ],
+                            "label": "Batch 4",
+                            "system_throughput": "-",
+                            "system_throughput_units": "-"
+                        },
+                        {
+                            "additional info": [
+                                {}
+                            ],
+                            "label": "Batch 8",
+                            "system_throughput": "-",
+                            "system_throughput_units": "-"
+                        },
+                        {
+                            "additional info": [
+                                {}
+                            ],
+                            "label": "Batch 16",
+                            "system_throughput": "-",
+                            "system_throughput_units": "-"
+                        },
+                        {
+                            "additional info": [
+                                {}
+                            ],
+                            "label": "Batch 32",
+                            "system_throughput": "-",
+                            "system_throughput_units": "-"
+                        }
+                    ],
+                    "workload run information": {},
+                    "workloadID": 1002,
+                    "workloadName": "SSD-MobileNet-v1"
+                }
+            ],
+            "isDemo": false,
+            "moduleID": 10,
+            "notes": [
+                "* Notes to be added"
+            ]
+        }
+    }
+}

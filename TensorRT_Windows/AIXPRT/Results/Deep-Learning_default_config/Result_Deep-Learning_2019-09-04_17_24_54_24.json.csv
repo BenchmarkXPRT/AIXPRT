@@ -1,0 +1,25 @@
+TEST INFORMATION
+""
+Application Version,0.5.2
+CPU,Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
+Frameworks Used,
+GPU 0,Intel(R) UHD Graphics 620
+Instruction Set Architecture,AMD64
+OS Platform,Windows-10-10.0.16299-SP0
+Thread(s) per core (CPU),-
+""
+TEST RESULTS
+""
+Workload Name,Batch Size,Hardware,Precision,Total Requests,Instances,System Throughput,System Throughput Units,System Latency(50th percentile),System Latency(90th percentile),System Latency(95th percentile),System Latency(99th percentile),System Latency Units
+ResNet-50,Batch 1,-,-,-,-,-,-,-,-,-,-,-
+ResNet-50,Batch 2,-,-,-,-,-,-,-,-,-,-,-
+ResNet-50,Batch 4,-,-,-,-,-,-,-,-,-,-,-
+ResNet-50,Batch 8,-,-,-,-,-,-,-,-,-,-,-
+ResNet-50,Batch 16,-,-,-,-,-,-,-,-,-,-,-
+ResNet-50,Batch 32,-,-,-,-,-,-,-,-,-,-,-
+SSD-MobileNet-v1,Batch 1,-,-,-,-,-,-,-,-,-,-,-
+SSD-MobileNet-v1,Batch 2,-,-,-,-,-,-,-,-,-,-,-
+SSD-MobileNet-v1,Batch 4,-,-,-,-,-,-,-,-,-,-,-
+SSD-MobileNet-v1,Batch 8,-,-,-,-,-,-,-,-,-,-,-
+SSD-MobileNet-v1,Batch 16,-,-,-,-,-,-,-,-,-,-,-
+SSD-MobileNet-v1,Batch 32,-,-,-,-,-,-,-,-,-,-,-
