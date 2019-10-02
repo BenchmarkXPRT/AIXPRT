@@ -129,6 +129,7 @@ def run_inference(tfConfigParams, images,image_path):
         if(key == "allow_soft_placement"):
           config.allow_soft_placement = value
           # open a tensorflow session and load the graph
+      timing_csv_buffer_data = []
       with tf.Session(config=config) as sess:
         graph_def = tf.GraphDef()
         with tf.gfile.GFile(model_dir+"/"+FLAGS.frozen_graph, 'rb') as input_file:
@@ -152,24 +153,19 @@ def run_inference(tfConfigParams, images,image_path):
           tstart = time.time()
           predicts = sess.run([output_tensor], feed_dict={input_tensor: images})
           tend = time.time()
-          print("Time:",(tend - tstart))
           predictions = np.squeeze(predicts)
-          tf.logging.info("Timing loop done!")
           if(os.environ["DEMO"] == "True"):
               imageName = os.path.basename(image_path)
               predictionsList = predictions.argsort()[-5:][::-1]
               scoreList = []
               for node_id in predictionsList:
                   scoreList.append(predictions[node_id])
-              row = [str(tstart),str(tend),imageName,str(predictionsList[0]),str(scoreList[0]),str(predictionsList[1]),str(scoreList[1]),str(predictionsList[2]),str(scoreList[2]),str(predictionsList[3]),str(scoreList[3]),str(predictionsList[4]),str(scoreList[4])]
-              with open(FLAGS.csv_file_path, 'a') as csvFile:
-                  writer = csv.writer(csvFile)
-                  writer.writerow(row)
-              csvFile.close()
+              timing_csv_buffer_data.append(str(tstart)+','+str(tend)+','+imageName+','+str(predictionsList[0])+','+str(scoreList[0])+','+str(predictionsList[1])+','+str(scoreList[1])+','+str(predictionsList[2])+','+str(scoreList[2])+','+str(predictionsList[3])+','+str(scoreList[3])+','+str(predictionsList[4])+','+str(scoreList[4]))
           else:
-              timing_csv_buffer_data = np.hstack((tstart, tend))
-              np.savetxt(timing_csv_file, timing_csv_buffer_data[np.newaxis], delimiter=",", fmt='%f')
-  return
+              timing_csv_buffer_data.append(str(tstart)+','+str(tend))
+          predictions = np.squeeze(predicts)
+          
+  return timing_csv_buffer_data
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
@@ -251,4 +247,7 @@ while cur_size < FLAGS.batch_size:
         images_map
 print(np.shape(batch_data))
 # run inference
-run_inference(tf_config_params,batch_data,image_path)
+timing_csv_buffer_data = run_inference(tf_config_params,batch_data,image_path)
+with open(FLAGS.csv_file_path,"w") as txt_file:
+              for line in timing_csv_buffer_data:
+                txt_file.write(line + "\n") 

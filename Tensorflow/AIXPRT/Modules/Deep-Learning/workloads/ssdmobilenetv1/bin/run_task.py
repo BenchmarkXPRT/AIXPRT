@@ -1,21 +1,15 @@
 import sys
 import os
-
 import time
-import mmap
-import re
-from os.path import expanduser
 import numpy as np
 import json
 import subprocess
 from subprocess import Popen
 from numpy import genfromtxt
-
 import os.path
 sys.path.insert(1, os.path.join(os.environ['APP_HOME'], 'Harness'))
 import resultsapi
 import utils
-import tensorflow as tf
 
 workload_dir = "ssdmobilenetv1"
 

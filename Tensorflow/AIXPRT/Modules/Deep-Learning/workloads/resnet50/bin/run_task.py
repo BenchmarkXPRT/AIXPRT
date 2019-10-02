@@ -25,8 +25,6 @@ import os.path
 sys.path.insert(1, os.path.join(os.environ['APP_HOME'], 'Harness'))
 import resultsapi
 import utils
-import tensorflow as tf
-import math
 import csv
 
 workload_dir = "resnet50"

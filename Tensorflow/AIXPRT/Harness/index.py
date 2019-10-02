@@ -23,6 +23,7 @@ import subprocess
 import platform, re
 import benchmarkVersion as bv
 import workloadLauncher
+import resultsParser
 
 # App name is the name of the application folder.
 AppName = constants.AppName
@@ -42,6 +43,8 @@ def main(argv):
     configsList = getListOfConfigFiles()
     for config in configsList:
         workloadLauncher.runConfig(config)
+    # summary the existing results
+    resultsParser.summarizeResults()
 
 
 # Function to get the list of confugaration json files present in /Config folder

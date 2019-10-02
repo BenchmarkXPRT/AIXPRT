@@ -113,7 +113,7 @@ def run_inference(image, data, model_dir, graph_file):
           config.intra_op_parallelism_threads = value
         if(key == "allow_soft_placement"):
           config.allow_soft_placement = value
-      timings = []
+      timing_csv_buffer_data = []
       with tf.Session(config=config) as sess:
           with tf.gfile.GFile(os.path.join(model_dir, graph_file), 'rb') as f:
             print("graph", os.path.join(model_dir, graph_file))
@@ -162,9 +162,7 @@ def run_inference(image, data, model_dir, graph_file):
                 output_dict = sess.run(tensor_dict,
                                        feed_dict={image_tensor: image})
                 tend = time.time()
-                timings.append(tend - tstart)
-                print("Time:",timings)
-                tf.logging.info("Timing loop done!")
+                timing_csv_buffer_data.append(str(tstart) + "," + str(tend)) 
 
                 # all outputs are float32 numpy arrays, so convert types as appropriate
                 output_dict['num_detections'] = int(output_dict['num_detections'][0])
@@ -174,9 +172,7 @@ def run_inference(image, data, model_dir, graph_file):
                 output_dict['detection_scores'] = output_dict['detection_scores'][0]
                 if 'detection_masks' in output_dict:
                   output_dict['detection_masks'] = output_dict['detection_masks'][0]
-                timing_csv_buffer_data = np.hstack((tstart, tend))
-                np.savetxt(timing_csv_file, timing_csv_buffer_data[np.newaxis], delimiter=",", fmt='%f')
-  return output_dict, timings
+  return timing_csv_buffer_data
 
 
 
@@ -208,7 +204,10 @@ def main(_):
                 batch_data = batch_from_image(image_path, FLAGS.batch_size, batch_data)
         print(np.shape(batch_data))
         if FLAGS.frozen_graph:
-            output_dict, timing = run_inference(batch_data, config_data, model_dir, FLAGS.frozen_graph)
+            timing_csv_buffer_data = run_inference(batch_data, config_data, model_dir, FLAGS.frozen_graph)
+            with open(FLAGS.csv_file_path,"w") as txt_file:
+              for line in timing_csv_buffer_data:
+                txt_file.write(line + "\n") 
         else:
             raise ValueError("Either a Frozen Graph file or a SavedModel must be provided.")
         
