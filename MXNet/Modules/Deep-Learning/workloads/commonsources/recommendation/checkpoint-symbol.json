@@ -1,0 +1,722 @@
+{
+  "nodes": [
+    {
+      "op": "null", 
+      "name": "csr_data", 
+      "attrs": {"__storage_type__": "2"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "null", 
+      "name": "linear_weight", 
+      "attrs": {
+        "__init__": "[\"normal\", {\"sigma\": 0.01}]", 
+        "__shape__": "(26000, 256)", 
+        "__storage_type__": "1"
+      }, 
+      "inputs": []
+    }, 
+    {
+      "op": "dot", 
+      "name": "dot0", 
+      "inputs": [[0, 0, 0], [1, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "linear_bias", 
+      "attrs": {"__shape__": "(256,)"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "broadcast_add", 
+      "name": "broadcast_add0", 
+      "inputs": [[2, 0, 0], [3, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "dns_data", 
+      "inputs": []
+    }, 
+    {
+      "op": "slice", 
+      "name": "slice1", 
+      "attrs": {
+        "begin": "(0, 26)", 
+        "end": "(None, 39)"
+      }, 
+      "inputs": [[5, 0, 0]]
+    }, 
+    {
+      "op": "slice", 
+      "name": "slice0", 
+      "attrs": {
+        "begin": "(0, 0)", 
+        "end": "(None, 26)"
+      }, 
+      "inputs": [[5, 0, 0]]
+    }, 
+    {
+      "op": "SliceChannel", 
+      "name": "split0", 
+      "attrs": {
+        "num_outputs": "26", 
+        "squeeze_axis": "1"
+      }, 
+      "inputs": [[7, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_0_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding0", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 0, 0], [9, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_1_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding1", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 1, 0], [11, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_2_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding2", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 2, 0], [13, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_3_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding3", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 3, 0], [15, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_4_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding4", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 4, 0], [17, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_5_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding5", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 5, 0], [19, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_6_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding6", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 6, 0], [21, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_7_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding7", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 7, 0], [23, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_8_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding8", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 8, 0], [25, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_9_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding9", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 9, 0], [27, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_10_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding10", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 10, 0], [29, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_11_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding11", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 11, 0], [31, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_12_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding12", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 12, 0], [33, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_13_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding13", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 13, 0], [35, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_14_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding14", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 14, 0], [37, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_15_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding15", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 15, 0], [39, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_16_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding16", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 16, 0], [41, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_17_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding17", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 17, 0], [43, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_18_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding18", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 18, 0], [45, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_19_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding19", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 19, 0], [47, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_20_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding20", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 20, 0], [49, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_21_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding21", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 21, 0], [51, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_22_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding22", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 22, 0], [53, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_23_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding23", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 23, 0], [55, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_24_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding24", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 24, 0], [57, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "embed_25_weight", 
+      "attrs": {"__storage_type__": "1"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "Embedding", 
+      "name": "embedding25", 
+      "attrs": {
+        "input_dim": "1000", 
+        "output_dim": "32", 
+        "sparse_grad": "True"
+      }, 
+      "inputs": [[8, 25, 0], [59, 0, 0]]
+    }, 
+    {
+      "op": "Concat", 
+      "name": "concat0", 
+      "attrs": {
+        "dim": "1", 
+        "num_args": "27"
+      }, 
+      "inputs": [
+        [6, 0, 0], 
+        [10, 0, 0], 
+        [12, 0, 0], 
+        [14, 0, 0], 
+        [16, 0, 0], 
+        [18, 0, 0], 
+        [20, 0, 0], 
+        [22, 0, 0], 
+        [24, 0, 0], 
+        [26, 0, 0], 
+        [28, 0, 0], 
+        [30, 0, 0], 
+        [32, 0, 0], 
+        [34, 0, 0], 
+        [36, 0, 0], 
+        [38, 0, 0], 
+        [40, 0, 0], 
+        [42, 0, 0], 
+        [44, 0, 0], 
+        [46, 0, 0], 
+        [48, 0, 0], 
+        [50, 0, 0], 
+        [52, 0, 0], 
+        [54, 0, 0], 
+        [56, 0, 0], 
+        [58, 0, 0], 
+        [60, 0, 0]
+      ]
+    }, 
+    {
+      "op": "null", 
+      "name": "fullyconnected0_weight", 
+      "attrs": {"num_hidden": "1024"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "null", 
+      "name": "fullyconnected0_bias", 
+      "attrs": {"num_hidden": "1024"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "FullyConnected", 
+      "name": "fullyconnected0", 
+      "attrs": {"num_hidden": "1024"}, 
+      "inputs": [[61, 0, 0], [62, 0, 0], [63, 0, 0]]
+    }, 
+    {
+      "op": "Activation", 
+      "name": "activation0", 
+      "attrs": {"act_type": "relu"}, 
+      "inputs": [[64, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "fullyconnected1_weight", 
+      "attrs": {"num_hidden": "512"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "null", 
+      "name": "fullyconnected1_bias", 
+      "attrs": {"num_hidden": "512"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "FullyConnected", 
+      "name": "fullyconnected1", 
+      "attrs": {"num_hidden": "512"}, 
+      "inputs": [[65, 0, 0], [66, 0, 0], [67, 0, 0]]
+    }, 
+    {
+      "op": "Activation", 
+      "name": "activation1", 
+      "attrs": {"act_type": "relu"}, 
+      "inputs": [[68, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "fullyconnected2_weight", 
+      "attrs": {"num_hidden": "256"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "null", 
+      "name": "fullyconnected2_bias", 
+      "attrs": {"num_hidden": "256"}, 
+      "inputs": []
+    }, 
+    {
+      "op": "FullyConnected", 
+      "name": "fullyconnected2", 
+      "attrs": {"num_hidden": "256"}, 
+      "inputs": [[69, 0, 0], [70, 0, 0], [71, 0, 0]]
+    }, 
+    {
+      "op": "elemwise_add", 
+      "name": "_plus0", 
+      "inputs": [[4, 0, 0], [72, 0, 0]]
+    }, 
+    {
+      "op": "null", 
+      "name": "softmax_label", 
+      "inputs": []
+    }, 
+    {
+      "op": "SoftmaxOutput", 
+      "name": "model", 
+      "inputs": [[73, 0, 0], [74, 0, 0]]
+    }
+  ], 
+  "arg_nodes": [
+    0, 
+    1, 
+    3, 
+    5, 
+    9, 
+    11, 
+    13, 
+    15, 
+    17, 
+    19, 
+    21, 
+    23, 
+    25, 
+    27, 
+    29, 
+    31, 
+    33, 
+    35, 
+    37, 
+    39, 
+    41, 
+    43, 
+    45, 
+    47, 
+    49, 
+    51, 
+    53, 
+    55, 
+    57, 
+    59, 
+    62, 
+    63, 
+    66, 
+    67, 
+    70, 
+    71, 
+    74
+  ], 
+  "node_row_ptr": [
+    0, 
+    1, 
+    2, 
+    3, 
+    4, 
+    5, 
+    6, 
+    7, 
+    8, 
+    34, 
+    35, 
+    36, 
+    37, 
+    38, 
+    39, 
+    40, 
+    41, 
+    42, 
+    43, 
+    44, 
+    45, 
+    46, 
+    47, 
+    48, 
+    49, 
+    50, 
+    51, 
+    52, 
+    53, 
+    54, 
+    55, 
+    56, 
+    57, 
+    58, 
+    59, 
+    60, 
+    61, 
+    62, 
+    63, 
+    64, 
+    65, 
+    66, 
+    67, 
+    68, 
+    69, 
+    70, 
+    71, 
+    72, 
+    73, 
+    74, 
+    75, 
+    76, 
+    77, 
+    78, 
+    79, 
+    80, 
+    81, 
+    82, 
+    83, 
+    84, 
+    85, 
+    86, 
+    87, 
+    88, 
+    89, 
+    90, 
+    91, 
+    92, 
+    93, 
+    94, 
+    95, 
+    96, 
+    97, 
+    98, 
+    99, 
+    100, 
+    101
+  ], 
+  "heads": [[75, 0, 0]], 
+  "attrs": {"mxnet_version": ["int", 10301]}
+}

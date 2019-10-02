@@ -1,0 +1,63 @@
+{
+    "category": "Recommendation",
+    "default_run_config": {
+        "batch_sizes": [
+            256,
+            512,
+            1024
+        ],
+        "concurrent_instances": 1,
+        "env_variables": {},
+        "hardware": "cpu",
+        "precision": "fp32",
+        "runtype": "performance",
+        "setNUMA": false,
+        "total_requests": 1000
+    },
+    "description": "Recommendation",
+    "dir_name": "wide-deep",
+    "framework": "MXNet",
+    "id": 1007,
+    "name": "wide-deep",
+    "requested_config": {
+        "batch_sizes": [
+            256,
+            512,
+            1024
+        ],
+        "concurrent_instances": 1,
+        "env_variables": {},
+        "hardware": "cpu",
+        "instance_allocation": [
+            {
+                "cpunodebind": "0",
+                "membind": "0"
+            }
+        ],
+        "name": "wide-deep",
+        "precision": "int8",
+        "runtype": "performance",
+        "setNUMA": false,
+        "total_requests": 10
+    },
+    "script": "run_task.py",
+    "support": {
+        "cpu": {
+            "supported_prec": "fp32,int8",
+            "supported_runtype": "performance"
+        },
+        "gpu": {
+            "supported_prec": "fp32",
+            "supported_runtype": "performance"
+        }
+    },
+    "workload_info": {
+        "accelerator_lib": [],
+        "inference_runtime": "",
+        "model": "wide-deep",
+        "source_model_format": "MXNet",
+        "test_dataset": "ILSVRC 2012",
+        "training_dataset": "ILSVRC 2012",
+        "training_framework": "MXNet"
+    }
+}

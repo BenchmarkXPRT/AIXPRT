@@ -1,0 +1,42 @@
+
+{
+  "Workloads": [
+    {
+      "results": [
+        {
+          "additional info": [
+            {}
+          ],
+          "label": "Batch 256",
+          "system_throughput": "-",
+          "system_throughput_units": "-"
+
+
+        },
+        {
+          "additional info": [
+            {}
+          ],
+          "label": "Batch 512",
+          "system_throughput": "-",
+          "system_throughput_units": "-"
+
+
+        },
+        {
+          "additional info": [
+            {}
+          ],
+          "label": "Batch 1024",
+          "system_throughput": "-",
+          "system_throughput_units": "-"
+
+
+        }
+      ],
+      "workload run information": {},
+      "workloadID": 1003,
+      "workloadName": "wide-deep"
+    }
+  ]
+}
