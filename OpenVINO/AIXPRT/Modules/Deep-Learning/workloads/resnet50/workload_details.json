@@ -1,76 +1,69 @@
 {
-    "category": "Image Classification", 
+    "category": "Image Classification",
     "default_run_config": {
         "batch_sizes": [
-            1, 
-            2, 
-            4, 
-            8, 
-            16, 
-            32, 
-            64, 
+            1,
+            2,
+            4,
+            8,
+            16,
+            32,
+            64,
             128
-        ], 
-        "concurrent_instances": 1, 
-        "hardware": "cpu", 
-        "precision": "fp32", 
-        "runtype": "performance", 
-        "total_requests": 1000
-    }, 
-    "description": "Image Classification using ResNet-50", 
-    "dir_name": "resnet50", 
-    "framework": "Intel Deep Learning Toolkit", 
-    "id": 1007, 
-    "name": "ResNet-50", 
+        ],
+        "concurrent_instances": 1,
+        "hardware": "cpu",
+        "precision": "int8",
+        "runtype": "performance",
+        "total_requests": 100
+    },
+    "description": "Image Classification using ResNet-50",
+    "dir_name": "resnet50",
+    "framework": "Intel Deep Learning Toolkit",
+    "id": 1007,
+    "name": "ResNet-50",
     "requested_config": {
         "batch_sizes": [
-            1, 
-            2, 
-            4, 
-            8, 
-            16, 
-            32, 
-            64, 
-            128
-        ], 
-        "concurrent_instances": 1, 
-        "hardware": "cpu", 
-        "name": "ResNet-50", 
-        "precision": "int8", 
-        "runtype": "performance", 
-        "total_requests": 1000
-    }, 
-    "script": "run_task.py", 
+            1,
+            2
+        ],
+        "concurrent_instances": 1,
+        "hardware": "cpu",
+        "name": "ResNet-50",
+        "precision": "int8",
+        "runtype": "performance",
+        "total_requests": 1
+    },
+    "script": "run_task.py",
     "support": {
         "cpu": {
-            "supported_prec": "fp32,int8", 
+            "supported_prec": "fp32,int8",
             "supported_runtype": "performance"
-        }, 
+        },
         "gpu": {
-            "supported_prec": "fp32,fp16", 
+            "supported_prec": "fp32,fp16",
             "supported_runtype": "performance"
-        }, 
+        },
         "hddl": {
-            "supported_prec": "fp16", 
+            "supported_prec": "fp16",
             "supported_runtype": "performance"
-        }, 
+        },
         "myriad": {
-            "supported_prec": "fp16", 
+            "supported_prec": "fp16",
             "supported_runtype": "performance"
         }
-    }, 
+    },
     "workload_info": {
         "accelerator_lib": [
-            "MKLDNN ", 
-            "CLDNN", 
-            "DLIA", 
+            "MKLDNN ",
+            "CLDNN",
+            "DLIA",
             "Myriad"
-        ], 
-        "inference_runtime": "v2018.5.445", 
-        "model": "ResNet-50", 
-        "source_model_format": "caffe", 
-        "test_dataset": "ILSVRC", 
-        "training_dataset": "ILSVRC", 
+        ],
+        "model": "ResNet-50",
+        "source_model_format": "caffe",
+        "test_dataset": "ILSVRC",
+        "training_dataset": "ILSVRC",
         "training_framework": "caffe"
     }
 }

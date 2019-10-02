@@ -34,12 +34,14 @@ def checkWorkloadRunCapabilities(workload , workloadConfig):
     runType = workloadConfig["runtype"]
     if((hardware in workload["support"]) and (precession in workload["support"][hardware]["supported_prec"]) and (runType in workload["support"][hardware]["supported_runtype"])):
         return True
+    if(("," in hardware)):
+        # trying hetero mode . pass everything
+        return True
     return False
 
 def getWorkloadsToRun(config):
     selectedModule = config["module"]
     workloadsList = []
-    isHDDL = False
     with open(constants.BENCHMARK_DETAILS_JSON_PATH) as data_file:
         data = json.load(data_file)
         # for each module (eg Deep Learning) from the default config json
@@ -55,13 +57,11 @@ def getWorkloadsToRun(config):
                         if(workload["name"] == workloadConfig["name"]):
                             # making sure that workload can run the given config . Harness will not run the workload if it doesnt have capability
                             if(checkWorkloadRunCapabilities(workload , workloadConfig)):
-                                if("hddl" == workloadConfig["hardware"]):
-                                    isHDDL = True
                                 utils.colorPrint(colors.OKBLUE , ("\t%s \n"%(workload["name"])) ,colors.ENDC)
                                 utils.colorPrint(colors.HEADER , ("\t\t %s \n"%workload["description"]) ,colors.ENDC)
                                 workload["requested_config"]= workloadConfig
                                 workloadsList.append(copy.deepcopy(workload))
-    return workloadsList,isHDDL
+    return workloadsList
 
 def get_current_time_stamp():
     ts = time.time()
@@ -70,19 +70,13 @@ def get_current_time_stamp():
 
 
 def runConfig(config):
-    workloads,isHDDL = getWorkloadsToRun(config)
+    workloads = getWorkloadsToRun(config)
     applicationIterations = config["iteration"]
     workloadDelays = config["delayBetweenWorkloads"]
     isDemo =  config["isDemo"]
     os.environ["DEMO"] = str(isDemo)
     i = 1
     while (i <= applicationIterations):
-        # Setup HDDL scripts is user targets it in the config
-        if isHDDL:
-            print("HDDL system is targetted in the Config")
-            setupScript = os.path.join(os.environ['APP_HOME'],"Harness","hddlSetup.sh")
-            p = subprocess.call(['gnome-terminal', '-x', setupScript])
-            time.sleep(30)
         threadObject = runWorkloads(config["module"],workloads,workloadDelays,isDemo)
         i = i +1
         generateResults(config["module"],workloads,config,threadObject,isDemo)

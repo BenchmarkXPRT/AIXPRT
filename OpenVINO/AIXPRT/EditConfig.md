@@ -38,9 +38,9 @@ Example  :  The json below has only Resnet-50 workload.
 * "precision": "fp32" (or) "precision": "fp16" (or) "precision": "int8"
 
 
-5. Below is explaination of each key: value in the config files
-![alt text](TODO : add url to AIXPRT/Harness/assets/config_details.png)
-Along with above tags , some workloads also have support for extra keys as below:
-![alt text](TODO : add url to AIXPRT/Harness/assets/additional_config_keys.png)
+5. Below is explaination of each key: value in the config files <br/>
+![alt text](https://github.com/BenchmarkXPRT/AIXPRT/blob/master/Tensorflow/AIXPRT/Harness/assets/config_details.png)
+<br/> Along with above tags , some workloads also have support for extra keys as below: <br/>
+![alt text](https://github.com/BenchmarkXPRT/AIXPRT/blob/master/Tensorflow/AIXPRT/Harness/assets/additional_config_keys.png
 
 

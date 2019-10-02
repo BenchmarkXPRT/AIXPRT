@@ -26,7 +26,7 @@ DL_DTK_Version="v2018.5.445"
 display_target=5
 
 # Setting default parameters
-aarch="GPU"
+aarch="CPU"
 precision="fp32"
 batch_size_number=[1,2,4,8]
 iterations=10
@@ -51,6 +51,9 @@ def get_params_from_json(dir_name):
         requested_config = data["requested_config"]
         if not (requested_config.get("hardware",None)==None):
             aarch = data["requested_config"]["hardware"].upper()
+            if("," in aarch):
+                # hetero mode 
+                aarch = "HETERO:"+aarch
         if not (requested_config.get("precision",None)==None):
             precision = data["requested_config"]["precision"]
         if not (requested_config.get("total_requests",None)==None):
@@ -90,36 +93,20 @@ def image_classification(model_name,dir_name,model_input_size):
         image_folder = create_batch_files(j,"input_images",model_input_size)
         print("   Running "+model_name+" batch"+str(j)+" "+precision + " " + aarch)
         file_out = os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","workloads",dir_name,'result','output',model_name+'_'+precision+'_batch'+str(j)+'_'+aarch+'.txt')
-
-        if (concurrent_requests>1):
-            display_target=1 #limit the size of output file
-
-            if aarch.upper()=="GPU": # GPU in concurrent mode not allowed
-                print("Don't run inference on GPU in async mode (set concurrent_instances = 1 in config file)")
-                sys.exit()
-
-            if (j > 1) and (aarch.upper() in ["MYRIAD", "HDDL"]): # Only run batch size 1 on MYRIAD devices
-                print("No support for BATCH SIZE {} on {}".format(j, aarch.upper()))
-                sys.exit()
-
-            if (concurrent_requests>iterations):
-                iterations=concurrent_requests
-                print("    iterations should be bigger than concurrent_requests, ammending iterations = " + str(iterations))
-
-            print("    Delivering "+ str(concurrent_requests) + " concurrent requests to inference engine....")
-            application = os.path.realpath(os.getcwd()+"/image_classification_async")
-            command = application + " -a "+model_name+" -b "+str(j)+" -aarch "+aarch+" -prec "+precision+" -d "+aarch+\
-                      " -i "+image_folder+" -m "+model_path+" -nt "+str(display_target)+" -ni "+str(iterations)+" -nireq "+str(concurrent_requests)
-        else:
-
-            if (aarch.upper() in ["MYRIAD", "HDDL"]): # Only run batch size 1 on MYRIAD devices
-                print("Workload does not support inference on {} with concurrent_instances < 2".format(aarch.upper()))
-                sys.exit()
-
-            application = os.path.realpath(os.getcwd()+"/image_classification")
-            command = application + " -a "+model_name+" -b "+str(j)+" -aarch "+aarch+" -prec "+precision+" -d "+aarch+\
-              " -i "+image_folder+" -m "+model_path+" -nt "+str(display_target)+" -ni "+str(iterations)
-
+        #  base command 
+        application = os.path.realpath(os.getcwd()+"/benchmark_app")
+        command = application + " -a "+model_name+" -b "+str(j)+" -aarch "+aarch+" -prec "+precision+" -d "+aarch+\
+                      " -i "+image_folder+" -m "+model_path
+        #  check for the provided concurrent_instances            #   
+        if not (str(concurrent_requests) == "auto"):
+            command = command +" -nireq "+str(concurrent_requests)
+            # sdk defaults to asyc mode . If user inputs 1 instance then pass that to the sdk
+            if (int(concurrent_requests) == 1):
+                    command = command +" -api sync"
+    #     check for the provided total_requests
+        if not (str(iterations) == "auto"):
+            command = command + " -niter "+str(iterations)
+            
         with open(file_out, 'w') as out:
             command = event.workloadStarted(workloadName , workloadID , j , precision , aarch, command)
             #Starting workload
@@ -150,42 +137,21 @@ def object_detection_ssd(model_name,dir_name,dataset):
 
         model_input_size = 300
         image_folder = create_batch_files(j,"input_images",model_input_size)
-
-        #if aarch.upper()=="GPU":
-        #    model_path=os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","models",model_name,model_name+'_'+precision+'_b'+str(j)+'.xml')
-        #    if not os.path.isfile(model_path):
-        #        print("OpenVINO IR files for batch size {} not found. Please modify 'compile_AIXPRT_sources.sh' to generate IR file with batch size {}".format( j, j))
-        #        sys.exit()
-
         file_out = os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","workloads",dir_name,'result','output',model_name+'_'+precision+'_batch'+str(j)+'_'+aarch+'.txt')
-
-        if (concurrent_requests>1):
-            display_target=1 #limit the size of output file
-            if aarch.upper()=="GPU":
-                print("Don't run inference on GPU in async mode (set concurrent_instances = 1 in config file)")
-                sys.exit()
-
-            if (j > 1) and (aarch.upper() in ["MYRIAD", "HDDL"]):
-                print("Cannot run {} concurrent requests with BATCH SIZE {}".format(concurrent_requests, j))
-                sys.exit()
-
-            if (concurrent_requests>iterations):
-                iterations=concurrent_requests
-                print("    iterations should be bigger than concurrent_requests, ammending iterations = " + str(iterations))
-            print("    Delivering "+ str(concurrent_requests) + " concurrent requests to inference engine....")
-            application = os.path.realpath(os.getcwd()+"/object_detection_ssd_async")
-            command = application + " -i " + image_folder + " -m " + model_path + " -ni " + str(iterations) + " -d " + aarch +\
-             " -nireq " + str(concurrent_requests) + " -b "+str(j) + " -prec "+precision+" -dir "+ dir_name + " -a "+model_name + " -aarch "+aarch
-        else:
-
-            if (aarch.upper() in ["MYRIAD", "HDDL"]): # Only run batch size 1 on MYRIAD devices
-                print("Workload does not support inference on {} with concurrent_instances < 2".format(aarch.upper()))
-                sys.exit()
-
-            application = os.path.realpath(os.getcwd()+"/object_detection_ssd")
-            command = application + " -i " + image_folder + " -m " + model_path + " -ni " + str(iterations) + " -d " + aarch +\
-                      " -b "+str(j) + " -prec "+precision+" -dir "+ dir_name + " -a "+model_name + " -aarch "+aarch
-
+        #  base command 
+        application = os.path.realpath(os.getcwd()+"/benchmark_app")
+        command = application + " -a "+model_name+" -b "+str(j)+" -aarch "+aarch+" -prec "+precision+" -d "+aarch+\
+                      " -i "+image_folder+" -m "+model_path
+        #  check for the provided concurrent_instances            #   
+        if not (str(concurrent_requests) == "auto"):
+            command = command +" -nireq "+str(concurrent_requests)
+            # sdk defaults to asyc mode . If user inputs 1 instance then pass that to the sdk
+            if (int(concurrent_requests) == 1):
+                    command = command +" -api sync"
+        # check for the provided total_requests
+        if not (str(iterations) == "auto"):
+            command = command + " -niter "+str(iterations)
+      
         with open(file_out, 'w') as out:
             command = event.workloadStarted(workloadName , workloadID , j , precision , aarch, command)
             #Starting workload
@@ -279,7 +245,7 @@ def set_env_path():
                 with open(openvino_version_file,'r') as fid:
                     text = fid.read().splitlines()
                     OpenVINO_PATH = text[0].split(':')[-1]
-                
+
                 os.environ['HDDL_INSTALL_DIR']= os.path.join(OpenVINO_PATH,"deployment_tools","inference_engine","external","hddl")
 
 # Set Model Path

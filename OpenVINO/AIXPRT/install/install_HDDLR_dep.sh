@@ -3,9 +3,10 @@ DASHES="\n\n==========================================================\n\n"
 
 
 #=================================== Get OpenVINO install directory ================================
-IFS=':' read -ra OPENVINO_BUILD < "../Harness/OpenVINO_BUILD.txt"
+# IFS=':' read -ra OPENVINO_BUILD < "../Harness/OpenVINO_BUILD.txt"
 
-OPENVINO_INSTALL_DIR=${OPENVINO_BUILD[1]}
+# OPENVINO_INSTALL_DIR=${OPENVINO_BUILD[1]}
+OPENVINO_INSTALL_DIR=/opt/intel/openvino
 if [ ! -d ${OPENVINO_INSTALL_DIR} ]; then
    echo -e "\e[1;31mCannot find OpenVINO installation directory ${OPENVINO_INSTALL_DIR}\e[0m"
    exit
@@ -67,35 +68,35 @@ sudo udevadm control --reload-rules
 sudo udevadm trigger
 sudo ldconfig
 printf "VPU support added."
-# =========================== INSTALL intel-opencl driver for integrated GPU ============================= 
-# INSTALL intel-opencl driver for integrated GPU
-printf ${DASHES}
-printf " Installing OpenCL drivers for Integrated GPU."
-printf ${DASHES}
+# # =========================== INSTALL intel-opencl driver for integrated GPU ============================= 
+# # INSTALL intel-opencl driver for integrated GPU
+# printf ${DASHES}
+# printf " Installing OpenCL drivers for Integrated GPU."
+# printf ${DASHES}
 
-cd "${OPENVINO_INSTALL_DIR}/install_dependencies"
-KERNEL_VERSION="$(uname -r | cut -c 1-4)" # Minimum kernel is 4.14
-if [ $(echo "${KERNEL_VERSION}" | cut -c 1) -lt "4" ]
-   then
-       bash install_4_14_kernel.sh
-fi
+# cd "${OPENVINO_INSTALL_DIR}/install_dependencies"
+# KERNEL_VERSION="$(uname -r | cut -c 1-4)" # Minimum kernel is 4.14
+# if [ $(echo "${KERNEL_VERSION}" | cut -c 1) -lt "4" ]
+#    then
+#        bash install_4_14_kernel.sh
+# fi
 
-if [ $(echo "${KERNEL_VERSION}" | cut -c 1) -eq "4" ] 
-   then 
-       if [ $(echo "${KERNEL_VERSION}" | cut -c 3-4) -lt "15" ]
-          then
-              bash install_4_14_kernel.sh
-       fi
-fi
+# if [ $(echo "${KERNEL_VERSION}" | cut -c 1) -eq "4" ] 
+#    then 
+#        if [ $(echo "${KERNEL_VERSION}" | cut -c 3-4) -lt "15" ]
+#           then
+#               bash install_4_14_kernel.sh
+#        fi
+# fi
 
-sudo bash install_NEO_OCL_driver.sh
-sudo apt-get -y install clinfo
-clinfo
+# sudo bash install_NEO_OCL_driver.sh
+# sudo apt-get -y install clinfo
+# clinfo
 
-printf "\n\nOpenCL installation completed."
-printf ${DASHES}
-echo -e "\e[1;33mWARNING: \e[0mSystem reboot required."
-printf ${DASHES}
-exit 1
+# printf "\n\nOpenCL installation completed."
+# printf ${DASHES}
+# echo -e "\e[1;33mWARNING: \e[0mSystem reboot required."
+# printf ${DASHES}
+# exit 1
 
 

@@ -40,7 +40,7 @@ echo.
 if exist "%AIXPRT_DIR%\" (
 	if not exist "%AIXPRT_DIR%\Modules\" (
 		echo.
-		echo Provided AIXPRT directory should contain 'Modules' subdirectory
+		echo ERROR: Incorrect path to  AIXPRT directory. Should contain 'Modules' subdirectory
 		echo.
 		goto :usage
 	)
@@ -49,6 +49,12 @@ if exist "%AIXPRT_DIR%\" (
 echo %DASHES%
 echo Verifing OpenVINO installation directories in %OPENVINO_DIR%\bin
 echo.
+: : Check if the openvino directory is custome dldt build
+if not x%OPENVINO_DIR:\dldt\=%==x%OPENVINO_DIR% (
+	echo Using the build of dldt
+	call restructure-installation.bat %OPENVINO_DIR% %AIXPRT_DIR%
+	set OPENVINO_DIR="C:\Program Files (x86)\IntelSWTools\ov_custom\"
+) 
 if not exist %OPENVINO_DIR%\bin\ (
 	echo.
 	echo The provided directory %OPENVINO_DIR% must contain 'bin' subdirectory. Please provide the correct install directory of OpenVINO
@@ -62,7 +68,7 @@ echo Checking OpenVINO Version
 echo.
 
 if exist %OPENVINO_DIR%\deployment_tools\tools\ (
-     set OPENVINO_VERSION="R1"
+     set OPENVINO_VERSION="R1 and above"
 )
 if exist %OPENVINO_DIR%\deployment_tools\model_downloader\ (
 	 :: previous version (2018 R3-R5) have similar directory structure
@@ -106,7 +112,7 @@ set "OPENVINO_IE_DIR="%INTEL_CVSDK_DIR%\deployment_tools\inference_engine\"
 set "OPENVINO_MO_DIR=%INTEL_CVSDK_DIR%\deployment_tools\model_optimizer\"
 set MO_PATH="%OPENVINO_MO_DIR%\mo.py"
 
-if %OPENVINO_VERSION%=="R1" (
+if %OPENVINO_VERSION%=="R1 and above" (
 	 set MD_PATH="%INTEL_CVSDK_DIR%\deployment_tools\tools\model_downloader\downloader.py"
 ) else (
 	 set MD_PATH="%INTEL_CVSDK_DIR%\deployment_tools\model_downloader\downloader.py"
@@ -262,7 +268,7 @@ echo %DASHES%
 echo Building solution
 echo.
 
-"%MSBUILD_BIN%" mlxbench_src.sln /p:Configuration=Release /clp:ErrorsOnly /m
+"%MSBUILD_BIN%" Samples.sln /p:Configuration=Release /clp:ErrorsOnly /m
 
 ::================================================================
 set "COMPILED_APP_DIR=%BUILD_FOLDER%\intel64\Release"
@@ -270,10 +276,10 @@ echo %DASHES%
 echo Copying compiled binaries
 echo.
 
-xcopy %COMPILED_APP_DIR%\image_classification.exe %AIXPRT_BIN% /s /e /y /q
-xcopy %COMPILED_APP_DIR%\image_classification_async.exe %AIXPRT_BIN% /s /e /y /q
-xcopy %COMPILED_APP_DIR%\object_detection_ssd.exe %AIXPRT_BIN% /s /e /y /q
-xcopy %COMPILED_APP_DIR%\object_detection_ssd_async.exe %AIXPRT_BIN% /s /e /y /q
+xcopy %COMPILED_APP_DIR%\benchmark_app.exe %AIXPRT_BIN% /s /e /y /q
+REM xcopy %COMPILED_APP_DIR%\image_classification_async.exe %AIXPRT_BIN% /s /e /y /q
+REM xcopy %COMPILED_APP_DIR%\object_detection_ssd.exe %AIXPRT_BIN% /s /e /y /q
+REM xcopy %COMPILED_APP_DIR%\object_detection_ssd_async.exe %AIXPRT_BIN% /s /e /y /q
 
 :: these are found after compiling AIXPRT
 xcopy %COMPILED_APP_DIR%\format_reader.dll %AIXPRT_PLUGIN% /s /e /y /q
@@ -286,14 +292,15 @@ echo %DASHES%
 echo Copying OpenVINO libraries
 echo.
 set OPENVINO_IE_DIR=%OPENVINO_DIR%\inference_engine
-xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\clDNN64.dll %AIXPRT_PLUGIN% /s /e /y /q
-xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\HDDLPlugin.dll %AIXPRT_PLUGIN% /s /e /y /q
-xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\cpu_extension_avx2.dll %AIXPRT_PLUGIN% /s /e /y /q
-xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\clDNNPlugin.dll %AIXPRT_PLUGIN% /s /e /y /q
-xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\HeteroPlugin.dll %AIXPRT_PLUGIN% /s /e /y /q
-xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\inference_engine.dll %AIXPRT_PLUGIN% /s /e /y /q
-xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\MKLDNNPlugin.dll %AIXPRT_PLUGIN% /s /e /y /q
-xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\myriadPlugin.dll %AIXPRT_PLUGIN% /s /e /y /q
+if exist %OPENVINO_IE_DIR%\bin\intel64\Release\clDNN64.dll ( xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\clDNN64.dll %AIXPRT_PLUGIN% /s /e /y /q )
+if exist %OPENVINO_IE_DIR%\bin\intel64\Release\HDDLPlugin.dll ( xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\HDDLPlugin.dll %AIXPRT_PLUGIN% /s /e /y /q )
+if exist %OPENVINO_IE_DIR%\bin\intel64\Release\cpu_extension.dll ( xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\cpu_extension.dll %AIXPRT_PLUGIN% /s /e /y /q )
+if exist %OPENVINO_IE_DIR%\bin\intel64\Release\clDNNPlugin.dll ( xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\clDNNPlugin.dll %AIXPRT_PLUGIN% /s /e /y /q )
+if exist %OPENVINO_IE_DIR%\bin\intel64\Release\HeteroPlugin.dll ( xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\HeteroPlugin.dll %AIXPRT_PLUGIN% /s /e /y /q )
+if exist %OPENVINO_IE_DIR%\bin\intel64\Release\inference_engine.dll ( xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\inference_engine.dll %AIXPRT_PLUGIN% /s /e /y /q )
+if exist %OPENVINO_IE_DIR%\bin\intel64\Release\MKLDNNPlugin.dll ( xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\MKLDNNPlugin.dll %AIXPRT_PLUGIN% /s /e /y /q )
+if exist %OPENVINO_IE_DIR%\bin\intel64\Release\myriadPlugin.dll ( xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\myriadPlugin.dll %AIXPRT_PLUGIN% /s /e /y /q )
+if exist %OPENVINO_IE_DIR%\bin\intel64\Release\plugins.xml ( xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\plugins.xml %AIXPRT_PLUGIN% /s /e /y /q )
 
 
 if exist %OPENVINO_IE_DIR%\bin\intel64\Release\mkl_tiny_omp.dll (
@@ -305,8 +312,8 @@ if exist %OPENVINO_IE_DIR%\bin\intel64\Release\mkl_tiny_omp.dll (
 		echo Cannot find mkl_tiny_omp library shipped with OpenVINO. AIXPRT may not run on your system.
 	)
 )
-
-if %OPENVINO_VERSION%=="R1" (
+if %OPENVINO_VERSION%=="R1 and above" (
+	
 	XCOPY %OPENVINO_IE_DIR%\bin\intel64\Release\tbb.dll %AIXPRT_PLUGIN% /s /e /y /q
 	XCOPY %OPENVINO_IE_DIR%\bin\intel64\Release\tbbmalloc.dll %AIXPRT_PLUGIN% /s /e /y /q
 
@@ -325,13 +332,18 @@ if %OPENVINO_VERSION%=="R1" (
 			XCOPY %OPENVINO_IE_DIR%\bin\intel64\Debug\mkl_tiny_tbb.dll %AIXPRT_PLUGIN% /s /e /y /q
 		)
 	)
+	
+	if exist %OPENVINO_DIR%\deployment_tools\inference_engine\external\omp\lib\libiomp5md.dll (
+		XCOPY %OPENVINO_DIR%\deployment_tools\inference_engine\external\omp\lib\libiomp5md.dll %AIXPRT_PLUGIN% /s /e /y /q
+	)
+		
+
 ) else (
 	 
 	 if exist %OPENVINO_IE_DIR%\bin\intel64\Release\libiomp5md.dll (
 		 xcopy %OPENVINO_IE_DIR%\bin\intel64\Release\libiomp5md.dll %AIXPRT_PLUGIN% /s /e /y /q
 	 )
 )
-
 
 :: copy python interface
 
@@ -385,6 +397,6 @@ goto :eof
 echo Usage:
 echo  	%~n0 ^</path/to/AIXPRT^> ^</path/to/openvino^>
 echo  	Requirements:
-echo    		--- you have installed OpenVINO 2019 R1 or 2018 R5
+echo    		--- you have installed OpenVINO 2019 R1 and above or 2018 R5
 echo    		--- you have cloned AIXPRT
 exit /b 0

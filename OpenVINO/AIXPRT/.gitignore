@@ -17,6 +17,27 @@ Harness/benchmark_details.json
 Config/
 
 
-#Ignore Large files in the Module ( <100MB)
-/Modules/Deep-Learning/packages/models/irv2/irv2_fp16.bin
-/Modules/Deep-Learning/packages/models/irv2/irv2_fp32.bin
+#Generated workload files
+Modules/Deep-Learning/workloads/commonsources/bin/benchmark_app
+OpenVINO_BUILD.txt
+Modules/Deep-Learning/packages/models/resnet-50/resnet-50.mapping
+Modules/Deep-Learning/packages/models/resnet-50/resnet-50_fp16.bin
+Modules/Deep-Learning/packages/models/resnet-50/resnet-50_fp16.xml
+Modules/Deep-Learning/packages/models/resnet-50/resnet-50_fp32.bin
+Modules/Deep-Learning/packages/models/resnet-50/resnet-50_fp32.xml
+Modules/Deep-Learning/packages/models/ssd_mobilenet/ssd_mobilenet.mapping
+Modules/Deep-Learning/packages/models/ssd_mobilenet/ssd_mobilenet_fp16.bin
+Modules/Deep-Learning/packages/models/ssd_mobilenet/ssd_mobilenet_fp16.xml
+Modules/Deep-Learning/packages/models/ssd_mobilenet/ssd_mobilenet_fp32.bin
+Modules/Deep-Learning/packages/models/ssd_mobilenet/ssd_mobilenet_fp32.xml
+Modules/Deep-Learning/workloads/commonsources/bin/src/benchmark_app/.vscode/
+Modules/Deep-Learning/workloads/commonsources/bin/src/build/
+Modules/Deep-Learning/workloads/commonsources/bin/src/common/
+Modules/Deep-Learning/workloads/commonsources/bin/src/thirdparty/
+install/plugin/
+Modules/Deep-Learning/workloads/commonsources/bin/benchmark_app
+Modules/Deep-Learning/packages/models/resnet-50/resnet-50_FP16.mapping
+Modules/Deep-Learning/packages/models/resnet-50/resnet-50_FP32.mapping
+Modules/Deep-Learning/packages/models/ssd_mobilenet/ssd_mobilenet_FP16.mapping
+Modules/Deep-Learning/packages/models/ssd_mobilenet/ssd_mobilenet_FP32.mapping
+Modules/Deep-Learning/workloads/commonsources/bin/benchmark_app.exe

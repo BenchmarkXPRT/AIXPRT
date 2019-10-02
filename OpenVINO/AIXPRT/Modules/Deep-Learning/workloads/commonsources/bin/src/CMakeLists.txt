@@ -1,32 +1,10 @@
-# ============================================================================
-# Copyright (C) 2018 BenchmarkXPRT Development Community
-# Licensed under the BENCHMARKXPRT DEVELOPMENT COMMUNITY MEMBER LICENSE AGREEMENT (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License by contacting Principled Technologies, Inc.
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing grants and
-# restrictions under the License.
-#============================================================================
+# Copyright (C) 2018-2019 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+#
 
-# Copyright (c) 2018 Intel Corporation
+cmake_minimum_required (VERSION 2.8.11)
 
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-
-#      http://www.apache.org/licenses/LICENSE-2.0
-
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-cmake_minimum_required (VERSION 2.8)
-
-project(mlxbench_src)
+project(Samples)
 
 if (CMAKE_BUILD_TYPE STREQUAL "")
     message(STATUS "CMAKE_BUILD_TYPE not defined, 'Release' will be used")
@@ -34,7 +12,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "")
 endif()
 
 if (NOT(BIN_FOLDER))
-    if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+    if(CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l")
+        set (ARCH armv7l)
+    elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
+        set (ARCH aarch64)
+    elseif("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
         set (ARCH intel64)
     else()
         set (ARCH ia32)
@@ -70,30 +52,34 @@ else ()
     set (LIBRARY_OUTPUT_PATH ${LIBRARY_OUTPUT_DIRECTORY}/lib)
 endif()
 
-find_package(InferenceEngine REQUIRED)
-
 if (WIN32)
-    if(NOT "${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+    if (NOT "${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
         message(FATAL_ERROR "Only 64-bit supported on Windows")
     endif()
 
-    set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS -DNOMINMAX")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc") #no asynchronous structured exception handling
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
-    if (THREADING STREQUAL "OMP")
-        find_package(OpenMP)
-        if (OPENMP_FOUND)
-            set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-            set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-        endif()
+    set_property (DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS -DNOMINMAX")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc") #no asynchronous structured exception handling
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
+
+    if (TREAT_WARNING_AS_ERROR)
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX") #treating warnings as errors
+    endif ()
+
+    if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251 /wd4275 /wd4267") #disable some warnings
     endif()
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Werror=return-type ")
+if (NOT(USE_PREBUILT_OPENVINO))
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") #treating warnings as errors
+endif()
     if (APPLE)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=unused-command-line-argument")
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=unused-command-line-argument")
     elseif(UNIX)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wuninitialized -Winit-self -Wmaybe-uninitialized")
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wuninitialized -Winit-self")
+        if(NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wmaybe-uninitialized")
+        endif()
     endif()
 endif()
 
@@ -101,41 +87,141 @@ endif()
 ## to use C++11
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+    set (CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+endif()
 ####################################
 
-set(GFLAGS_IS_SUBPROJECT TRUE)
-add_subdirectory(thirdparty/gflags)
+set (GFLAGS_IS_SUBPROJECT TRUE)
+set (HAVE_SYS_STAT_H 1)
+set (HAVE_INTTYPES_H 1)
 
-# Properties->C/C++->General->Additional Include Directories
-include_directories (
-    ${CMAKE_CURRENT_SOURCE_DIR}/common/format_reader
-    ${InferenceEngine_INCLUDE_DIRS}
-    ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/gflags/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/common
-)
-
-if (UNIX)
-    SET(LIB_DL dl)
+if (USE_PREBUILT_OPENVINO)
+  include_directories( ${IE_SAMPLE_NAME}
+     ${SAMPLE_HEADER_DIR}/samples/common
+     ${SAMPLE_HEADER_DIR}/samples/common/format_reader
+     ${SAMPLE_HEADER_DIR}/extension
+  )
 endif()
 
-# This sample must be built before an OpenCV check. Otherwise, -DUSE_OPENCV flag is
-# set which leads to OpenCV headers enabled in a common header. But OpenCV libraries
-# are not included to speech_sample. And in this case it generates undefined references.
-# add_subdirectory(speech_sample)
+if (NOT(USE_PREBUILT_OPENVINO))
+  add_subdirectory(thirdparty/gflags)
+endif()
 
-# Find OpenCV library if exists
-find_package(OpenCV)
-if(OpenCV_FOUND)
-    include_directories(${OpenCV_INCLUDE_DIRS})
-    add_definitions(-DUSE_OPENCV)
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+endif()
+
+if (NOT(USE_PREBUILT_OPENVINO))
+  add_subdirectory(common/format_reader)
+endif()
+
+# samples build can be switched off during whole IE build
+if (IE_MAIN_SOURCE_DIR AND NOT ENABLE_SAMPLES)
+    return()
+endif()
+
+function(add_samples_to_build)
+    # check each passed sample subdirectory
+    foreach (dir ${ARGN})
+        if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${dir})
+            # check if a subdirectory contains CMakeLists.txt. In this case we can build it.
+            file(GLOB is_sample_dir "${CMAKE_CURRENT_SOURCE_DIR}/${dir}/CMakeLists.txt")
+            if(is_sample_dir)
+                # check if specified sample/demo is found.
+                if (BUILD_SAMPLE_NAME)
+                    list(FIND BUILD_SAMPLE_NAME ${dir} index)
+                endif()
+                if (index EQUAL -1)
+                    message(STATUS "${dir} SKIPPED")
+                else()
+                    # Include subdirectory to the project.
+                    add_subdirectory(${dir})
+                endif()
+            endif()
+        endif()
+    endforeach()
+endfunction(add_samples_to_build)
+
+include(CMakeParseArguments)
+
+#
+# ie_add_sample(NAME <target name>
+#               SOURCES <source files>
+#               [HEADERS <header files>]
+#               [INCLUDE_DIRECTORIES <include dir>]
+#               [DEPENDENCIES <dependencies>]
+#               [OPENCV_DENENDENCIES <opencv modules>]
+#               [EXCLUDE_CPPLINT]
+#
+macro(ie_add_sample)
+    set(options EXCLUDE_CPPLINT)
+    set(oneValueArgs NAME)
+    set(multiValueArgs SOURCES HEADERS DEPENDENCIES OPENCV_DEPENDENCIES INCLUDE_DIRECTORIES)
+    cmake_parse_arguments(IE_SAMPLE "${options}" "${oneValueArgs}"
+                          "${multiValueArgs}" ${ARGN} )
+
+    # Find OpenCV components if exist
+    if(IE_SAMPLE_OPENCV_DEPENDENCIES)
+        find_package(OpenCV COMPONENTS ${IE_SAMPLE_OPENCV_DEPENDENCIES} QUIET)
+        if(NOT OpenCV_FOUND)
+            message(WARNING "OPENCV is disabled or not found, " ${IE_SAMPLE_NAME} " skipped")
+            return()
+        else()
+            add_definitions(-DUSE_OPENCV)
+        endif()
+    endif()
+
+    # Create named folders for the sources within the .vcproj
+    # Empty name lists them directly under the .vcproj
+    source_group("src" FILES ${IE_SAMPLES_SOURCES})
+    if(IE_SAMPLES_HEADERS)
+        source_group("include" FILES ${IE_SAMPLES_HEADERS})
+    endif()
+
+    # Create executable file from sources
+    add_executable(${IE_SAMPLE_NAME} ${IE_SAMPLE_SOURCES} ${IE_SAMPLES_HEADERS})
+
+    if(WIN32)
+        set_target_properties(${IE_SAMPLE_NAME} PROPERTIES COMPILE_PDB_NAME ${IE_SAMPLE_NAME})
+    endif()
+
+    if(IE_SAMPLE_INCLUDE_DIRECTORIES)
+        target_include_directories(${IE_SAMPLE_NAME} PRIVATE ${IE_SAMPLE_INCLUDE_DIRECTORIES})
+    endif()
+    target_include_directories(${IE_SAMPLE_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../common")
+
+    target_link_libraries(${IE_SAMPLE_NAME} PRIVATE ${OpenCV_LIBRARIES} ${InferenceEngine_LIBRARIES}
+                                                    ${IE_SAMPLE_DEPENDENCIES} IE::ie_cpu_extension gflags)
+
+    if(UNIX)
+        target_link_libraries(${IE_SAMPLE_NAME} PRIVATE pthread)
+    endif()
+
+    # create global target with all samples / demo apps
+    if(NOT TARGET ie_samples)
+        add_custom_target(ie_samples ALL)
+    endif()
+    add_dependencies(ie_samples ${IE_SAMPLE_NAME})
+
+    if(COMMAND add_cpplint_target AND NOT IE_SAMPLE_EXCLUDE_CPPLINT)
+        add_cpplint_target(${IE_SAMPLE_NAME}_cpplint FOR_TARGETS ${IE_SAMPLE_NAME})
+    endif()
+endmacro()
+
+
+# use this flag if you need to throw custom message in case if the IE package is not found.
+if (IE_NOT_FOUND_MESSAGE)
+    find_package(InferenceEngine 2.0 QUIET)
+    if (NOT(InferenceEngine_FOUND))
+        message(FATAL_ERROR ${IE_NOT_FOUND_MESSAGE})
+    endif()
 else()
-    set (BUILD_VALIDATION_APP OFF)
-    message(WARNING "No suitable OpenCV version detected, BUILD_VALIDATION_APP is set to OFF")
+    find_package(InferenceEngine 2.0 REQUIRED)
 endif()
 
-add_subdirectory(common/format_reader)
-add_subdirectory(image_classification)
-add_subdirectory(object_detection_ssd)
-add_subdirectory(image_classification_async)
-add_subdirectory(object_detection_ssd_async)
+# collect all samples subdirectories
+file(GLOB samples_dirs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
+# skip building of unnecessary subdirectories
+list(REMOVE_ITEM samples_dirs common thirdparty)
+add_samples_to_build(${samples_dirs})

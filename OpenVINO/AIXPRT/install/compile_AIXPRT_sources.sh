@@ -14,13 +14,20 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+. /etc/os-release
+DISTRO=$NAME
+
+if [[ $DISTRO = "Clear Linux OS" ]]; then
+    USE_PREBUILT_OPENVINO=TRUE
+fi
+
 NUM_ARGS=$#
 usage() {
     echo "Usage:"
     echo -e "\t compile_AIXPRT_sources.sh </path/to/AIXPRT>"
     echo -e "\t compile_AIXPRT_sources.sh -dir </path/to/AIXPRT>"
     echo -e "\t compile_AIXPRT_sources.sh -h [PRINT HELP MESSAGE]"
-    echo -e "Assumes:\n\t--- you have installed openVINO in /opt/intel/computer_vision_sdk/ or /opt/intel/openvino/"
+    echo -e "Assumes:\n\t--- you have installed openVINO in /opt/intel/computer_vision_sdk/ or /opt/intel/openvino/ or a custom build path to /dldt folder"
     echo -e "\t--- you have cloned AIXPRT"
     exit 1
 }
@@ -41,7 +48,7 @@ key="$1"
 case $key in
     -h | -help | --help)
      usage
-    ;;    
+    ;;
     -dir | --dir)
     flag=$key
     AIXPRT_DIR="$2"
@@ -57,41 +64,45 @@ if [[ ${NUM_ARGS} -lt 1 ]]; then
      echo -e "\e[1;31mCannot determine AIXPRT distribution directory. Please pass the source directory with -dir </path/to/AIXPRT/folder>.\e[0m"
      usage
   fi
-  
-  OPENVINO_DIR="/opt/intel/computer_vision_sdk"
-  if [ -d ${OPENVINO_DIR} ] && [ -d ${OPENVINO_DIR}/bin ]; then
-     echo -e "\e[1;33mOpenVINO install directory not provided. But we found an existing installation at ${OPENVINO_DIR}. This will be used\e[0m"
-  else
-     OPENVINO_DIR="/opt/intel/openvino"
+
+  if [[ -z $USE_PREBUILT_OPENVINO ]]; then
+     OPENVINO_DIR="/opt/intel/computer_vision_sdk"
      if [ -d ${OPENVINO_DIR} ] && [ -d ${OPENVINO_DIR}/bin ]; then
         echo -e "\e[1;33mOpenVINO install directory not provided. But we found an existing installation at ${OPENVINO_DIR}. This will be used\e[0m"
      else
-        echo -e "\e[1;31mCannot find OpenVINO in default install locations /opt/intel/openvino or /opt/intel/computer_vision_sdk\e[0m"
-        usage
+        OPENVINO_DIR="/opt/intel/openvino"
+        if [ -d ${OPENVINO_DIR} ] && [ -d ${OPENVINO_DIR}/bin ]; then
+           echo -e "\e[1;33mOpenVINO install directory not provided. But we found an existing installation at ${OPENVINO_DIR}. This will be used\e[0m"
+        else
+           echo -e "\e[1;31mCannot find OpenVINO in default install locations /opt/intel/openvino or /opt/intel/computer_vision_sdk\e[0m"
+           usage
+        fi
      fi
   fi
-  
+
 fi
 
 
 
 if [[ ${NUM_ARGS} == 1 ]]; then
    AIXPRT_DIR=$key
-  if  [ ! -d ${AIXPRT_DIR} ]; then   
+  if  [ ! -d ${AIXPRT_DIR} ]; then
      echo -e "\e[1;31m\n\nTarget folder ${key} does not exist.\n\e[0m"
      usage
   fi
 
-  OPENVINO_DIR="/opt/intel/computer_vision_sdk"
-  if [ -d ${OPENVINO_DIR} ] && [ -d ${OPENVINO_DIR}/bin ]; then
-     echo -e "\e[1;33mOpenVINO install directory not provided. But we found an existing installation at ${OPENVINO_DIR}. This will be used\e[0m"
-  else
-     OPENVINO_DIR="/opt/intel/openvino"
+  if [[ -z $USE_PREBUILT_OPENVINO ]]; then
+     OPENVINO_DIR="/opt/intel/computer_vision_sdk"
      if [ -d ${OPENVINO_DIR} ] && [ -d ${OPENVINO_DIR}/bin ]; then
         echo -e "\e[1;33mOpenVINO install directory not provided. But we found an existing installation at ${OPENVINO_DIR}. This will be used\e[0m"
      else
-        echo -e "\e[1;31mCannot find OpenVINO in default install locations /opt/intel/openvino or /opt/intel/computer_vision_sdk\e[0m"
-        usage
+        OPENVINO_DIR="/opt/intel/openvino"
+        if [ -d ${OPENVINO_DIR} ] && [ -d ${OPENVINO_DIR}/bin ]; then
+           echo -e "\e[1;33mOpenVINO install directory not provided. But we found an existing installation at ${OPENVINO_DIR}. This will be used\e[0m"
+        else
+           echo -e "\e[1;31mCannot find OpenVINO in default install locations /opt/intel/openvino or /opt/intel/computer_vision_sdk\e[0m"
+           usage
+        fi
      fi
   fi
 
@@ -101,11 +112,19 @@ elif [[ ${NUM_ARGS} == 2 ]]; then
      echo -e "\e[1;31m\n\nTarget folder ${key} does not exist.\n\e[0m"
      usage
   fi
-  
-  OPENVINO_DIR="$2"
-  if [ ! -d ${OPENVINO_DIR} ]; then
-     echo -e "\e[1;31m\n\nOpenvino install directory ${OPENVINO_DIR} not found.\n\e[0m"
-     usage
+
+  if [[ -z $USE_PREBUILT_OPENVINO ]]; then
+     OPENVINO_DIR="$2"
+     #If custom build is provides , first restucture the custom build at /opt/int/ov_custom/ so that the rest of the script works.
+     if [[ $OPENVINO_DIR == *"dldt"* ]]; then
+      source ${PWD}/restructure-installation.sh $OPENVINO_DIR $AIXPRT_DIR
+      OPENVINO_DIR=/opt/intel/ov_custom
+      echo -e "\e[1;32mUsing dldt source to build AIXPRT. Final dldt installation will be at /opt/intel/ov_custom\e[0m"
+     fi
+     if [ ! -d ${OPENVINO_DIR} ]; then
+        echo -e "\e[1;31m\n\nOpenvino install directory ${OPENVINO_DIR} not found.\n\e[0m"
+        usage
+     fi
   fi
 
 elif [[ "${NUM_ARGS}" -ge "2" ]] && [ "$flag" == "-dir" ] && [ ! -d ${AIXPRT_DIR} ]; then
@@ -122,16 +141,18 @@ elif [[ "${NUM_ARGS}" -ge "2" ]] && [ "${1}" != "-dir" ]; then
 elif [[ ${NUM_ARGS} -gt 2 ]]; then
    echo -e "\e[1;31m\nCannot parse inputs\n\e[0m"
    usage
-fi  
+fi
 
 # Last sanity check
 if [ ! -d "${AIXPRT_DIR}/Modules" ]; then
    echo -e "\e[1;31mProvided install directory ${AIXPRT_DIR} does not have Modules subdir.\e[0m"
    usage
 fi
-if [ ! -d ${OPENVINO_DIR}/bin ]; then
-   echo -e "\e[1;31m\n\nThe provided OpenVINO install directory must contain a 'bin' folder. Please check that you have installed openvino correctly.\n\e[0m"
-   usage
+if [[ -z $USE_PREBUILT_OPENVINO ]]; then
+   if [ ! -d ${OPENVINO_DIR}/bin ]; then
+      echo -e "\e[1;31m\n\nThe provided OpenVINO install directory must contain a 'bin' folder. Please check that you have installed openvino correctly.\n\e[0m"
+      usage
+  fi
 fi
 
 
@@ -139,20 +160,22 @@ RUN_AGAIN="Then run the script again\n\n"
 DASHES="\n\n==================================================\n\n"
 CUR_PATH=$PWD
 
-if [ -d "${OPENVINO_DIR}/deployment_tools/tools/" ]; then
-   OPENVINO_BUILD="R1"
-else
-   OPENVINO_BUILD="R5"
+if [[ -z $USE_PREBUILT_OPENVINO ]]; then
+   if [ -d "${OPENVINO_DIR}/deployment_tools/tools/" ]; then
+      OPENVINO_BUILD="R1 and above"
+   else
+      OPENVINO_BUILD="R5"
+   fi
+ 
+   if [ ! -e $OPENVINO_DIR ]; then
+      echo -e "\e[1;33m\nDid not find OpenVINO installed in ${OPENVINO_DIR}.\n\e[0m"
+      echo -e "\e[1;0mPlease install OpenVINO distribution in /opt/intel\n\e[0m"
+ 
+      exit 1
+   fi
+
+   OPENVINO_CV_DEP_DIR="${OPENVINO_DIR}/install_dependencies"
 fi
-
-if [ ! -e $OPENVINO_DIR ]; then
-   echo -e "\e[1;33m\nDid not find OpenVINO installed in ${OPENVINO_DIR}.\n\e[0m"
-   echo -e "\e[1;0mPlease install OpenVINO distribution in /opt/intel\n\e[0m"
-
-   exit 1
-fi
-
-OPENVINO_CV_DEP_DIR="${OPENVINO_DIR}/install_dependencies"
 
 AIXPRT_MODELS="${AIXPRT_DIR}/Modules/Deep-Learning/packages/models"
 AIXPRT_PLUGIN="${AIXPRT_DIR}/Modules/Deep-Learning/packages/plugin/"
@@ -201,7 +224,8 @@ elif [[ $DISTRO == "ubuntu" ]]; then
        echo -e "\e[0;32m Installing PIL and png packages for Ubuntu 18.04.\e[0m"
        sudo -E apt -y install python-pil libpng-dev
     fi
-
+elif [[ $DISTRO == "Clear Linux OS" ]]; then
+    echo -e "\e[0;31m Clear Linux operating system.\e[0m"
 else
    echo -e "\e[0;31mUnsupported operating system.\e[0m"
    exit
@@ -209,55 +233,69 @@ fi
 
 #------------------------------------------------------------------------------------------------------
 
-printf "${DASHES}"
-printf "Installing cv sdk dependencies\n\n"
-cd ${OPENVINO_CV_DEP_DIR}
+if [[ -z $USE_PREBUILT_OPENVINO ]]; then
+   printf "${DASHES}"
+   printf "Installing cv sdk dependencies\n\n"
+   # cd ${OPENVINO_CV_DEP_DIR}
 
-if [ "${OPENVINO_BUILD}" == "R5" ]; then
-   sudo -E ./install_cv_sdk_dependencies.sh; 
+   # if [ "${OPENVINO_BUILD}" == "R5" ]; then
+   #    sudo -E ./install_cv_sdk_dependencies.sh;
+   # else
+   #    sudo -E bash install_openvino_dependencies.sh
+   # fi
+
+   cd ${CUR_PATH}
+
+   #========================= Setup Model Optimizer =======================================================
+   # Step 2. Enter OpenVINO environment and Configure Model Optimizer
+
+   printf "${DASHES}"
+   printf "Setting OpenVINO environment and Configuring Model Optimizer"
+   printf "${DASHES}"
+
+   if [[ -z "${INTEL_CVSDK_DIR}" ]]; then
+      printf "\n\nINTEL_CVSDK_DIR environment variable is not set. Trying to run ./setvars.sh to set it. \n"
+
+      if [ -e "${OPENVINO_DIR}/bin/setupvars.sh" ]; then # for Intel CV SDK package
+         SETVARS_PATH="${OPENVINO_DIR}/bin/setupvars.sh"
+      else
+         echo -e "\e[0;31mError: setvars.sh is not found\n\e[0m"
+         exit 1
+      fi
+      if ! source ${SETVARS_PATH} ; then
+         printf "Unable to run ./setvars.sh. Please check its presence. ${RUN_AGAIN}"
+         exit 1
+      fi
+   fi
+
+   OPENVINO_DT_DIR="${OPENVINO_DIR}/deployment_tools"
+   OPENVINO_IE_DIR="${OPENVINO_DT_DIR}/inference_engine/"
+   OPENVINO_MO_DIR="${OPENVINO_DT_DIR}/model_optimizer/"
+   MO_PATH="${OPENVINO_MO_DIR}/mo.py"
+
+   if [ "${OPENVINO_BUILD}" == "R1 and above" ]; then
+      MD_PATH="${OPENVINO_DT_DIR}/tools/model_downloader/downloader.py"
+   else
+      MD_PATH="${OPENVINO_DT_DIR}/model_downloader/downloader.py"
+   fi
+
+   printf "${DASHES}"
+   printf "Install Model Optimizer dependencies"
+   cd "${OPENVINO_MO_DIR}/install_prerequisites"
+# bash install_prerequisites.sh "caffe"
 else
-   sudo -E bash install_openvino_dependencies.sh
+   if [[ -d clearlinux ]]; then
+      rm -rf clearlinux
+   fi
+   wget https://github.com/opencv/open_model_zoo/archive/2019_R2.zip --directory-prefix clearlinux
+   unzip clearlinux/2019_R2.zip -d clearlinux
+   rm clearlinux/2019_R2.zip
+
+   MD_PATH=clearlinux/open_model_zoo-2019_R2/tools/downloader/downloader.py
+   MO_PATH=/usr/share/openvino/model-optimizer/mo.py
+
+   export PYTHONPATH=/usr/lib/python3.7/site-packages/openvino/inference_engine/:${PYTHONPATH}
 fi
-
-cd ${CUR_PATH}
-
-#========================= Setup Model Optimizer =======================================================
-# Step 2. Enter OpenVINO environment and Configure Model Optimizer
-
-printf "${DASHES}"
-printf "Setting OpenVINO environment and Configuring Model Optimizer"
-printf "${DASHES}"
-
-if [[ -z "${INTEL_CVSDK_DIR}" ]]; then
-            printf "\n\nINTEL_CVSDK_DIR environment variable is not set. Trying to run ./setvars.sh to set it. \n"
-
-    if [ -e "${OPENVINO_DIR}/bin/setupvars.sh" ]; then # for Intel CV SDK package
-        SETVARS_PATH="${OPENVINO_DIR}/bin/setupvars.sh"
-    else
-        echo -e "\e[0;31mError: setvars.sh is not found\n\e[0m"
-	exit 1
-    fi
-    if ! source ${SETVARS_PATH} ; then
-        printf "Unable to run ./setvars.sh. Please check its presence. ${RUN_AGAIN}"
-        exit 1
-    fi
-fi
-
-OPENVINO_DT_DIR="${OPENVINO_DIR}/deployment_tools"
-OPENVINO_IE_DIR="${OPENVINO_DT_DIR}/inference_engine/"
-OPENVINO_MO_DIR="${OPENVINO_DT_DIR}/model_optimizer/"
-MO_PATH="${OPENVINO_MO_DIR}/mo.py"
-
-if [ "${OPENVINO_BUILD}" == "R1" ]; then
-    MD_PATH="${OPENVINO_DT_DIR}/tools/model_downloader/downloader.py"
-else
-    MD_PATH="${OPENVINO_DT_DIR}/model_downloader/downloader.py"
-fi
-
-printf "${DASHES}"
-printf "Install Model Optimizer dependencies"
-cd "${OPENVINO_MO_DIR}/install_prerequisites"
-bash install_prerequisites.sh "caffe"
 
 cd ${CUR_PATH}
 #========================= Download and Convert Caffepre-trained models ===========================================
@@ -275,7 +313,7 @@ export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp
 for idx in "${!MODEL_NAMES[@]}"
   do
     MODEL_DIR="$CUR_PATH/caffe_models"
-    
+
     MODEL_NAME=${MODEL_NAMES[idx]}
     echo -e "\n\e[0;32m Generating IRs for ${MODEL_NAME}\n\e[0m"
     IR_PATH="$CUR_PATH/${MODEL_NAME}"
@@ -296,7 +334,7 @@ for idx in "${!MODEL_NAMES[@]}"
 		printf "Run ${MD_PATH} --name "${MODEL_NAME}" --output_dir "${MODEL_DIR}"\n\n"
 		MODEL_PATH="$MODEL_DIR/classification/resnet/v1/50/caffe/resnet-50.caffemodel"
 		$PYTHON_BINARY ${MD_PATH} --name "${MODEL_NAME}" --output_dir "${MODEL_DIR}"
-		MEAN_VALUES="data[0.0,0.0,0.0]"
+		MEAN_VALUES="data[104.0,117.0,123.0]"
 		SCALE_VALUES="data[1.0]"
 		MODEL_DEST="resnet-50"
 		INPUT_SHAPE="[1,3,224,224]"
@@ -319,7 +357,7 @@ for idx in "${!MODEL_NAMES[@]}"
 		mv ${IR_MODEL_BIN} ${IR_MODEL_AIXPRT_BIN}
 	done
 
-	
+
 	if [ ! -e $IR_PATH ]; then
 	    printf "\n\nTarget folder ${IR_PATH} does not exists"
 	    exit 1
@@ -351,13 +389,18 @@ if [ -d "${BUILD_DIR}" ]; then rm -Rf $BUILD_DIR; fi
 
 mkdir ${AIXPRT_TMP_SRC}
 cp -r ${AIXPRT_SOURCES}/* ${AIXPRT_TMP_SRC}
-cp -r ${OPENVINO_DIR}/inference_engine/samples/thirdparty ${AIXPRT_TMP_SRC}
-cp -r ${OPENVINO_DIR}/inference_engine/samples/common ${AIXPRT_TMP_SRC}
 
-if [ ! -e "${BUILD_DIR}/intel64/Release/image_classification" ]; then
+if [[ -z $USE_PREBUILT_OPENVINO ]]; then
+  cp -r ${OPENVINO_DIR}/inference_engine/samples/thirdparty ${AIXPRT_TMP_SRC}
+  cp -r ${OPENVINO_DIR}/inference_engine/samples/common ${AIXPRT_TMP_SRC}
+else
+  CLEARLINUX_SAMPLE_HDR_DIR=/usr/share/doc/inference_engine
+fi
+
+if [ ! -e "${BUILD_DIR}/intel64/Release/benchmark_app" ]; then
     mkdir -p ${BUILD_DIR}
     cd ${BUILD_DIR}
-    cmake -DCMAKE_BUILD_TYPE=Release ${AIXPRT_TMP_SRC}
+    cmake -DCMAKE_BUILD_TYPE=Release ${AIXPRT_TMP_SRC} -DUSE_PREBUILT_OPENVINO=${USE_PREBUILT_OPENVINO} -DSAMPLE_HEADER_DIR=${CLEARLINUX_SAMPLE_HDR_DIR}
     make -j8
 else
     printf "\n\nTarget folder ${BUILD_DIR} already exists. Skipping samples building."
@@ -368,15 +411,17 @@ if [ ! -e $COMPILED_APP_DIR ]; then
    printf "\n\nTarget folder ${COMPILED_APP_DIR} does not exists.\n"
    exit 1
 else
-   cp ${COMPILED_APP_DIR}/image_classification ${AIXPRT_BIN}
-   cp ${COMPILED_APP_DIR}/image_classification_async ${AIXPRT_BIN}
-   cp ${COMPILED_APP_DIR}/object_detection_ssd ${AIXPRT_BIN}
-   cp ${COMPILED_APP_DIR}/object_detection_ssd_async ${AIXPRT_BIN}
+   cp ${COMPILED_APP_DIR}/benchmark_app ${AIXPRT_BIN}
+#   cp ${COMPILED_APP_DIR}/image_classification ${AIXPRT_BIN}
+#   cp ${COMPILED_APP_DIR}/image_classification_async ${AIXPRT_BIN}
+#   cp ${COMPILED_APP_DIR}/object_detection_ssd ${AIXPRT_BIN}
+#   cp ${COMPILED_APP_DIR}/object_detection_ssd_async ${AIXPRT_BIN}
 
-   # these are found after compiling AIXPRT
-   cp ${COMPILED_APP_DIR}/lib/libformat_reader.so ${AIXPRT_PLUGIN}/
-   cp ${COMPILED_APP_DIR}/lib/libcpu_extension.so ${AIXPRT_PLUGIN}/
-
+   if [[ -z $USE_PREBUILT_OPENVINO ]]; then
+     # these are found after compiling AIXPRT
+     cp ${COMPILED_APP_DIR}/lib/libformat_reader.so ${AIXPRT_PLUGIN}/
+     cp ${COMPILED_APP_DIR}/lib/libcpu_extension.so ${AIXPRT_PLUGIN}/
+   fi
 fi
 
 #========================= Copy libraries ================================================================================
@@ -389,7 +434,7 @@ PLUGIN_DIR="$CUR_PATH/plugin"
 if [ -d "${PLUGIN_DIR}" ]; then rm -Rf $PLUGIN_DIR; fi
 mkdir ${PLUGIN_DIR}
 
-if [ $DISTRO == "centos" ];then 
+if [ $DISTRO == "centos" ];then
    OPERATING_SYSTEM="centos_7.4"
    OS_VERSION="centos7"
 elif [ $DISTRO == "ubuntu" ];then
@@ -401,36 +446,81 @@ elif [ $DISTRO == "ubuntu" ];then
    fi
 fi
 
-# Due to directory structure change in R1 releases
-if [ "${OPENVINO_BUILD}" == "R1" ]; then
+if [[ -z $USE_PREBUILT_OPENVINO ]]; then
+# Due to directory structure change in R1 and above releases
+if [ "${OPENVINO_BUILD}" == "R1 and above" ]; then
    OPERATING_SYSTEM=""
+
+   cpu_extension=$OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libcpu_extension.so
+   avx2_extension=$OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libcpu_extension_avx2.so
+   avx512_extension=$OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libcpu_extension_avx512.so
+   myriad_plugin=$OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libmyriadPlugin.so
+   mkl_tiny_lnx=$OPENVINO_IE_DIR/external/mkltiny_lnx/lib/
+   hddl_plugin=$OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libHDDLPlugin.so
+   if [ -f "$cpu_extension" ]; then
+    cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libcpu_extension.so $PLUGIN_DIR
+   fi
+   if [ -f "$avx2_extension" ]; then
+    cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libcpu_extension_avx2.so $PLUGIN_DIR
+   fi
+   if [ -f "$avx512_extension" ]; then
+    cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libcpu_extension_avx512.so $PLUGIN_DIR
+   fi
+   if [ -f "$myriad_plugin" ]; then
+    cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libmyriadPlugin.so $PLUGIN_DIR
+   fi
+   if [ -d "$mkl_tiny_lnx" ]; then
+    cp $OPENVINO_IE_DIR/external/mkltiny_lnx/lib/* $PLUGIN_DIR
+   fi
+   
+
    cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libclDNN64.so $PLUGIN_DIR
-   cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libcpu_extension_avx2.so $PLUGIN_DIR
-   cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libcpu_extension_avx512.so $PLUGIN_DIR
    cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libclDNNPlugin.so $PLUGIN_DIR
    cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libHeteroPlugin.so $PLUGIN_DIR
    cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libinference_engine.so $PLUGIN_DIR
    cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libMKLDNNPlugin.so $PLUGIN_DIR
-   # cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libmyriadPlugin.so $PLUGIN_DIR
+   cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/plugins.xml $PLUGIN_DIR
 
-   cp $OPENVINO_IE_DIR/external/mkltiny_lnx/lib/* $PLUGIN_DIR
    
+
    # Copy tbb libraries
-   find ${OPENVINO_IE_DIR}/external/tbb/lib/ -type f -name 'libtbb.so*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
-   find ${OPENVINO_IE_DIR}/external/tbb/lib/ -type f -name 'libtbbmalloc.so*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+   if [ -d "${OPENVINO_IE_DIR}/external/tbb/lib/" ]; then
+      find ${OPENVINO_IE_DIR}/external/tbb/lib/ -type f -name 'libtbb.so*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+      find ${OPENVINO_IE_DIR}/external/tbb/lib/ -type f -name 'libtbbmalloc.so*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+   fi
+
+   # Copy omp libraries 
+
+    if [ -d "${OPENVINO_IE_DIR}/external/omp/lib/" ]; then
+      find ${OPENVINO_IE_DIR}/external/omp/lib/ -type f -name 'libiomp5.so*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+    fi
 
    # Copy HDDL libraries
-   cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libHDDLPlugin.so $PLUGIN_DIR
-   find ${OPENVINO_IE_DIR}/external/hddl/lib/ -type f -name 'lib*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+   if [ -d "$hddl_plugin" ]; then
+    find ${OPENVINO_IE_DIR}/external/hddl/lib/ -type f -name 'lib*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+    cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libHDDLPlugin.so $PLUGIN_DIR
+   fi
+
 
    # openCV
-   find ${OPENVINO_DIR}/opencv/lib/ -type f -name 'libopencv_core*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+   find ${OPENVINO_DIR}/opencv/lib/ -name 'libopencv_core*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
 
-   find ${OPENVINO_DIR}/opencv/lib/ -type f -name 'libopencv_imgcodecs*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+   find ${OPENVINO_DIR}/opencv/lib/ -name 'libopencv_imgcodecs*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
 
-   find ${OPENVINO_DIR}/opencv/lib/ -type f -name 'libopencv_imgproc*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
-
-   cp ${OPENVINO_DIR}/python/python3.5/openvino/inference_engine/ie_api.so ${PLUGIN_DIR}
+   find ${OPENVINO_DIR}/opencv/lib/ -name 'libopencv_imgproc*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+   # Copy the specific python version of ie_api.so plugin
+   pythonVersion=$(python3 -c 'import platform; major, minor, patch = platform.python_version_tuple(); print(major+"."+minor)')
+   pushd $OPENVINO_DIR/python/
+   pythonDirectories=$(ls)
+   for D in $pythonDirectories; do
+    subDir=$OPENVINO_DIR/python/$D
+    if [ -d $subDir ]; then
+      if [[ $subDir == *$pythonVersion* ]]; then
+         cp ${OPENVINO_DIR}/python/$D/openvino/inference_engine/ie_api.so ${PLUGIN_DIR}
+      fi
+   fi
+   done
+   popd
 
 else
 
@@ -452,17 +542,18 @@ else
    fi
 
    # openCV
-   find ${OPENVINO_DIR}/opencv/lib/ -type f -name 'libopencv_core*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+   find ${OPENVINO_DIR}/opencv/lib/ -name 'libopencv_core*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
 
-   find ${OPENVINO_DIR}/opencv/lib/ -type f -name 'libopencv_imgcodecs*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+   find ${OPENVINO_DIR}/opencv/lib/ -name 'libopencv_imgcodecs*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
 
-   find ${OPENVINO_DIR}/opencv/lib/ -type f -name 'libopencv_imgproc*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
+   find ${OPENVINO_DIR}/opencv/lib/ -name 'libopencv_imgproc*' -exec cp '{}' ${PLUGIN_DIR}/ ';'
 
    cp ${OPENVINO_DIR}/python/python3.5/${OS_VERSION}/openvino/inference_engine/ie_api.so ${PLUGIN_DIR}
 
 fi
 
 cp -r ${PLUGIN_DIR}/* ${AIXPRT_PLUGIN}/
+fi
 
 #printf ${DASHES}
 #======================= Remove temp directories =================================================
@@ -481,10 +572,9 @@ if [ -d "${plugin}" ]; then rm -Rf ${plugin}; fi
 if [ -d "${models}" ]; then rm -Rf ${models}; fi
 if [ -d "${caffe_models}" ]; then rm -Rf ${caffe_models}; fi
 
+
 printf ${DASHES}
 echo "OpenVINO Directory: ${OPENVINO_DIR}" > ${AIXPRT_DIR}/Harness/OpenVINO_BUILD.txt
 echo -e "\e[1;32mSetup completed successfully.\e[0m"
 printf ${DASHES}
 exit 1
-
-
