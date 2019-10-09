@@ -1,0 +1,22 @@
+# Ignore Mac DS_Store files
+.DS_Store
+
+# Ignore generated files
+*.pyc
+*.o
+Harness/__pycache__/
+*.idea/
+
+#Ignore generated Result folder
+/Results
+
+#Ignore Generated System info json
+Harness/SystemInfo.json
+Harness/config.json
+Harness/benchmark_details.json
+Config/
+
+Modules/Deep-Learning/workloads/commonsources/recommendation/val_csr.pkl
+Modules/Deep-Learning/workloads/commonsources/recommendation/val_dns.pkl
+Modules/Deep-Learning/workloads/commonsources/recommendation/val_label.pkl
+Modules/Deep-Learning/workloads/wide-deep/bin/large_version/
