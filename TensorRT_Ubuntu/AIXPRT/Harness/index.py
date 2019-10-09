@@ -47,7 +47,7 @@ def main(argv):
     resultsParser.summarizeResults()
 
 
-# Function to get the list of confugaration json files present in /Config folder
+# Function to get the list of configuration json files present in /Config folder
 def getListOfConfigFiles():
     configDirectory = os.path.join(constants.APP_HOME,"Config")
     configFileList = []

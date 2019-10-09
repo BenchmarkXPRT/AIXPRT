@@ -1,5 +1,5 @@
 ﻿## 1. Introduction
-This module contains workloads to evaluate the system performance of use cases related to Image Classification and Object Detection  using TensorRT optimizations.
+This module contains workloads to evaluate the system performance of use cases related to Image Classification and Object Detection using TensorRT optimizations.
 It has workloads “resnet50_v1”, "ssd-mobilenet-v1" and can run Single and Multi-Batch size scenarios.
 
 ## 2. System Requirements
@@ -14,10 +14,10 @@ For Nvidia Discrete Graphics Cards
 #### Steps to configure the machine and workloads
 
 1. Install dependencies:
-   * These workloads will requier CUDA , cuDNN and TensorRT . Please install the appropriate version of Cuda and cudnn associated with the TensorRT version.
+   * These workloads will require CUDA, cuDNN and TensorRT . Please install the appropriate version of Cuda and cudnn associated with the TensorRT version.
 
     [Note] The instructions below assume the user is not connected to Internet via Proxy.
-   * Install [Visual Studio](https://docs.microsoft.com/en-us/visualstudio/install/install-visual-studio?view=vs-2019). During the installation of Visual Studio please select the belwo option in the installtion wizard and install. <br />
+   * Install [Visual Studio](https://docs.microsoft.com/en-us/visualstudio/install/install-visual-studio?view=vs-2019). During the installation of Visual Studio please select the below option in the installation wizard and install. <br />
         a. "Workloads" tab select "Desktop development with C++" <br />
         b. "Individual components" tab select "MSBuild" <br />
     
@@ -37,8 +37,8 @@ For Nvidia Discrete Graphics Cards
 
 2. Setup AIXPRT environment variable
 
-   * On Windows search , type "Advanced system Settings" and open View Advanced system Settings .Click on  "Environment Variable" . 
-   * In "System variable" section select "New" . Set variable name to AIXPRT_INCLUDE and the below paths on your system for variable vaules with ; seperated. Save the environment variable after adding.
+   * On Windows search, type "Advanced system Settings" and open View Advanced system Settings .Click on  "Environment Variable" . 
+   * In "System variable" section select "New". Set variable name to AIXPRT_INCLUDE and add the below paths on your system for variable values separated by a semicolon. Save the environment variable after adding.
       ```
 
       C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\{cudaVersion}\include
@@ -54,7 +54,7 @@ For Nvidia Discrete Graphics Cards
   
       ```
 
-   * In "System variable" section select "New" . Set variable name to AIXPRT_LINKER and the below paths on your system for variable vaules with ; seperated. Save the environment variable after adding.
+   * In "System variable" section select "New". Set variable name to AIXPRT_LINKER and the below paths on your system for variable values separated by a semicolon. Save the environment variable after adding.
 
       ```
       
@@ -66,38 +66,38 @@ For Nvidia Discrete Graphics Cards
       ```
 3. Compile the sources 
 
-	* Navigate to  <AIXPRT_Directory>/Modules/Deep-Learning/workloads/commonsources/bin/src/MultiStream_resnet and open the .sln (Microsoft Visual Studio Solution) file in Visula Studio.
+	* Navigate to  <AIXPRT_Directory>/Modules/Deep-Learning/workloads/commonsources/bin/src/MultiStream_resnet and open the .sln (Microsoft Visual Studio Solution) file in Visual Studio.
 
-  * On top rightside of Visula Studio, UI change " Solution Configuration" to "Release" .Click the green button  which says " Local Windows Debugger" to compile the source. Once the code compiles a console window opens to confirm the success , press any button to close that console.
+  * On top-right side of the Visual Studio UI, change "Solution Configuration" to "Release". Click the green button which says "Local Windows Debugger" to compile the source. Once the code compiles a console window opens to confirm the success, press any button to close that console.
 
-  * Navigate to  <AIXPRT_Directory>/Modules/Deep-Learning/workloads/commonsources/bin/src/MultiStream_ssd and open the .sln (Microsoft Visual Studio Solution) file in Visula Studio.
+  * Navigate to  <AIXPRT_Directory>/Modules/Deep-Learning/workloads/commonsources/bin/src/MultiStream_ssd and open the .sln (Microsoft Visual Studio Solution) file in Visual Studio.
 
-  * On top rightside of Visula Studio, UI change " Solution Configuration" to "Release" .Click the green button  which says " Local Windows Debugger" to compile the source. Once the code compiles a console window opens to confirm the success , press any button to close that console.
+  * On top-right side of the Visual Studio UI, change "Solution Configuration" to "Release". Click the green button which says "Local Windows Debugger" to compile the source. Once the code compiles a console window opens to confirm the success, press any button to close that console.
 #### Steps to run benchmark
  1. Navigate to directory:
  	`cd /{path_to}/AIXPRT/Harness/`
 
  2. Run the benchmark:<br />
 	`python3 index.py`
-   On Windows, the python3 command is not recognised  by default. Please make a copy of your python.exe and rename as python3.exe
+   On Windows, the python3 command is not recognized by default. Please make a copy of your python.exe and rename as python3.exe
    
 ## Results
 
-When the test is complete, the benchmark saves the results to AIXPRT/Resultsin JSONformat, and also generates CSV files with the name {ConfigName}_RESULTS_SUMMARY.csv
+When the test is complete, the benchmark saves the results to AIXPRT/Results in JSON format, and also generates CSV files with the name {ConfigName}_RESULTS_SUMMARY.csv
 To submit results, please follow the instructions in AIXPRT/ResultSubmission.md or at https://www.principledtechnologies.com/benchmarkxprt/aixprt/2019/submit-results.php.
 
 
 ##### Sample results summary file <br/>
 
-Each results summary file has three sections: SYSTEM INFORMATION, RESULTSSUMMARY and DETAILED RESULTS.<br/>
+Each results summary file has three sections: SYSTEM INFORMATION, RESULTS SUMMARY and DETAILED RESULTS.<br/>
  1. SYSTEM INFORMATION <br/>
     This section provides basic information about the system under test. <br/>
     ![alt text](https://github.com/BenchmarkXPRT/AIXPRT/tree/master/Tensorflow/AIXPRT/Harness/assets/tensorflow_systemInfo.png)
 
- 2. RESULTSSUMMARY <br/>
+ 2. RESULTS SUMMARY <br/>
     AIXPRT measures inference latency and throughput for image recognition (ResNet-50) and object detection (SSD-MobileNet) tasks. Batching tasks allows AI applications to achieve 
 higher levels of throughput, but higher throughput may come at the expense of increased latency per task. In real-time or near real-time use cases like performing image recognition 
-on individual photos being captured by a camera, lowerlatency is important to enable better user experience. In other cases, like performing image recognition on a large library of 
+on individual photos being captured by a camera, lower latency is important to enable better user experience. In other cases, like performing image recognition on a large library of 
 photos, higher throughput through batching images or concurrent instances may allow faster completion of the overall workload. The achieve optimal latency and/or throughput levels, 
 AI applications often tune batch sizes and/or concurrent instances according to a system’s hardware capabilities, such as the number of available processor cores and threads.
 To represent a spectrum of common tunings, AIXPRT tests AI tasks in different batch sizes (1 –32 is the default in this package) that are relevant to the target test system. 
@@ -108,7 +108,7 @@ The AIXPRT results summary (example below) makes iteasier to quickly identify re
 
 
  3. DETAILED RESULTS <br/>
-   This section shows the throughput and latency results for each AItask configuration tested by the benchmark. 
-AIXPRT runs each AI task (e.g. ResNet-50, Batch1, on CPU) multiple times andreports the average inference throughput and corresponding latency percentiles.
+   This section shows the throughput and latency results for each AI task configuration tested by the benchmark. 
+AIXPRT runs each AI task (e.g. ResNet-50, Batch1, on CPU) multiple times and reports the average inference throughput and corresponding latency percentiles.
 
 ![alt text](https://github.com/BenchmarkXPRT/AIXPRT/tree/master/Tensorflow/AIXPRT/Harness/assets/detailed_results.png)

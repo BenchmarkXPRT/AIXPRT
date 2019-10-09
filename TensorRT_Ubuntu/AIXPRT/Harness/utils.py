@@ -83,7 +83,7 @@ def find_between( s, first, last ):
 def getGpuName():
     gpuDeviceList = []
     if platform.system() == "Windows":
-        # requiers
+        # requires
         # pip install --upgrade wmi
         # pip install --upgrade pypiwin32
         import wmi

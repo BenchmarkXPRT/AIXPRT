@@ -1,6 +1,6 @@
 
 ## 1. Introduction
-This module contains workloads to evaluate the system performance of use cases related to Image Classification and Object Detection  using Tensorflow with TensorRT optimizations.
+This module contains workloads to evaluate the system performance of use cases related to Image Classification and Object Detection using Tensorflow with TensorRT optimizations.
 It has workloads “resnet50_v1”, "ssd-mobilenet-v1" and can run Single and Multi-Batch size scenarios.
 
 ## 2. System Requirements
@@ -10,7 +10,7 @@ For Nvidia Discrete Graphics Cards
 * GPU:
 	  [CUDA enabled NVIDIA GPUs](https://developer.nvidia.com/cuda-gpus)
 
-For NVidia Tegra Xavier
+For Nvidia Tegra Xavier
 * JetPACK 4.1.1
 
 ## 3. Run Benchmark
@@ -21,11 +21,11 @@ For NVidia Tegra Xavier
 
 2. Install dependencies:
 
-   a. If using NVidia Discrete GFX
+   a. If using Nvidia Discrete GFX
 
    * Install [CUDA 10](https://developer.nvidia.com/cuda-downloads)
    * Restart the system after installing CUDA 10
-   * NOTE : Requires NVIDIA Driver release 410.xx.However,these drivers are installed during CUDA installation and no 		    seperate driver installation is requiered.
+   * Note: Requires NVIDIA Driver release 410.xx.However,these drivers are installed during CUDA installation and no 		    seperate driver installation is requireed.
    * Install docker and nvidia-docker <br />
 	 => Install docker: <br />
 	 		1. To aid with the docker installation, type the following to get you Ubuntu version and name:
@@ -57,11 +57,11 @@ For NVidia Tegra Xavier
 
 #### Steps to run benchmark
  1. Choose the target machine and run the commands <br />
-	 a. If using NVidia Discrete GFX
+	 a. If using Nvidia Discrete GFX
 	    Run the docker image
 		`nvidia-docker run -v <Path_to_AIXPRT_directory>:/workspace/AIXPRT --shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 -it --rm nvcr.io/nvidia/tensorflow:19.01-py3`
 
-	 b. If using NVidia Tegra Xavier <br />
+	 b. If using Nvidia Tegra Xavier <br />
 	    Install pre-reqs
 	```shell
 		sudo apt-get install libhdf5-serial-dev hdf5-tools

@@ -21,9 +21,9 @@ Workloads are implemented using the publicly available libraries and SDKs for ea
 
    3. Navigate to AIXPRT/Modules/Deep-Learning/README.md of the cloned branch and follow instructions to run the benchmark.
 
-   4. AIXPRT application runs on default configuration provided by the workloads. However once a default config file is generated , user can edit this config to change the workload behavior.
+   4. AIXPRT application runs on default configuration provided by the workloads. However once a default config file is generated, user can edit this config to change the workload behavior.
 
-NOTE : A config file will be generated at AIXPRT/Config/{config_name}.json after the first run of index.py . One can edit this config file to run the specific workload in a specific way or use one of the provided config files. 
+Note: A config file will be generated at AIXPRT/Config/{config_name}.json after the first run of index.py. One can edit this config file to run the specific workload in a specific way or use one of the provided config files. 
 
 [How to edit config](TODO : add url to AIXPRT/EditConfig.md file )
 

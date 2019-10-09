@@ -91,7 +91,7 @@ def writeToCSV(resultJsonPathArray,FolderName,AIXPRT_dir):
     summaryFile = os.path.join(AIXPRT_dir,"Results",FolderName)
     csvFileName = summaryFile +"_RESULTS_SUMMARY.csv"
     summaryFile = csv.writer(open(csvFileName, "w", newline=''))
-    # Parse requierd system information
+    # Parse required system information
     summaryFile.writerow(["SYSTEM INFORMATION :"])
     for key , value in systemInfo.items():
         if not (key == "Thread(s) per core (CPU)"):
