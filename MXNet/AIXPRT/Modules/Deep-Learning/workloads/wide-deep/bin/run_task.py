@@ -41,10 +41,7 @@ def writeBatchResults(path_list,batchsize,aarch,iterations,instances,total_reque
         tstart_max, tend_max = np_from_csv_data.max(axis=0)
         tstart_min, tend_min = np_from_csv_data.min(axis=0)
 
-
-    speed_mean =  ( batchsize*np_from_csv_data.shape[0] * instances)/ (tend_max - tstart_min)
-
-
+    speed_mean =  ( batchsize*np_from_csv_data.shape[0] )/ (tend_max - tstart_min)
 
     labelstr = "Batch "+ str(batchsize)
     additional_info_details = {}
@@ -159,7 +156,7 @@ for batchSize in batch_size_number:
     commands = []
     path_list = []
     allocation = []
- 
+
 
     if setNUMA:
         if  not len(instance_allocation) == concurrent_instances:
@@ -185,7 +182,7 @@ for batchSize in batch_size_number:
             command = command + " python3 inference.py --batch-size "+ str(batchSize) + " --csv-file-path "+ csv_file_path + " --aarch "  + aarch +" --iterations "+ str(iterations)
         if precision == "int8":
             command = command + " python3 inference.py --batch-size "+ str(batchSize) + " --csv-file-path "+ csv_file_path + " --aarch "  + aarch +" --iterations "+ str(iterations) + " --symbol-file=WD-quantized-162batches-naive-symbol.json --param-file=WD-quantized-0000.params"
-        
+
         commands.append(command)
         path_list.append(csv_file_path)
     print(commands)
