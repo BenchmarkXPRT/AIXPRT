@@ -1,28 +1,28 @@
 ## 1. Introduction
-This module contains workloads to evaluate the system performance of use cases related to Image Classification and Object Detection using TensorRT optimizations.
-It has workloads “resnet50_v1”, "ssd-mobilenet-v1" and can run Single and Multi-Batch size and Muti instance scenarios.
+This module contains workloads to evaluate the system performance of use cases related to image classification and object detection using TensorRT optimizations.
+It has workloads “ResNet50_v1”, "SSD-MobileNet-v1" and can run single- and multi-batchsize and Muti instance scenarios.
 
 ## 2. System Requirements
 
-For Nvidia Discrete Graphics Cards
+For NVIDIA Discrete Graphics Cards
 * Operating System:
 	Ubuntu 16.04 / 18.04 LTS . (We recommend 18.04.3)
 * GPU:
 	  [CUDA enabled NVIDIA GPUs](https://developer.nvidia.com/cuda-gpus)
 
-For Nvidia Tegra Xavier
+For NVIDIA Tegra Xavier
 * JetPACK 4.2
 
-## 3. Run Benchmark
+## 3. Run the Benchmark
 
 #### Steps to configure the machine
    
 1. Install dependencies:
     [Note] The instructions below assume the user is not connected to Internet via Proxy.
-   a. If using Nvidia Discrete GFX
+   a. If using NVIDIA Discrete GFX
    
    * Install CUDA v10.1 [CUDA](https://developer.nvidia.com/cuda-downloads)
-    [Note] Link above may be updated to newer versions. Please use the specific version mentioned above.
+    [Note]. The link above may be updated to newer versions. Please use the specific version mentioned above.
    * Restart the system after installing CUDA 
    * Install OpenCV <br />
 	 => Download OpenCV: <br />
@@ -63,10 +63,10 @@ For Nvidia Tegra Xavier
      
    b. If using Tegra Xavier <br />
    	Flash JetPack v4.2 https://developer.nvidia.com/embedded/jetpack
-    [Note] Link above may be updated to newer versions. Please use the specific version mentioned above.
+    [Note]. The link above may be updated to newer versions. Please use the specific version mentioned above.
     
-#### Steps to run benchmark
- 1. Choose the target machine and run the commands <br />
+#### Steps to run the benchmark
+ 1. Choose the target machine and run the commands: <br />
 	 Compile the sources 
 		`Goto <AIXPRT_Directory>/Modules/Deep-Learning/workloads/commonsources/bin/src/<workload> and run "make clean" and "make" to create binaries`<br />
          Note: <workload> in the above path is each folder in the src directory.
@@ -92,7 +92,7 @@ Each results summary file has three sections: SYSTEM INFORMATION, RESULTS SUMMAR
     ![alt text](https://github.com/BenchmarkXPRT/AIXPRT/tree/master/Tensorflow/AIXPRT/Harness/assets/tensorflow_systemInfo.png)
 
  2. RESULTS SUMMARY <br/>
-    AIXPRT measures inference latency and throughput for image recognition (ResNet-50) and object detection (SSD-MobileNet) tasks. Batching tasks allows AI applications to achieve 
+    AIXPRT measures inference latency and throughput for image recognition (ResNet-50) and object detection (SSD-MobileNet) tasks. batching tasks allows AI applications to achieve 
 higher levels of throughput, but higher throughput may come at the expense of increased latency per task. In real-time or near real-time use cases like performing image recognition 
 on individual photos being captured by a camera, lower latency is important to enable better user experience. In other cases, like performing image recognition on a large library of 
 photos, higher throughput through batching images or concurrent instances may allow faster completion of the overall workload. The achieve optimal latency and/or throughput levels, 
@@ -106,6 +106,6 @@ The AIXPRT results summary (example below) makes iteasier to quickly identify re
 
  3. DETAILED RESULTS <br/>
    This section shows the throughput and latency results for each AI task configuration tested by the benchmark. 
-AIXPRT runs each AI task (e.g. ResNet-50, Batch1, on CPU) multiple times and reports the average inference throughput and corresponding latency percentiles.
+AIXPRT runs each AI task (e.g. ResNet-50, batch1, on CPU) multiple times and reports the average inference throughput and corresponding latency percentiles.
 
 ![alt text](https://github.com/BenchmarkXPRT/AIXPRT/tree/master/Tensorflow/AIXPRT/Harness/assets/detailed_results.png)

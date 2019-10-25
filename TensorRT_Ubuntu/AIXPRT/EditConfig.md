@@ -10,7 +10,7 @@ Note: Please perform at least 1 run of the benchmark so that a default config is
 
 3. If you wish to run only a specific workload/workloads in a config, please navigate to AIXPRT/Config/jsonFileYouWantToRun.json. Under the key “workloads_config”, each item is a workload. Delete the workloads which you do not want to run.
 
-Example  :  The JSON below has only Resnet-50 workload.
+Example  :  The JSON below has only ResNet-50 workload.
 
 ```
 {
@@ -26,7 +26,7 @@ Example  :  The JSON below has only Resnet-50 workload.
             ],
             "hardware": "cpu",
             "iterations": 10,
-            "name": "Resnet-50",
+            "name": "ResNet-50",
             "precision": "fp32",
             "runtype": "performance"
         }

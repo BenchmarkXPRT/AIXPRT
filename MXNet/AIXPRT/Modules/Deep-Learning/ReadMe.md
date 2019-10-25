@@ -1,6 +1,6 @@
 ## 1. Introduction 
 This module contains workloads to evaluate the system performance of use cases related to recommendation using MxNet.
-It can run single-batch, multi-batch and multi instance scenarios. 
+It can run single-batch, multi-batch, and multi-instance scenarios. 
 
 ## 2. System Requirements
 * Operating System: Ubuntu 18.04 LTS
@@ -8,7 +8,7 @@ It can run single-batch, multi-batch and multi instance scenarios.
 * GPU: NVIDIA 
 
 
-## 3. Run Benchmark 
+## 3. Run the Benchmark 
 
 #### Steps to configure machine
 1. Install Dependencies
@@ -25,7 +25,7 @@ It can run single-batch, multi-batch and multi instance scenarios.
     Choose the required installation of MXNet depending on your hardware ( CPU /GPU). Please install python3 version of MXNet with pip3.
      
 
-#### Steps to run benchmark 
+#### Steps to run the benchmark 
 
 1. Navigate to directory: 
 
@@ -34,7 +34,7 @@ It can run single-batch, multi-batch and multi instance scenarios.
         ```
 2. Run the benchmark
 
-THIS PARTICULAR WORKLOAD REQUIRES KAGGLE'S SERVICES AND ARE SUBJECT TO THE TERMS: https://www.kaggle.com/terms
+THIS PARTICULAR WORKLOAD REQUIRES KAGGLE'S SERVICES and ARE SUBJECT TO THE TERMS: https://www.kaggle.com/terms
 IF YOU DO NOT AGREE TO ALL OF THEM, YOU MAY NOT EXECUTE THE WORKLOAD OR ACCESS KAGGLE'S SERVICES IN ANY MANNER. 
 
         ```
@@ -55,7 +55,7 @@ Each results summary file has three sections: SYSTEM INFORMATION, RESULTS SUMMAR
     ![alt text](https://github.com/BenchmarkXPRT/AIXPRT/tree/master/Tensorflow/AIXPRT/Harness/assets/mxnet_systeminfo.png)
 
  2. RESULTS SUMMARY <br/>
-    AIXPRT measures inference latency and throughput for Wide and Deep Recommendation task. Batching allows AI applications to achieve 
+    AIXPRT measures inference latency and throughput for Wide and Deep Recommendation task. batching allows AI applications to achieve 
 higher levels of throughput, but higher throughput may come at the expense of increased latency per task. 
 AIXPRT thenreports the maximum throughput and minimum latency for Wide and Deep Recommendation usages.<br/>
 The AIXPRT results summary (example below) makes iteasier to quickly identify relevant comparisons between systems. <br/>
@@ -65,6 +65,6 @@ The AIXPRT results summary (example below) makes iteasier to quickly identify re
 
  3. DETAILED RESULTS <br/>
    This section shows the throughput and latency results for each AI task configuration tested by the benchmark. 
-AIXPRT runs each AI task (e.g. ResNet-50, Batch1, on CPU) multiple times and reports the average inference throughput and corresponding latency percentiles.
+AIXPRT runs each AI task (e.g. ResNet-50, batch1, on CPU) multiple times and reports the average inference throughput and corresponding latency percentiles.
 
 ![alt text](https://github.com/BenchmarkXPRT/AIXPRT/tree/master/Tensorflow/AIXPRT/Harness/assets/mxnet_result_details.png)

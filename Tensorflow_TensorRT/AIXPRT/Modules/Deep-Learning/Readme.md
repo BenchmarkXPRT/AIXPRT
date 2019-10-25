@@ -1,27 +1,27 @@
 
 ## 1. Introduction
-This module contains workloads to evaluate the system performance of use cases related to Image Classification and Object Detection using Tensorflow with TensorRT optimizations.
-It has workloads “resnet50_v1”, "ssd-mobilenet-v1" and can run Single and Multi-Batch size scenarios.
+This module contains workloads to evaluate the system performance of use cases related to image classification and object detection using Tensorflow with TensorRT optimizations.
+It has workloads “ResNet50_v1”, "SSD-MobileNet-v1" and can run single- and multi-batch size scenarios.
 
 ## 2. System Requirements
-For Nvidia Discrete Graphics Cards
+For NVIDIA Discrete Graphics Cards
 * Operating System:
 	Ubuntu 16.04 LTS
 * GPU:
 	  [CUDA enabled NVIDIA GPUs](https://developer.nvidia.com/cuda-gpus)
 
-For Nvidia Tegra Xavier
+For NVIDIA Tegra Xavier
 * JetPACK 4.1.1
 
-## 3. Run Benchmark
+## 3. Run the Benchmark
 
 #### Steps to configure the machine
 
-1. Clone the AIXPRT Github repository
+1. clone the AIXPRT repository.
 
 2. Install dependencies:
 
-   a. If using Nvidia Discrete GFX
+   a. If using NVIDIA Discrete GFX
 
    * Install [CUDA 10](https://developer.nvidia.com/cuda-downloads)
    * Restart the system after installing CUDA 10
@@ -45,7 +45,7 @@ For Nvidia Tegra Xavier
 				sudo usermod -a -G docker $USER
 				```
 
-	 => Install nvidia Docker: <br />
+	 => Install NVIDIA Docker: <br />
 		https://github.com/NVIDIA/nvidia-docker<br />
 
 	 => Pull and run TensorRT Docker Container v19.01 <br />
@@ -55,13 +55,13 @@ For Nvidia Tegra Xavier
    b. If using Tegra Xavier <br />
    	Flash JetPack v4.1.1 https://developer.nvidia.com/embedded/jetpack
 
-#### Steps to run benchmark
- 1. Choose the target machine and run the commands <br />
-	 a. If using Nvidia Discrete GFX
+#### Steps to run the benchmark
+ 1. Choose the target machine and run the commands: <br />
+	 a. If using NVIDIA Discrete GFX
 	    Run the docker image
 		`nvidia-docker run -v <Path_to_AIXPRT_directory>:/workspace/AIXPRT --shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 -it --rm nvcr.io/nvidia/tensorflow:19.01-py3`
 
-	 b. If using Nvidia Tegra Xavier <br />
+	 b. If using NVIDIA Tegra Xavier <br />
 	    Install pre-reqs
 	```shell
 		sudo apt-get install libhdf5-serial-dev hdf5-tools

@@ -3,11 +3,11 @@
 1. Create a folder with your workload name. Add "bin" and  "data" folders to it. Also add workload_details.json which would describe your workload. Here is a sample [workload_details.json](TODO : Add the url to one workload_details.json).
  In the json, all the keys must remain same, only values must change according to your workload. ID's of the workloads are in the [resultSchema](TODO: add url to /Harness/ResultSchemaFiles/Deep-Learning/result_schema.json) file in Harness.
 
-2. Add your workload  to resultSchema File present in harness so that the results table generated is consistent across. Choose a workload ID following the series.
+2. Add your workload  to resultSchema File present in harness so that the results table generated is consistent. Choose a workload ID following the series.
 
 3. Create a python script file which can start your workload and add its name as a value to "script" key in workload_details.json file. Harness will run the workload using this script file.
 
-4. All the binary and script files mush be placed in bin/ folder . And all the source that is used to generate the bin should be at bin/src/ .
+4. All the binary and script files must be placed in bin/ folder. All the source that is used to generate the bin should be at bin/src/ .
 
 5. Any data used in the workload ( Example: images, input textFiles, input sound files etc) should be placed in data/ folder
 

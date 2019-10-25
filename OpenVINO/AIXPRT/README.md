@@ -6,8 +6,8 @@ AIXPRT is an AI benchmark which has the capability of running on below platforms
 * Intel CPU
 * Intel GPU
 * Intel VPU (Myriad)
-* Nvidia GPU
-* Nvidia Xavier
+* NVIDIA GPU
+* NVIDIA Xavier
 
 Workloads are implemented using the publicly available libraries and SDKs for each platform.
 
@@ -17,7 +17,7 @@ Workloads are implemented using the publicly available libraries and SDKs for ea
         
         2. Enter the requested information to select and download the package. 
         
-        3.Navigate to AIXPRT/Modules/Deep-Learning/README.md of the downloaded package and follow instructions to run the benchmark.
+        3.Navigate to AIXPRT/Modules/Deep-Learning/README.md of the downloaded package and follow instructions for running the benchmark.
         
         4. AIXPRT application runs on default configuration provided by the workloads. However once a default config file is generated, user can edit this config to change the workload behavior.
         
@@ -27,7 +27,7 @@ Workloads are implemented using the publicly available libraries and SDKs for ea
        2. Clone the repository 
         * git clone https://github.com/BenchmarkXPRT/AIXPRT.git
     
-       3. Navigate to AIXPRT/Modules/Deep-Learning/README.md of the cloned branch and follow instructions to run the benchmark.
+       3. Navigate to AIXPRT/Modules/Deep-Learning/README.md of the cloned branch and follow instructions for running the benchmark.
     
        4. AIXPRT application runs on default configuration provided by the workloads. However once a default config file is generated, user can edit this config to change the workload behavior.
     

@@ -68,7 +68,7 @@ Options:
     -api "<sync/async>"       Optional. Enable Sync/Async API. Default value is "async".
     -niter "<integer>"        Optional. Number of iterations. If not specified, the number of iterations is calculated depending on a device.
     -nireq "<integer>"        Optional. Number of infer requests. Default value is determined automatically for a device.
-    -b "<integer>"            Optional. Batch size value. If not specified, the batch size value is determined from Intermediate Representation.
+    -b "<integer>"            Optional. batch size value. If not specified, the batch size value is determined from Intermediate Representation.
     -stream_output            Optional. Print progress as a plain text. When specified, an interactive progress bar is replaced with a multiline output.
     -t                        Optional. Time in seconds to execute topology.
     -progress                 Optional. Show progress bar (can affect performance measurement). Default values is "false".
