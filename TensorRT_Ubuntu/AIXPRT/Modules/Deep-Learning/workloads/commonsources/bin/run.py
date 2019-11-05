@@ -83,7 +83,7 @@ def multistream_resnet(model_name,dir_name):
     for j in batch_size_number:
         print("Running "+model_name+" batch"+str(j)+" "+precision+"\n")
         file_out = os.path.join('..','..',dir_name,'result','output',model_name+'_'+precision+'_batch'+str(j)+'_'+aarch+'.txt')
-        command = "./multi_stream_resnet "+deploy_path+" "+model_path+" "+str(requests)+" "+str(iterations)+" "+str(j)+" "+image_path+"/"
+        command = "./imageclassification "+deploy_path+" "+model_path+" "+str(requests)+" "+str(iterations)+" "+str(j)+" "+image_path+"/"
         if precision == "int8":
                 command=command+" int8 "+calib_path
         elif precision == "fp16":
@@ -123,7 +123,7 @@ def multistream_ssd(dir_name):
     for j in batch_size_number:
         print("Running SSD-MobileNet-v1 batch"+str(j)+" "+precision+"\n")
         file_out = os.path.join('..','..',dir_name,'result','output','SSD-MobileNet-v1_'+precision+'_batch'+str(j)+'_'+aarch+'.txt')
-        command = "./multi_stream_ssd deploy "+model_path+" "+str(requests)+" "+str(iterations)+" "+str(j)+" "+ppm_folder
+        command = "./objectDetection deploy "+model_path+" "+str(requests)+" "+str(iterations)+" "+str(j)+" "+ppm_folder
         if precision == "int8":
                 command=command+" int8 calib"
         elif precision == "fp16":
