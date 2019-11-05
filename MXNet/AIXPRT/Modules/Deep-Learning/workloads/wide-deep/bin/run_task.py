@@ -7,6 +7,7 @@ import   subprocess
 from subprocess import Popen
 import   os.path
 from numpy import genfromtxt
+import shutil
 
 sys.path.insert(1, os.path.join(os.environ['APP_HOME'], 'Harness'))
 import resultsapi
@@ -41,7 +42,10 @@ def writeBatchResults(path_list,batchsize,aarch,iterations,instances,total_reque
         tstart_max, tend_max = np_from_csv_data.max(axis=0)
         tstart_min, tend_min = np_from_csv_data.min(axis=0)
 
-    speed_mean =  ( batchsize*np_from_csv_data.shape[0] )/ (tend_max - tstart_min)
+
+    speed_mean =  ( batchsize*np_from_csv_data.shape[0])/ (tend_max - tstart_min)
+
+
 
     labelstr = "Batch "+ str(batchsize)
     additional_info_details = {}
@@ -129,6 +133,11 @@ fullPath = path + path_arg
 if not (os.path.exists(os.path.join(os.environ['APP_HOME'], "Modules", "Deep-Learning", "workloads","commonsources", "recommendation","val_csr.pkl"))):
     subprocess.call(fullPath, shell=True)
 
+csv_file_folder_path = os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","workloads","wide-deep",'result','output')
+if os.path.exists(csv_file_folder_path):
+    shutil.rmtree(csv_file_folder_path)
+    os.mkdir(csv_file_folder_path)
+
 
 
 # Set environment variable if provided
@@ -156,7 +165,7 @@ for batchSize in batch_size_number:
     commands = []
     path_list = []
     allocation = []
-
+ 
 
     if setNUMA:
         if  not len(instance_allocation) == concurrent_instances:
@@ -182,7 +191,7 @@ for batchSize in batch_size_number:
             command = command + " python3 inference.py --batch-size "+ str(batchSize) + " --csv-file-path "+ csv_file_path + " --aarch "  + aarch +" --iterations "+ str(iterations)
         if precision == "int8":
             command = command + " python3 inference.py --batch-size "+ str(batchSize) + " --csv-file-path "+ csv_file_path + " --aarch "  + aarch +" --iterations "+ str(iterations) + " --symbol-file=WD-quantized-162batches-naive-symbol.json --param-file=WD-quantized-0000.params"
-
+        
         commands.append(command)
         path_list.append(csv_file_path)
     print(commands)
