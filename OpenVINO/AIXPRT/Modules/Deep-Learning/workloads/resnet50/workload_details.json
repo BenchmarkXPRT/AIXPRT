@@ -24,13 +24,12 @@
     "name": "ResNet-50",
     "requested_config": {
         "batch_sizes": [
-            1,
-            2
+            1
         ],
         "concurrent_instances": 1,
-        "hardware": "cpu",
+        "hardware": "gpu",
         "name": "ResNet-50",
-        "precision": "int8",
+        "precision": "fp16",
         "runtype": "performance",
         "total_requests": 1
     },

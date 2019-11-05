@@ -1,30 +1,58 @@
 This version of AIXPRT is built with open source dldt source (https://github.com/opencv/dldt) with 2019 R2 version . 
 
 a. Instructions to compile on Windows :
+    Install dependencies : 
+        1. Install Microsoft* Windows* 10 (64-bit) with Visual Studio 2017 and Intel® C++ Compiler 2018 Update 3 
+    More info on dependencies here https://github.com/opencv/dldt/blob/2019/inference-engine/README.md#software-requirements-1 
+        2. pip3 install Cython
+        3. Install Wget 
+            Download from https://sourceforge.net/projects/gnuwin32/files/wget/1.11.4-1/wget-1.11.4-1-setup.exe/download?use_mirror=excellmedia
+            Install with the exe
+            Add path : C:\Program Files (x86)\GnuWin32\bin
+        NOTE : Please make sure that you have the right llicenses for Visual Studio , Intel C++ Compiler and Windows OS
+        4. Set the PATH to OpenCV libraries if you face any OpenCV issues. inference-engine/temp/opencv_4.1.2/lib/
+            
 
-    1. Install dependencies as specified here https://github.com/opencv/dldt/blob/2019/inference-engine/README.md#software-requirements-1 
-    2.  Clone the dldt repo with the above specified release. 
-    3. git submodule init
-    4. git submodule update --recursive
-    5. cd dldt/inference-engine
-    6. mkdir build
-    7. cd build
-    8. cmake -G "Visual Studio 15 2017 Win64" -T "Intel C++ Compiler 18.0"  -DCMAKE_BUILD_TYPE=Release -DICCLIB="C:\Program Files (x86)\IntelSWTools\compilers_and_libraries_2018\windows\compiler\lib" -DENABLE_DLIA=OFF -DENABLE_GNA=OFF -DENABLE_CLDNN=ON -DENABLE_MODELS=OFF -DTHREADING=OMP -DENABLE_MKL_DNN=ON -DENABLE_TESTS=OFF -DVERBOSE_BUILD=ON -DENABLE_PERFORMANCE_TESTS=OFF -DENABLE_INTEGRATION_TESTS=OFF -DENABLE_FUNCTIONAL_TESTS=OFF -DENABLE_BEH_TESTS=ON -DENABLE_PLUGIN_RPATH=OFF -DENABLE_PRIVATE_MODELS=OFF -DENABLE_SEGMENTATION_TESTS=OFF -DENABLE_OBJECT_DETECTION_TESTS=OFF -DENABLE_PYTHON=ON -DPYTHON_EXECUTABLE="C:\Users\t\AppData\Local\Programs\Python\Python36\python.exe" -DPYTHON_LIBRARY="C:\Users\t\AppData\Local\Programs\Python\Python36\libs\python36.lib" -DPYTHON_INCLUDE_DIR="C:\Users\t\AppData\Local\Programs\Python\Python36\include" -DENABLE_VALIDATION_SET=OFF ..
-    9. cmake --build . --config Release
-    10. Navigate to AIXPRT/install dir 
-    11. compile_AIXPRT_sources.bat "path/to/AIXPRT/" "path/to/dldt/clone/folder/
+    Compile the source:
+        1. Open The cmd in administrative mode
+        2.  Clone the dldt repo with the above specified release. 
+        3. git submodule init
+        4. git submodule update --recursive
+        5. cd dldt/inference-engine
+        6. mkdir build
+        7. cd build
+        // Change the python install directory and version to th eone of your build system
+        8. cmake -G "Visual Studio 15 2017 Win64" -T "Intel C++ Compiler 18.0"  -DCMAKE_BUILD_TYPE=Release -DICCLIB="C:\Program Files (x86)\IntelSWTools\compilers_and_libraries_2018\windows\compiler\lib" -DENABLE_DLIA=OFF -DENABLE_GNA=OFF -DENABLE_CLDNN=ON -DENABLE_MODELS=OFF -DTHREADING=OMP -DENABLE_MKL_DNN=ON -DENABLE_TESTS=OFF -DVERBOSE_BUILD=ON -DENABLE_PERFORMANCE_TESTS=OFF -DENABLE_INTEGRATION_TESTS=OFF -DENABLE_FUNCTIONAL_TESTS=OFF -DENABLE_BEH_TESTS=ON -DENABLE_PLUGIN_RPATH=OFF -DENABLE_PRIVATE_MODELS=OFF -DENABLE_SEGMENTATION_TESTS=OFF -DENABLE_OBJECT_DETECTION_TESTS=OFF -DENABLE_PYTHON=ON -DPYTHON_EXECUTABLE="C:\Users\t\AppData\Local\Programs\Python\Python36\python.exe" -DPYTHON_LIBRARY="C:\Users\t\AppData\Local\Programs\Python\Python36\libs\python36.lib" -DPYTHON_INCLUDE_DIR="C:\Users\t\AppData\Local\Programs\Python\Python36\include" -DENABLE_VALIDATION_SET=OFF ..
+        9. cmake --build . --config Release
+        10. Navigate to AIXPRT/install dir 
+        11. compile_AIXPRT_sources.bat "path/to/AIXPRT/" "path/to/dldt/clone/folder/
 
 Above commad will compile AIXPRT with custom dldt build
 
 
 b. Instructions to compile on Ubuntu :
 
+    Install dependencies : 
     1. Install dependencies as specified here https://github.com/opencv/dldt/blob/2019/inference-engine/README.md#software-requirements
+    2. pip3 install Cython
+    3. If compiling with OMP , install tbb lib form openCV libraries to build. Inference Engine will not use these libraries 
+        sudo apt-get install libtbb-dev
+    4. Set the LD_LIBRARY_PATH to OpenCV libraries if needed. Example below
+        export LD_LIBRARY_PATH=/home/t/Documents/AIXPRT_dldt_R3/dldt/inference-engine/temp/opencv_4.1.2_ubuntu18/lib/
+    5. sudo apt-get install libusb-1.0-0-dev libusb-dev
+    6. pip3 install pyyaml
+    7. pip3 install requests
+
+Compile the source:
+
+    1. clone the repo and chnage the branch to the requiered version
     2. cd dldt/inference-engine
     3. git submodule init
     4. git submodule update --recursive
     5. mkdir build && cd build
-    6. cmake -DCMAKE_BUILD_TYPE=Release -DTHREADING=OMP -DENABLE_MKL_DNN=ON -DENABLE_CLDNN=ON -DENABLE_MODELS=OFF -DENABLE_PLUGIN_RPATH=OFF -DENABLE_BEH_TESTS=ON -DENABLE_OBJECT_DETECTION_TESTS=OFF -DENABLE_SEGMENTATION_TESTS=OFF -DENABLE_PRIVATE_MODELS=OFF -DENABLE_FUNCTIONAL_TESTS=OFF -DENABLE_INTEGRATION_TESTS=OFF -DENABLE_PERFORMANCE_TESTS=OFF -DVERBOSE_BUILD=ON -DENABLE_DLIA=OFF -DENABPP=OFF -DENABLE_PROFILING_ITT=OFF -DENABLE_VALIDATION_SET=OFF -DENABLE_TESTS=OFF -DENABLE_GNA=OFF -DENABLE_PYTHON=ON -DPYTHON_EXECUTABLE=`which python3` -DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.7m.so -DPYTHON_INCLUDE_DIR=/usr/include/python3.7
+       Chnage the python3 version in the below command with the installed python3 version
+    6. cmake -DCMAKE_BUILD_TYPE=Release -DTHREADING=OMP -DENABLE_MKL_DNN=ON -DENABLE_CLDNN=ON -DENABLE_MODELS=OFF -DENABLE_PLUGIN_RPATH=OFF -DENABLE_BEH_TESTS=OFF -DENABLE_OBJECT_DETECTION_TESTS=OFF -DENABLE_SEGMENTATION_TESTS=OFF -DENABLE_PRIVATE_MODELS=OFF -DENABLE_FUNCTIONAL_TESTS=OFF -DENABLE_INTEGRATION_TESTS=OFF -DENABLE_PERFORMANCE_TESTS=OFF -DVERBOSE_BUILD=ON -DENABLE_DLIA=OFF -DENABPP=OFF -DENABLE_PROFILING_ITT=OFF -DENABLE_VALIDATION_SET=OFF -DENABLE_TESTS=OFF -DENABLE_GNA=OFF -DENABLE_PYTHON=ON -DPYTHON_EXECUTABLE=`which python3` -DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.{version}m.so -DPYTHON_INCLUDE_DIR=/usr/include/python3.{version}
     7. make --jobs=$(nproc --all)
-    8. Navigate to AIXPRT/install dir 
-    9. compile_AIXPRT_sources.bat "path/to/AIXPRT/" "path/to/dldt/clone/folder/
+    8. Open another cmd with administrative rights 
+    9. Navigate to AIXPRT/install dir 
+    10. compile_AIXPRT_sources.bat "path/to/AIXPRT/" "path/to/dldt/clone/folder/

@@ -53,21 +53,27 @@ mklink /D %INSTALL_DIR%\inference_engine %INSTALL_DIR%\deployment_tools\inferenc
 
 :: 1.2 tools subdirectory
 
-mkdir %INSTALL_DIR%\deployment_tools\tools\model_downloader
+REM mkdir %INSTALL_DIR%\deployment_tools\tools\open_model_zoo
+
 if exist %INSTALL_DIR%\deployment_tools\tools\open_model_zoo (
    rd /s /q %INSTALL_DIR%\deployment_tools\tools\open_model_zoo 
 )
-pushd %INSTALL_DIR%\deployment_tools\tools
-git clone https://github.com/opencv/open_model_zoo.git
-popd
-xcopy  %INSTALL_DIR%\deployment_tools\tools\open_model_zoo\tools\downloader %INSTALL_DIR%\deployment_tools\tools\model_downloader
-rd /s /q %INSTALL_DIR%\deployment_tools\tools\open_model_zoo
 
+REM if exist %DLDT_BUILD%\open_model_zoo (
+REM     REM pull and revert to Oct 28th commit e372d4173e50741a6828cda415d55c37320f89cd to ensure consistency
+REM     pushd %DLDT_BUILD%\open_model_zoo && git pull
+REM ) else (
+REM     pushd %DLDT_BUILD%
+REM     git clone https://github.com/opencv/open_model_zoo.git
+REM )
+pushd %INSTALL_DIR%\deployment_tools\tools\
+git clone https://github.com/opencv/open_model_zoo.git
+REM xcopy /s/e %DLDT_BUILD%\open_model_zoo %INSTALL_DIR%\deployment_tools\tools\open_model_zoo
 
 :: 2. OpenCV
 mkdir %INSTALL_DIR%\opencv
 echo Copying opencv libs
-xcopy /s/e %DLDT_BUILD%\inference-engine\temp\opencv_4.1.1 %INSTALL_DIR%\opencv
+xcopy /s/e %DLDT_BUILD%\inference-engine\temp\opencv_4.1.2 %INSTALL_DIR%\opencv
 
 :: 3. Python
 mkdir %INSTALL_DIR%\python
@@ -76,18 +82,11 @@ xcopy /s/e %DLDT_BUILD%\inference-engine\bin\intel64\Release\python_api %INSTALL
 xcopy /s/e  %DLDT_BUILD%\inference-engine\ie_bridges\python\sample %INSTALL_DIR%\deployment_tools\inference_engine\samples\python_samples
 
 :: 4. OpenVX
-mkdir /D %INSTALL_DIR%\openvx\bin
-xcopy %OPENVINO_DIR%\openvx\bin\libmmd.dll %INSTALL_DIR%\openvx\bin
-
-:: 5 GPU libs : Unable to get the dldt to compile with cldnn at this time so copying form openvino bundle 
-xcopy %OPENVINO_DIR%\deployment_tools\inference_engine\bin\intel64\Release\clDNN64.dll %INSTALL_DIR%\deployment_tools\inference_engine\bin\intel64\Release
-xcopy %OPENVINO_DIR%\deployment_tools\inference_engine\bin\intel64\Release\clDNNPlugin.dll %INSTALL_DIR%\deployment_tools\inference_engine\bin\intel64\Release
-
+mkdir %INSTALL_DIR%\openvx\bin
+xcopy /s/e %OPENVINO_DIR%\openvx\bin\libmmd.dll %INSTALL_DIR%\openvx\bin
 
 set INTEL_SHARE_LIB="C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler"
 
 	if exist %INTEL_SHARE_LIB%\svml_dispmd.dll (
 		XCOPY %INTEL_SHARE_LIB%\svml_dispmd.dll %AIXPRT_DIR%\Modules\Deep-Learning\packages\plugin /s /e /y /q
 	)
-del %INSTALL_DIR%\deployment_tools\inference_engine\bin\intel64\Release\plugins.xml /s /f /q
-XCOPY %OPENVINO_DIR%\deployment_tools\inference_engine\bin\intel64\Release\plugins.xml %INSTALL_DIR%\deployment_tools\inference_engine\bin\intel64\Release

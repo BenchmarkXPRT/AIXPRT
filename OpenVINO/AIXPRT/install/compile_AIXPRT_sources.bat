@@ -113,7 +113,11 @@ set "OPENVINO_MO_DIR=%INTEL_CVSDK_DIR%\deployment_tools\model_optimizer\"
 set MO_PATH="%OPENVINO_MO_DIR%\mo.py"
 
 if %OPENVINO_VERSION%=="R1 and above" (
-	 set MD_PATH="%INTEL_CVSDK_DIR%\deployment_tools\tools\model_downloader\downloader.py"
+	 if exist %INTEL_CVSDK_DIR%\deployment_tools\tools\model_downloader (
+		set MD_PATH="%INTEL_CVSDK_DIR%\deployment_tools\tools\model_downloader\downloader.py" 
+	 ) else (
+	 set MD_PATH="%INTEL_CVSDK_DIR%\deployment_tools\tools\open_model_zoo\tools\downloader\downloader.py"
+	 )
 ) else (
 	 set MD_PATH="%INTEL_CVSDK_DIR%\deployment_tools\model_downloader\downloader.py"
 )
@@ -158,7 +162,7 @@ for %%G in %MODEL_NAMES% do (
   if !MODEL_NAME!=="mobilenet-ssd" (
     call echo Inside mobilenet-ssd
 	call set "MODEL_DEST=ssd_mobilenet"
-	call set "MODEL_PATH=%MODEL_DIR%/object_detection/common/mobilenet-ssd/caffe/mobilenet-ssd.caffemodel"
+	call set "MODEL_PATH=%MODEL_DIR%\public\mobilenet-ssd\mobilenet-ssd.caffemodel"
 
 	call set "MEAN_VALUES=data[127.5,127.5,127.5]"
 	call set "SCALE_VALUES=data[127.50223128904757]"
@@ -170,7 +174,7 @@ for %%G in %MODEL_NAMES% do (
   if !MODEL_NAME!=="resnet-50" (
 	call set "MODEL_NAME=resnet-50"
 	call set "MODEL_DEST=resnet-50"
-	call set "MODEL_PATH=%MODEL_DIR%\classification/resnet/v1/50/caffe/resnet-50.caffemodel"
+	call set "MODEL_PATH=%MODEL_DIR%\public\resnet-50\resnet-50.caffemodel"
 
 	call set "MEAN_VALUES=data[104.0,117.0,123.0]"
 	call set "SCALE_VALUES=data[1.0]"

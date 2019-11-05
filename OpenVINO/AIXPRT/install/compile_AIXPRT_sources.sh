@@ -82,7 +82,7 @@ if [[ ${NUM_ARGS} -lt 1 ]]; then
 
 fi
 
-
+CUR_PATH=$PWD
 
 if [[ ${NUM_ARGS} == 1 ]]; then
    AIXPRT_DIR=$key
@@ -158,7 +158,6 @@ fi
 
 RUN_AGAIN="Then run the script again\n\n"
 DASHES="\n\n==================================================\n\n"
-CUR_PATH=$PWD
 
 if [[ -z $USE_PREBUILT_OPENVINO ]]; then
    if [ -d "${OPENVINO_DIR}/deployment_tools/tools/" ]; then
@@ -234,10 +233,9 @@ fi
 #------------------------------------------------------------------------------------------------------
 
 if [[ -z $USE_PREBUILT_OPENVINO ]]; then
-   printf "${DASHES}"
-   printf "Installing cv sdk dependencies\n\n"
+   echo "${DASHES}"
+   echo "Installing dependencies\n\n"
    # cd ${OPENVINO_CV_DEP_DIR}
-
    # if [ "${OPENVINO_BUILD}" == "R5" ]; then
    #    sudo -E ./install_cv_sdk_dependencies.sh;
    # else
@@ -254,7 +252,7 @@ if [[ -z $USE_PREBUILT_OPENVINO ]]; then
    printf "${DASHES}"
 
    if [[ -z "${INTEL_CVSDK_DIR}" ]]; then
-      printf "\n\nINTEL_CVSDK_DIR environment variable is not set. Trying to run ./setvars.sh to set it. \n"
+      printf "\n\n INTEL_CVSDK_DIR environment variable is not set. Trying to run ./setvars.sh to set it. \n"
 
       if [ -e "${OPENVINO_DIR}/bin/setupvars.sh" ]; then # for Intel CV SDK package
          SETVARS_PATH="${OPENVINO_DIR}/bin/setupvars.sh"
@@ -274,7 +272,12 @@ if [[ -z $USE_PREBUILT_OPENVINO ]]; then
    MO_PATH="${OPENVINO_MO_DIR}/mo.py"
 
    if [ "${OPENVINO_BUILD}" == "R1 and above" ]; then
-      MD_PATH="${OPENVINO_DT_DIR}/tools/model_downloader/downloader.py"
+      if [ -d ${OPENVINO_DT_DIR}/tools/model_downloader ];then
+         MD_PATH="${OPENVINO_DT_DIR}/tools/model_downloader/downloader.py"
+      fi
+      if [ -d ${OPENVINO_DT_DIR}/tools/open_model_zoo ];then
+         MD_PATH="${OPENVINO_DT_DIR}/tools/open_model_zoo/tools/downloader/downloader.py"
+      fi
    else
       MD_PATH="${OPENVINO_DT_DIR}/model_downloader/downloader.py"
    fi
@@ -322,7 +325,8 @@ for idx in "${!MODEL_NAMES[@]}"
 	if [ $MODEL_NAME == "mobilenet-ssd" ]
 	     then
 		printf "Run ${MD_PATH} --name "${MODEL_NAME}" --output_dir "${MODEL_DIR}"\n\n"
-		MODEL_PATH="$MODEL_DIR/object_detection/common/mobilenet-ssd/caffe/mobilenet-ssd.caffemodel"
+
+      MODEL_PATH="$MODEL_DIR/public/mobilenet-ssd/mobilenet-ssd.caffemodel"
 		$PYTHON_BINARY ${MD_PATH} --name "${MODEL_NAME}" --output_dir "${MODEL_DIR}"
 		MEAN_VALUES="data[127.5,127.5,127.5]"
 		SCALE_VALUES="data[127.50223128904757]"
@@ -332,7 +336,8 @@ for idx in "${!MODEL_NAMES[@]}"
 	elif [ $MODEL_NAME == "resnet-50" ]
 	   then
 		printf "Run ${MD_PATH} --name "${MODEL_NAME}" --output_dir "${MODEL_DIR}"\n\n"
-		MODEL_PATH="$MODEL_DIR/classification/resnet/v1/50/caffe/resnet-50.caffemodel"
+
+      MODEL_PATH="$MODEL_DIR/public/resnet-50/resnet-50.caffemodel"
 		$PYTHON_BINARY ${MD_PATH} --name "${MODEL_NAME}" --output_dir "${MODEL_DIR}"
 		MEAN_VALUES="data[104.0,117.0,123.0]"
 		SCALE_VALUES="data[1.0]"
@@ -412,10 +417,6 @@ if [ ! -e $COMPILED_APP_DIR ]; then
    exit 1
 else
    cp ${COMPILED_APP_DIR}/benchmark_app ${AIXPRT_BIN}
-#   cp ${COMPILED_APP_DIR}/image_classification ${AIXPRT_BIN}
-#   cp ${COMPILED_APP_DIR}/image_classification_async ${AIXPRT_BIN}
-#   cp ${COMPILED_APP_DIR}/object_detection_ssd ${AIXPRT_BIN}
-#   cp ${COMPILED_APP_DIR}/object_detection_ssd_async ${AIXPRT_BIN}
 
    if [[ -z $USE_PREBUILT_OPENVINO ]]; then
      # these are found after compiling AIXPRT
@@ -474,7 +475,7 @@ if [ "${OPENVINO_BUILD}" == "R1 and above" ]; then
    fi
    
 
-   cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libclDNN64.so $PLUGIN_DIR
+   # cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libclDNN64.so $PLUGIN_DIR
    cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libclDNNPlugin.so $PLUGIN_DIR
    cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libHeteroPlugin.so $PLUGIN_DIR
    cp $OPENVINO_IE_DIR/lib/$OPERATING_SYSTEM/intel64/libinference_engine.so $PLUGIN_DIR

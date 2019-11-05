@@ -24,13 +24,12 @@
     "name": "SSD-MobileNet-v1",
     "requested_config": {
         "batch_sizes": [
-            1,
-            2
+            1
         ],
         "concurrent_instances": 1,
-        "hardware": "cpu",
+        "hardware": "gpu",
         "name": "SSD-MobileNet-v1",
-        "precision": "int8",
+        "precision": "fp16",
         "runtype": "performance",
         "total_requests": 1
     },
