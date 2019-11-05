@@ -11,10 +11,10 @@
 
 5. Any data used in the workload ( Example: images, input textFiles, input sound files etc) should be placed in data/ folder
 
-6. Please follow the [Measurment Methodology](TODO : add url to /Harness/assets/measurment_method.pdf) and [Result Caluculation](TODO : add url to /Harness/assets/result_calculation.pdf) to obtain a workload result.
+6. Please follow the [Measurment Methodology](https://github.com/BenchmarkXPRT/Public-AIXPRT-Resources/blob/master/assets/measurment_method.pdf) and [Result Caluculation](https://github.com/BenchmarkXPRT/Public-AIXPRT-Resources/blob/master/assets/result_calculation.pdf) to obtain a workload result.
 
 7. Call the result API in harness to generate the workload result from your script file after running the workload.
-  API ==> [resultapi.py](TODO : add the url to "createResultJson" method in /Harness/resultsapi.py)
+  resultapi.py documentation is at /Harness/resultsapi.py
 
 8. Verify if it works
 
@@ -30,7 +30,7 @@ Once the run is completed, the application closes. At this time, please go to /A
 
 Note: A config file will be generated at AIXPRT/Config/{config_name}.json after the first run of index.py. One can edit this config file to run the specific workload in a specific way .
 
-[How to edit config](TODO : add url to  AIXPRT/EditConfig.md file )
+[How to edit config](https://github.com/BenchmarkXPRT/Public-AIXPRT-Resources/blob/master/OtherDocuments/EditConfig.md)
 
 ### Steps to edit a workload
 
@@ -43,4 +43,4 @@ Users are allowed to edit the scripts of workload but are required to share the 
 3. Please make sure the workload scripts follow the guidelines as described in the "Steps to add a workload" section of this document.
 
 ## UML
-![alt text](TODO: add the url to  AIXPRT/Harness/assets/HarnessUML.pdf)
+![alt text](https://github.com/BenchmarkXPRT/Public-AIXPRT-Resources/blob/master/assets/HarnessUML.png)
