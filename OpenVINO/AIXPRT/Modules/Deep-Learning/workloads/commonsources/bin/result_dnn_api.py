@@ -15,7 +15,7 @@ import os
 import platform
 import csv
 import json
-
+import shutil
 
 
 ###################################################################
@@ -51,14 +51,18 @@ def returnBatchsizeResults(batchSize, resultInImgPerSec, timeInMsec, iterCount, 
                                "95_percentile_time": perc_95, "99_percentile_time": perc_99,"time_units":"milliseconds"}
 
     image_list = [os.path.basename(el) for el in image_names.split(',')]
-    print(top_predictions)
-    top_predictions = top_predictions.split(',')[:-1]
+    topk_predictions = top_predictions.split(',')[:-1]
     predictionsList = []
-    for im_predictions in top_predictions:
+    for im_predictions in topk_predictions:
         for pairs in im_predictions.split('_'):
             if len(pairs) > 0:
-                predictionsList.append(pairs.split(':')[0])
-                predictionsList.append(pairs.split(':')[1])
+                try:
+                    predictionsList.append(pairs.split(':')[0])
+                    predictionsList.append(pairs.split(':')[1])
+                except IndexError as idx_er:
+                    print("Trouble processing outputs: %s", idx_er)
+                    sys.exit()
+
     # image name in jpg only not bmp
     additional_info_details['output'] = {os.path.splitext(image_list[0])[0]+".jpg":predictionsList}
 

@@ -25,6 +25,7 @@ import shutil
 import copy
 import numpy as np
 import gui.workload_ui as ui
+import gui.workload_gui as w_gui
 from threading import Thread
 
 
@@ -106,18 +107,26 @@ def runWorkloads(module,workloadList,workloadDelays,isDemo):
         f.close()
         time.sleep(workloadDelays)
         if(isDemo):
-            # show demo if requested
-            thread = Thread(target=ui.showWorkloadUI, args = (workload["name"],workload["dir_name"],workload["requested_config"]["hardware"],workload["requested_config"]["precision"]))
-            thread.daemon = True
-            thread.start()
+            workloadDir = workload["dir_name"]
+            hardware = workload["requested_config"]["hardware"]
+            precision = workload["requested_config"]["precision"]
+            workloadName = workload["name"]
+            resultPath = os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","workloads",workloadDir,"result",workloadName+".json")
+            
+            wgui = w_gui.workloadUI(workloadName,workloadDir,hardware,precision)
+            
+            file_id = 0
             for file in  os.listdir(os.path.join(constants.INSTALLED_MODULES_PATH,module,"packages","input_images")):
                 subprocess.call(["python3",path])
+                wgui.updateUI(resultPath)
+
+                file_id+=1
             time.sleep(1)
-            thread.join()
+
         else:
             subprocess.call(["python3",path])
-    if(isDemo):
-        return thread
+    # if(isDemo):
+        # return thread
 
     return None
 

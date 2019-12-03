@@ -51,9 +51,11 @@ echo Verifing OpenVINO installation directories in %OPENVINO_DIR%\bin
 echo.
 : : Check if the openvino directory is custome dldt build
 if not x%OPENVINO_DIR:\dldt\=%==x%OPENVINO_DIR% (
-	echo Using the build of dldt
+	echo "Using the custom-built dldt. Restructuring for ease of use ..."
 	call restructure-installation.bat %OPENVINO_DIR% %AIXPRT_DIR%
+	
 	set OPENVINO_DIR="C:\Program Files (x86)\IntelSWTools\ov_custom\"
+	echo Custom-built dldt restructured to %OPENVINO_DIR%
 ) 
 if not exist %OPENVINO_DIR%\bin\ (
 	echo.
@@ -113,7 +115,7 @@ set "OPENVINO_MO_DIR=%INTEL_CVSDK_DIR%\deployment_tools\model_optimizer\"
 set MO_PATH="%OPENVINO_MO_DIR%\mo.py"
 
 if %OPENVINO_VERSION%=="R1 and above" (
-	 if exist %INTEL_CVSDK_DIR%\deployment_tools\tools\model_downloader (
+	 if exist "%INTEL_CVSDK_DIR%\deployment_tools\tools\model_downloader" (
 		set MD_PATH="%INTEL_CVSDK_DIR%\deployment_tools\tools\model_downloader\downloader.py" 
 	 ) else (
 	 set MD_PATH="%INTEL_CVSDK_DIR%\deployment_tools\tools\open_model_zoo\tools\downloader\downloader.py"
@@ -125,7 +127,7 @@ if %OPENVINO_VERSION%=="R1 and above" (
 echo %DASHES%
 echo     Install Model Optimizer and Downloader dependencies
 echo.
-pip install --user pyyaml requests pillow numpy
+pip install --user pyyaml requests pillow numpy test-generator pywin32 wmi opencv-python
 
 cd "%OPENVINO_MO_DIR%/install_prerequisites"
 call install_prerequisites_caffe.bat
@@ -281,9 +283,6 @@ echo Copying compiled binaries
 echo.
 
 xcopy %COMPILED_APP_DIR%\benchmark_app.exe %AIXPRT_BIN% /s /e /y /q
-REM xcopy %COMPILED_APP_DIR%\image_classification_async.exe %AIXPRT_BIN% /s /e /y /q
-REM xcopy %COMPILED_APP_DIR%\object_detection_ssd.exe %AIXPRT_BIN% /s /e /y /q
-REM xcopy %COMPILED_APP_DIR%\object_detection_ssd_async.exe %AIXPRT_BIN% /s /e /y /q
 
 :: these are found after compiling AIXPRT
 xcopy %COMPILED_APP_DIR%\format_reader.dll %AIXPRT_PLUGIN% /s /e /y /q

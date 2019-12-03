@@ -76,11 +76,12 @@ It contains the “ResNet50_v1” and "SSD-MobileNet" and can run single batch, 
 ##### (b) Windows
    * Install dependencies
 
-
+         ***Note*** During the installation process, Windows may restart, if it does, please repeat the steps, as below. Also, please review and allow any installation requests for dependencies.
+ 
           ```
           cd AIXPRT/install
           setup_AIXPRT.bat
-
+ 
           ```
 
    * Run the benchmark
@@ -91,7 +92,6 @@ It contains the “ResNet50_v1” and "SSD-MobileNet" and can run single batch, 
             python3 index.py
 
          ```
-   * During the installation process, please review any prompts and allow the installation of necessary dependencies.
 
 ***Note***: The steps above will configure the benchmark with run with the CPU as target, and int8 precision on batches (1, 2, 4, 8, 16, 32, 64, and 128 on Ubuntu and 1,2,4,8,16 and 32 on Windows) for ResNet-50 and SSD-MobileNet.
    If you prefer to change the configuration, please edit the JSON file under AIXPRT/Config/. Instructions to edit the configuration JSON are [here](https://github.com/BenchmarkXPRT/Public-AIXPRT-Resources/blob/master/OtherDocuments/EditConfig.md).

@@ -530,13 +530,72 @@ int main(int argc, char *argv[]) {
         std::cout << "Result: " << imgpersec << " images/sec" << std::endl;
         std::cout << std::endl;
 
-        //double standard_deviation = 0.0; // not possible to compute
+//	********************* Begin enable demo mode *************************
+		std::string demo_output = "";
+		if ((model_name.find("resnet") != std::string::npos) && (batch_size < 2)){
+			/** Get Output **/
+			bool labelsEnabled = false;
+			std::string labelFileName = fileNameNoExt(FLAGS_m) + ".labels";
+			std::vector<std::string> labels;
+
+			std::ifstream inputFile;
+			inputFile.open(labelFileName, std::ios::in);
+			if (inputFile.is_open()) {
+				std::string strLine;
+				while (std::getline(inputFile, strLine)) {
+					trim(strLine);
+					labels.push_back(strLine);
+				}
+				labelsEnabled = true;
+			}
+			
+			std::string image_names = "";
+			std::string top_results = "";
+			std::string top_predictions = "";
+			
+			slog::info << "Processing output blobs" << slog::endl;
+			OutputsDataMap outputInfo(cnnNetwork.getOutputsInfo());
+			if (outputInfo.size() != 1) throw std::logic_error("Sample supports topologies with 1 output only");
+			InferenceEngine::Blob::Ptr outputBlob = inferRequest->getBlob(outputInfo.begin()->first);
+			auto output_data = outputBlob->buffer().as<PrecisionTrait<Precision::FP32>::value_type*>();
+			size_t FLAGS_nt = 5; // Top K results
+			std::vector<unsigned> results;
+			TopResults(FLAGS_nt, *(outputBlob), results);
+			
+			// auto outputBlob = inferRequestsQueue.getOutputs();//(outputInfo.begin()->first);
+			for (int image_id = 0; image_id < batchSize; ++image_id) {
+				std::cout << "Image " << inputFiles[image_id] << std::endl << std::endl;
+				image_names = image_names + inputFiles[image_id];
+				for (size_t id = image_id * FLAGS_nt, cnt = 0; cnt < FLAGS_nt; ++cnt, ++id) {
+					std::cout.precision(7);
+					/** Getting probability for resulting class **/
+					const auto result = output_data[results[id] + image_id*(outputBlob->size() / batchSize)];
+
+					std::cout << std::left << std::fixed << results[id] << " " << result;
+					top_results = top_results + std::to_string(results[id]) + ":" + std::to_string(result) + "_";
+
+					if (labelsEnabled) {
+						std::cout << " label " << labels[results[id]] << std::endl;
+					} else {
+						std::cout << " label #" << results[id] << std::endl;
+					}
+				}
+				image_names = image_names + ",";
+				top_results = top_results + ",";
+				std::cout << std::endl;
+			}
+			
+		   demo_output = " " + image_names + " " + top_results;
+
+		}
         std::string standard_deviation = "Undefined";
         std::string const command = "python3 cpp_to_python_api.py "  + model_name +" " + std::to_string(batch_size) + " " + aarch +\
             " " + precision + " " + std::to_string(imgpersec) + " " + std::to_string(iteration) + " " + std::to_string(avg_time) +\
             " " + standard_deviation + " " + std::to_string(nireq) +\
             " " + std::to_string(perc_99) + " " + std::to_string(perc_95) + " " + std::to_string(perc_90) + " " + std::to_string(perc_50) +\
-            " " + std::to_string(min_time) + " " + std::to_string(max_time);
+            " " + std::to_string(min_time) + " " + std::to_string(max_time) + demo_output;
+			
+//	******************* End enable demo mode ********************************
 
         // -------------------------------------------------------------------------------------------------------------------------------------
         int ret_val = system(command.c_str());

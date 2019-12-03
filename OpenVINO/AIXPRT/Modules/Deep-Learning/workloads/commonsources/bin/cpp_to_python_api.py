@@ -76,6 +76,8 @@ def getOpenVINOversion():
 sys.path.insert(0, os.path.join(os.environ['APP_HOME'],"Modules","Deep-Learning","packages","plugin"))
 from ie_api import get_version
 version = get_version()
+version = version.split('_')[0]
+version = version.split('.custom')[0]
 
 s = {
 'cpu': 'MKLDNN',
@@ -97,7 +99,7 @@ def writeBatchResultsToAPI():
     resInImgPerSec = float(imgPerSec)
     forwardTime = float(timeInMillisec)
     workLoadName = result_dnn_api.returnWorkloadName(modelPrefix)
-    inputString = result_dnn_api.returnInputMap("OpenVINO ", version , "ILSVRC 2012",batchSize , aarch, modelPrefix+'net',prec,iterCount,usedAcceleratorList)
+    inputString = result_dnn_api.returnInputMap("OpenVINO IE", version , "ILSVRC 2012",batchSize , aarch, modelPrefix+'net',prec,iterCount,usedAcceleratorList)
     resultsString = result_dnn_api.returnBatchsizeResults(int(batchSize), round(resInImgPerSec,3), forwardTime, int(iterCount), modelPrefix, aarch.lower(), \
                     StandardDev, int(concurrent_instances), float(perc_99),float(perc_95), float(perc_90),float(perc_50), min_time, max_time,image_names, top_results)
     # Now wrtie the info to the API
