@@ -8,10 +8,27 @@ set INSTALL_DIR="%LocalAppData%\Programs\Python\Python36"
 echo %DASHES%
 echo installing VC Redistributable
 echo %DASHES%
+set VC_INSTALL_LOGS_DIR=%TEMP%
+del %VC_INSTALL_LOGS_DIR%\dd_vcredist_amd64*
+
 call "%CUR_DIR%\VC_redist.x64.exe" /quiet
+
 if errorlevel 1 (
-	echo VC-Redistributable could not be installed on your system. Try running the script from administrative prompt.
-	exit /b 1
+	findstr  /L Error %VC_INSTALL_LOGS_DIR%\dd_vcredist_amd64* > vc_log.txt
+
+	:: Check if newer version of vc
+	for /f "tokens=3 delims= " %%F in (vc_log.txt) do (
+
+		if "%%F"=="0x80070666:" (
+			echo Newer version of vc runtime is already installed. Skipping VC runtime installation.
+			del vc_log.txt
+		) else (
+			type vc_log.txt
+			del vc_log.txt
+			exit /b
+		)
+	)
+
 )
 
 echo.
