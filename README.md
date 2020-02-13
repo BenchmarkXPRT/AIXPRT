@@ -69,3 +69,9 @@ Instructions are found at https://packagecloud.io/github/git-lfs/install and are
 * [Understanding concurrent instances in AIXPRT](https://www.principledtechnologies.com/benchmarkxprt/blog/2019/09/12/understanding-concurrent-instances-in-aixprt/)
 * [Understanding AIXPRT results](https://www.principledtechnologies.com/benchmarkxprt/blog/2019/08/01/understanding-aixprt-results/)
 * [Navigating the AIXPRT results table](https://www.principledtechnologies.com/benchmarkxprt/blog/2019/05/30/improvements-to-the-aixprt-results-table/)
+
+## Licensing and legal information
+
+For legal and licensing information, please see the following file:
+
+* [LICENSE](https://github.com/BenchmarkXPRT/AIXPRT/blob/master/LICENSE.txt)
