@@ -46,24 +46,23 @@ For NVIDIA Tegra Xavier
 	 `sudo apt-get install python3-numpy python3-opencv python3-pil python-dev` <br />
 
    * Install TensorRT6 files ( Uninstall any older versions of TensorRT following the [instructions](https://docs.nvidia.com/deeplearning/sdk/tensorrt-install-guide/index.html#uninstalling) ) <br />
-   * 
+   *
      Goto https://developer.download.nvidia.com/compute/machine-learning/repos/ <br />
      Select Ubuntu 18.04 and "x86_64" in the next page <br />
 
-     Download the following packages: <br />
-      libcudnn7_{version}+cuda10.1_amd64.deb (Tested with libcudnn7_7.6.4.38-1+cuda10.1_amd64.deb) <br />
-      libcudnn7-dev_{version}+cuda10.1_amd64.deb (Tested with libcudnn7-dev_7.6.4.38-1+cuda10.1_amd64.deb) <br />
-      libnccl2_{version}+cuda10.1_amd64.deb (Tested with libnccl2_2.4.8-1+cuda10.1_amd64.deb) <br />
-      libnccl-dev_{version}+cuda10.1_amd64.deb (Tested with libnccl-dev_2.4.8-1+cuda10.1_amd64.deb) <br />
-      libnvinfer6_{version}+cuda10.1_amd64.deb (Tested with libnvinfer6_6.0.1-1+cuda10.1_amd64.deb) <br />
-      libnvinfer-dev_{version}+cuda10.1_amd64.deb (Tested with libnvinfer-dev_6.0.1-1+cuda10.1_amd64.deb) <br />
-      libnvparsers6_{version}+cuda10.1_amd64.deb (Tested with libnvparsers6_6.0.1-1+cuda10.1_amd64.deb) <br />
-      libnvparsers-dev_{version}+cuda10.1_amd64.deb (Tested with libnvparsers-dev_6.0.1-1+cuda10.1_amd64.deb) <br />
-      libnvinfer-plugin6_{version}+cuda10.1_amd64.deb (Tested with libnvinfer-plugin6_6.0.1-1+cuda10.1_amd64.deb) <br />
-      libnvinfer-plugin-dev_{version}+cuda10.1_amd64.deb (Tested with libnvinfer-plugin-dev_6.0.1-1+cuda10.1_amd64.deb) <br />
-      libnvonnxparsers6_{version}+cuda10.1_amd64.deb (Tested with libnvonnxparsers6_6.0.1-1+cuda10.1_amd64.deb) <br />
-      libnvonnxparsers-dev_{version}+cuda10.1_amd64.deb (Tested with libnvonnxparsers-dev_6.0.1-1+cuda10.1_amd64.deb) <br />
-
+		 Download the following packages: <br />
+		 	libcudnn7_{version}+cuda10.1_amd64.deb (Tested with libcudnn7_7.6.5.32-1+cuda10.1_amd64.deb) <br />
+		 	libcudnn7-dev_{version}+cuda10.1_amd64.deb (Tested with libcudnn7-dev_7.6.5.32-1+cuda10.1_amd64.deb) <br />
+		 	libnccl2_{version}+cuda10.1_amd64.deb (Tested with libnccl2_2.5.6-1+cuda10.1_amd64.deb) <br />
+		 	libnccl-dev_{version}+cuda10.1_amd64.deb (Tested with libnccl-dev_2.5.6-1+cuda10.1_amd64.deb) <br />
+		 	libnvinfer6_{version}+cuda10.1_amd64.deb (Tested with libnvinfer6_6.0.1-1+cuda10.1_amd64.deb) <br />
+		 	libnvinfer-dev_{version}+cuda10.1_amd64.deb (Tested with libnvinfer-dev_6.0.1-1+cuda10.1_amd64.deb) <br />
+		 	libnvparsers6_{version}+cuda10.1_amd64.deb (Tested with libnvparsers6_6.0.1-1+cuda10.1_amd64.deb) <br />
+		 	libnvparsers-dev_{version}+cuda10.1_amd64.deb (Tested with libnvparsers-dev_6.0.1-1+cuda10.1_amd64.deb) <br />
+		 	libnvinfer-plugin6_{version}+cuda10.1_amd64.deb (Tested with libnvinfer-plugin6_6.0.1-1+cuda10.1_amd64.deb) <br />
+		 	libnvinfer-plugin-dev_{version}+cuda10.1_amd64.deb (Tested with libnvinfer-plugin-dev_6.0.1-1+cuda10.1_amd64.deb) <br />
+		 	libnvonnxparsers6_{version}+cuda10.1_amd64.deb (Tested with libnvonnxparsers6_6.0.1-1+cuda10.1_amd64.deb) <br />
+		 	libnvonnxparsers-dev_{version}+cuda10.1_amd64.deb (Tested with libnvonnxparsers-dev_6.0.1-1+cuda10.1_amd64.deb) <br />
 
      Install the packages:
      ```shell
